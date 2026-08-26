@@ -58,7 +58,7 @@ const noticiasBrutas: NoticiaBruta[] = [
     horario: hora(9, 15),
     categoria: "Prefeitura",
     importancia: "media",
-    status: "aguardando_aprovacao",
+    status: "em_analise",
     resumo:
       "Ação prevê recuperação de calçadas e nova iluminação em ruas do centro de Laguna, com início previsto para o próximo mês.",
     conteudo:
@@ -109,7 +109,7 @@ const noticiasBrutas: NoticiaBruta[] = [
     horario: hora(11, 20),
     categoria: "Trânsito",
     importancia: "alta",
-    status: "nova",
+    status: "aguardando_aprovacao",
     resumo:
       "Rua lateral ao Mercado Público terá sentido único a partir de segunda-feira, segundo a Secretaria de Mobilidade.",
     conteudo:
@@ -137,7 +137,7 @@ const noticiasBrutas: NoticiaBruta[] = [
     horario: hora(16, 45, 1),
     categoria: "Turismo",
     importancia: "baixa",
-    status: "rejeitada",
+    status: "ignorada",
     resumo:
       "Guias locais relatam aumento na procura por visitas ao centro histórico e à Casa de Anita.",
     conteudo:
@@ -166,7 +166,7 @@ const noticiasBrutas: NoticiaBruta[] = [
     horario: hora(13, 0),
     categoria: "Saúde",
     importancia: "media",
-    status: "nova",
+    status: "revisao_obrigatoria",
     resumo:
       "Unidade passa a atender até as 20h de segunda a sexta a partir da próxima semana.",
     conteudo:
