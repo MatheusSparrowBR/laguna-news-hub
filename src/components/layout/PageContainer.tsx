@@ -8,8 +8,8 @@ export function PageContainer({
   children,
 }: {
   titulo: string;
-  descricao?: string;
-  acoes?: ReactNode;
+  descricao?: string | undefined;
+  acoes?: ReactNode | undefined;
   children: ReactNode;
 }) {
   return (
