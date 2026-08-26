@@ -19,11 +19,13 @@ export function ArtePreview({
 
   return (
     <div
+      style={{
+        backgroundImage: urgente
+          ? "linear-gradient(150deg, var(--destructive) 0%, var(--primary) 100%)"
+          : "linear-gradient(150deg, var(--primary) 0%, var(--primary) 60%, var(--sidebar-primary) 100%)",
+      }}
       className={cn(
         "relative flex aspect-square w-full flex-col justify-between overflow-hidden rounded-lg p-5 text-white",
-        urgente
-          ? "bg-[linear-gradient(150deg,var(--destructive)_0%,var(--primary)_100%)]"
-          : "bg-[linear-gradient(150deg,var(--primary)_0%,var(--primary)_60%,var(--sidebar-primary)_100%)]",
         className,
       )}
     >
