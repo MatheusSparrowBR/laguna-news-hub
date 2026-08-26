@@ -58,7 +58,7 @@ export function NewsList({
                   <CategoryBadge categoria={n.categoria} />
                 </TableCell>
                 <TableCell>
-                  <StatusBadge tipo="importancia" valor={n.importancia} />
+                  <StatusBadge tipo="importancia" valor={n.importancia} semPrefixo />
                 </TableCell>
                 <TableCell>
                   <ConfidenceBadge valor={n.confiancaIA} />

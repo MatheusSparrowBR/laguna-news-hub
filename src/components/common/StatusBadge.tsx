@@ -51,7 +51,12 @@ const importanciaLabels: Record<Importancia, { label: string; className: string 
 type Props =
   | { tipo: "noticia"; valor: NewsStatus; className?: string }
   | { tipo: "publicacao"; valor: PublicationStatus; className?: string }
-  | { tipo: "importancia"; valor: Importancia; className?: string };
+  | {
+      tipo: "importancia";
+      valor: Importancia;
+      className?: string;
+      semPrefixo?: boolean;
+    };
 
 export function StatusBadge(props: Props) {
   const mapa =
@@ -69,7 +74,9 @@ export function StatusBadge(props: Props) {
         props.className,
       )}
     >
-      {props.tipo === "importancia" ? `Importância: ${mapa.label}` : mapa.label}
+      {props.tipo === "importancia" && !props.semPrefixo
+        ? `Importância: ${mapa.label}`
+        : mapa.label}
     </span>
   );
 }
