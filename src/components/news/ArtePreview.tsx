@@ -22,8 +22,8 @@ export function ArtePreview({
       className={cn(
         "relative flex aspect-square w-full flex-col justify-between overflow-hidden rounded-lg p-5 text-white",
         urgente
-          ? "bg-[linear-gradient(150deg,hsl(var(--destructive))_0%,hsl(var(--primary))_100%)]"
-          : "bg-[linear-gradient(150deg,hsl(var(--primary))_0%,hsl(var(--primary))_55%,hsl(var(--primary)/0.75)_100%)]",
+          ? "bg-[linear-gradient(150deg,var(--destructive)_0%,var(--primary)_100%)]"
+          : "bg-[linear-gradient(150deg,var(--primary)_0%,var(--primary)_60%,var(--sidebar-primary)_100%)]",
         className,
       )}
     >
