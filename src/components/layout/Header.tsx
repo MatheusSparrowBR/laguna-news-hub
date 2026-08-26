@@ -11,7 +11,7 @@ export function Header({
   acoes,
 }: {
   titulo: string;
-  descricao?: string;
+  descricao?: string | undefined;
   acoes?: React.ReactNode;
 }) {
   const [menuAberto, setMenuAberto] = useState(false);

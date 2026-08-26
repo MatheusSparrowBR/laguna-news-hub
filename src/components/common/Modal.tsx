@@ -19,7 +19,7 @@ export function Modal({
   aberto: boolean;
   onOpenChange: (aberto: boolean) => void;
   titulo: string;
-  descricao?: string;
+  descricao?: string | undefined;
   children?: ReactNode;
   rodape?: ReactNode;
 }) {
