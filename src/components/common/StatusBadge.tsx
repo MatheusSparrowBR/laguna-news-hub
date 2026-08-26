@@ -14,6 +14,18 @@ const newsLabels: Record<NewsStatus, { label: string; className: string }> = {
     label: "Duplicada",
     className: "bg-muted text-muted-foreground border-dashed border-border",
   },
+  em_analise: {
+    label: "Em análise",
+    className: "bg-primary-soft text-primary border-primary/20",
+  },
+  ignorada: {
+    label: "Ignorada",
+    className: "bg-muted text-muted-foreground border-border",
+  },
+  revisao_obrigatoria: {
+    label: "Revisão obrigatória",
+    className: "bg-destructive-soft text-destructive border-destructive/25",
+  },
 };
 
 const publicationLabels: Record<PublicationStatus, { label: string; className: string }> = {
