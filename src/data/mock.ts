@@ -19,7 +19,20 @@ function hora(h: number, m = 0, diasAtras = 0): string {
   return d.toISOString();
 }
 
-export const mockNews: NewsItem[] = [
+/** Notícia como ela chega das fontes, antes da análise simulada da IA. */
+type NoticiaBruta = Omit<
+  NewsItem,
+  | "cidade"
+  | "estado"
+  | "importanciaNota"
+  | "confiancaIA"
+  | "duplicada"
+  | "grupoDuplicidade"
+  | "explicacaoIA"
+  | "gerado"
+>;
+
+const noticiasBrutas: NoticiaBruta[] = [
   {
     id: "n1",
     titulo: "Acidente causa lentidão em trecho da BR-101 em Laguna",
@@ -45,7 +58,7 @@ export const mockNews: NewsItem[] = [
     horario: hora(9, 15),
     categoria: "Prefeitura",
     importancia: "media",
-    status: "aguardando_aprovacao",
+    status: "em_analise",
     resumo:
       "Ação prevê recuperação de calçadas e nova iluminação em ruas do centro de Laguna, com início previsto para o próximo mês.",
     conteudo:
@@ -96,7 +109,7 @@ export const mockNews: NewsItem[] = [
     horario: hora(11, 20),
     categoria: "Trânsito",
     importancia: "alta",
-    status: "nova",
+    status: "aguardando_aprovacao",
     resumo:
       "Rua lateral ao Mercado Público terá sentido único a partir de segunda-feira, segundo a Secretaria de Mobilidade.",
     conteudo:
@@ -124,7 +137,7 @@ export const mockNews: NewsItem[] = [
     horario: hora(16, 45, 1),
     categoria: "Turismo",
     importancia: "baixa",
-    status: "rejeitada",
+    status: "ignorada",
     resumo:
       "Guias locais relatam aumento na procura por visitas ao centro histórico e à Casa de Anita.",
     conteudo:
@@ -153,7 +166,7 @@ export const mockNews: NewsItem[] = [
     horario: hora(13, 0),
     categoria: "Saúde",
     importancia: "media",
-    status: "nova",
+    status: "revisao_obrigatoria",
     resumo:
       "Unidade passa a atender até as 20h de segunda a sexta a partir da próxima semana.",
     conteudo:
@@ -174,6 +187,193 @@ export const mockNews: NewsItem[] = [
       "As escolas da rede municipal de Laguna abriram o período de matrículas para o novo semestre. O atendimento acontece nas secretarias das unidades, das 8h às 17h.",
   },
 ];
+
+/**
+ * Análise e conteúdo simulados da IA para cada notícia.
+ * Futuramente estes campos virão do Supabase / do serviço de IA.
+ */
+type AnaliseSimulada = Pick<
+  NewsItem,
+  | "importanciaNota"
+  | "confiancaIA"
+  | "duplicada"
+  | "explicacaoIA"
+  | "gerado"
+> & { grupoDuplicidade?: string };
+
+const analiseSimulada: Record<string, AnaliseSimulada> = {
+  n1: {
+    importanciaNota: 9,
+    confiancaIA: 96,
+    duplicada: false,
+    grupoDuplicidade: "dup-br101-km320",
+    explicacaoIA:
+      "Classificada como urgente porque envolve acidente com bloqueio de faixa em rodovia federal que corta a cidade, com impacto imediato no deslocamento dos moradores.",
+    gerado: {
+      titulo: "BR-101: acidente deixa trânsito lento em Laguna",
+      resumo:
+        "Colisão no km 320 da BR-101, sentido sul, bloqueou uma faixa e deixou o trânsito lento na manhã desta quarta.",
+      legenda:
+        "🚨 TRÂNSITO | Acidente no km 320 da BR-101, em Laguna, deixa o trânsito lento no sentido sul nesta manhã. Uma faixa está bloqueada para atendimento. Redobre a atenção ao passar pelo trecho.",
+      hashtags: "#laguna #br101 #transito #lagunasc #noticiaslaguna",
+      textoArte: "ACIDENTE NA BR-101\nTrânsito lento em Laguna",
+    },
+  },
+  n2: {
+    importanciaNota: 6,
+    confiancaIA: 91,
+    duplicada: false,
+    explicacaoIA:
+      "Importância média: é um anúncio oficial da Prefeitura com impacto no centro da cidade, mas sem urgência imediata para o dia de hoje.",
+    gerado: {
+      titulo: "Centro de Laguna terá calçadas e iluminação renovadas",
+      resumo:
+        "Prefeitura anuncia revitalização no centro com novas calçadas, iluminação e paisagismo a partir do próximo mês.",
+      legenda:
+        "🏛️ PREFEITURA | Laguna anuncia revitalização no centro: calçadas recuperadas, nova iluminação e paisagismo. Início previsto para o próximo mês.",
+      hashtags: "#laguna #prefeituradelaguna #centrohistorico #lagunasc",
+      textoArte: "REVITALIZAÇÃO NO CENTRO\nCalçadas e nova iluminação",
+    },
+  },
+  n3: {
+    importanciaNota: 5,
+    confiancaIA: 88,
+    duplicada: false,
+    explicacaoIA:
+      "Importância média porque é um evento cultural com data definida no centro histórico, de interesse geral, mas sem caráter de alerta.",
+    gerado: {
+      titulo: "Feira cultural agita o centro histórico de Laguna",
+      resumo:
+        "Feira com música, artesanato e gastronomia ocupa a Praça República Juliana de sexta a domingo, das 10h às 22h.",
+      legenda:
+        "🎉 EVENTOS | Música, artesanato e gastronomia no centro histórico de Laguna neste fim de semana. Entrada gratuita, das 10h às 22h.",
+      hashtags: "#laguna #eventoslaguna #centrohistorico #culturasc",
+      textoArte: "FEIRA CULTURAL\nCentro histórico de Laguna",
+    },
+  },
+  n4: {
+    importanciaNota: 10,
+    confiancaIA: 98,
+    duplicada: false,
+    explicacaoIA:
+      "Classificada como urgente porque é um alerta oficial da Defesa Civil com risco à segurança da população e validade para hoje.",
+    gerado: {
+      titulo: "Alerta: ventos de até 70 km/h em Laguna",
+      resumo:
+        "Defesa Civil alerta para rajadas de até 70 km/h no litoral sul, incluindo Laguna, até a noite desta quarta.",
+      legenda:
+        "⚠️ ALERTA | Defesa Civil prevê rajadas de até 70 km/h em Laguna e região até a noite. Evite praias e não se abrigue sob árvores.",
+      hashtags: "#laguna #defesacivil #alerta #clima #lagunasc",
+      textoArte: "ALERTA DE VENTOS FORTES\nRajadas de até 70 km/h",
+    },
+  },
+  n5: {
+    importanciaNota: 8,
+    confiancaIA: 94,
+    duplicada: false,
+    explicacaoIA:
+      "A notícia foi classificada como alta importância porque informa uma alteração no trânsito em uma via central da cidade, afetando a rotina de quem circula pela região.",
+    gerado: {
+      titulo: "Rua do Mercado Público terá sentido único em Laguna",
+      resumo:
+        "Rua lateral ao Mercado Público passa a ter sentido único a partir de segunda-feira, segundo a Secretaria de Mobilidade.",
+      legenda:
+        "🚦 TRÂNSITO | Atenção, Laguna: a rua lateral ao Mercado Público passa a ter sentido único a partir de segunda-feira. A mudança busca melhorar o fluxo e ampliar o espaço para pedestres.",
+      hashtags: "#laguna #transito #mercadopublico #lagunasc",
+      textoArte: "MUDANÇA NO TRÂNSITO\nRua do Mercado Público",
+    },
+  },
+  n6: {
+    importanciaNota: 3,
+    confiancaIA: 82,
+    duplicada: false,
+    explicacaoIA:
+      "Importância baixa: é uma ação comunitária positiva já encerrada, sem impacto direto na rotina ou na segurança dos moradores.",
+    gerado: {
+      titulo: "Mutirão recolhe 300 kg de resíduos no Mar Grosso",
+      resumo:
+        "Voluntários recolheram cerca de 300 kg de resíduos na orla da Praia do Mar Grosso, com apoio de escolas.",
+      legenda:
+        "🌊 CIDADE | Mutirão na Praia do Mar Grosso recolheu cerca de 300 kg de resíduos. Parabéns aos voluntários e às escolas que participaram!",
+      hashtags: "#laguna #margrosso #meioambiente #lagunasc",
+      textoArte: "MUTIRÃO DE LIMPEZA\n300 kg recolhidos no Mar Grosso",
+    },
+  },
+  n7: {
+    importanciaNota: 2,
+    confiancaIA: 71,
+    duplicada: false,
+    explicacaoIA:
+      "Importância baixa e confiança reduzida: o texto traz percepções de guias locais, sem dados oficiais que confirmem o crescimento citado.",
+    gerado: {
+      titulo: "Roteiros históricos crescem em Laguna",
+      resumo:
+        "Guias locais relatam aumento na procura por visitas ao centro histórico e à Casa de Anita Garibaldi.",
+      legenda:
+        "🏛️ TURISMO | Guias de Laguna relatam mais procura por roteiros históricos, com destaque para o centro histórico e a Casa de Anita.",
+      hashtags: "#laguna #turismo #anitagaribaldi #lagunasc",
+      textoArte: "TURISMO HISTÓRICO\nProcura em alta em Laguna",
+    },
+  },
+  n8: {
+    importanciaNota: 8,
+    confiancaIA: 65,
+    duplicada: true,
+    grupoDuplicidade: "dup-br101-km320",
+    explicacaoIA:
+      "Marcada como duplicada: descreve o mesmo acidente no km 320 da BR-101 já publicado por outra fonte, com poucas informações novas.",
+    gerado: {
+      titulo: "BR-101 com trânsito lento perto de Laguna",
+      resumo: "Motoristas relatam lentidão na BR-101 após colisão entre dois carros.",
+      legenda:
+        "🚧 TRÂNSITO | Lentidão na BR-101 na altura de Laguna após colisão entre dois veículos.",
+      hashtags: "#laguna #br101 #transito",
+      textoArte: "BR-101\nTrânsito lento",
+    },
+  },
+  n9: {
+    importanciaNota: 6,
+    confiancaIA: 58,
+    duplicada: false,
+    explicacaoIA:
+      "Marcada para revisão obrigatória: a confiança ficou baixa porque a data de início da ampliação não está clara no texto original.",
+    gerado: {
+      titulo: "Posto de saúde do Magalhães amplia horário",
+      resumo:
+        "Unidade do bairro Magalhães passa a atender até as 20h de segunda a sexta a partir da próxima semana.",
+      legenda:
+        "🏥 SAÚDE | O posto de saúde do bairro Magalhães, em Laguna, passa a atender até as 20h de segunda a sexta.",
+      hashtags: "#laguna #saude #magalhaes #lagunasc",
+      textoArte: "POSTO DE SAÚDE\nAtendimento até as 20h",
+    },
+  },
+  n10: {
+    importanciaNota: 6,
+    confiancaIA: 90,
+    duplicada: false,
+    explicacaoIA:
+      "Importância média: informação de serviço com prazo definido, útil para famílias da rede municipal de ensino.",
+    gerado: {
+      titulo: "Matrículas abertas na rede municipal de Laguna",
+      resumo:
+        "Escolas municipais recebem matrículas para o novo semestre por duas semanas, das 8h às 17h.",
+      legenda:
+        "🎓 EDUCAÇÃO | Matrículas abertas nas escolas municipais de Laguna por duas semanas, das 8h às 17h nas secretarias.",
+      hashtags: "#laguna #educacao #matriculas #lagunasc",
+      textoArte: "MATRÍCULAS ABERTAS\nRede municipal de Laguna",
+    },
+  },
+};
+
+export const mockNews: NewsItem[] = noticiasBrutas.map((n) => {
+  const analise = analiseSimulada[n.id]!;
+  return {
+    ...n,
+    cidade: "Laguna",
+    estado: "SC",
+    ...analise,
+  };
+});
 
 export const mockPublications: Publication[] = [
   {
