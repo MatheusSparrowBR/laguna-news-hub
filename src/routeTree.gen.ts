@@ -10,33 +10,118 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminRouteImport } from './routes/_admin'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as AdminDashboardRouteImport } from './routes/_admin.dashboard'
+import { Route as AdminPublicationsRouteImport } from './routes/_admin.publications'
+import { Route as AdminSourcesRouteImport } from './routes/_admin.sources'
+import { Route as AdminNewsIndexRouteImport } from './routes/_admin.news.index'
+import { Route as AdminNewsIdRouteImport } from './routes/_admin.news.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/_admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminDashboardRoute = AdminDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminPublicationsRoute = AdminPublicationsRouteImport.update({
+  id: '/publications',
+  path: '/publications',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSourcesRoute = AdminSourcesRouteImport.update({
+  id: '/sources',
+  path: '/sources',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminNewsIndexRoute = AdminNewsIndexRouteImport.update({
+  id: '/news/',
+  path: '/news/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminNewsIdRoute = AdminNewsIdRouteImport.update({
+  id: '/news/$id',
+  path: '/news/$id',
+  getParentRoute: () => AdminRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/dashboard': typeof AdminDashboardRoute
+  '/publications': typeof AdminPublicationsRoute
+  '/sources': typeof AdminSourcesRoute
+  '/news/$id': typeof AdminNewsIdRoute
+  '/news/': typeof AdminNewsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/dashboard': typeof AdminDashboardRoute
+  '/publications': typeof AdminPublicationsRoute
+  '/sources': typeof AdminSourcesRoute
+  '/news/$id': typeof AdminNewsIdRoute
+  '/news': typeof AdminNewsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_admin': typeof AdminRouteWithChildren
+  '/login': typeof LoginRoute
+  '/_admin/dashboard': typeof AdminDashboardRoute
+  '/_admin/publications': typeof AdminPublicationsRoute
+  '/_admin/sources': typeof AdminSourcesRoute
+  '/_admin/news/$id': typeof AdminNewsIdRoute
+  '/_admin/news/': typeof AdminNewsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/dashboard'
+    | '/publications'
+    | '/sources'
+    | '/news/$id'
+    | '/news/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/login'
+    | '/dashboard'
+    | '/publications'
+    | '/sources'
+    | '/news/$id'
+    | '/news'
+  id:
+    | '__root__'
+    | '/'
+    | '/_admin'
+    | '/login'
+    | '/_admin/dashboard'
+    | '/_admin/publications'
+    | '/_admin/sources'
+    | '/_admin/news/$id'
+    | '/_admin/news/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRouteWithChildren
+  LoginRoute: typeof LoginRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +133,80 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_admin': {
+      id: '/_admin'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_admin/dashboard': {
+      id: '/_admin/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AdminDashboardRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/_admin/publications': {
+      id: '/_admin/publications'
+      path: '/publications'
+      fullPath: '/publications'
+      preLoaderRoute: typeof AdminPublicationsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/_admin/sources': {
+      id: '/_admin/sources'
+      path: '/sources'
+      fullPath: '/sources'
+      preLoaderRoute: typeof AdminSourcesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/_admin/news/': {
+      id: '/_admin/news/'
+      path: '/news'
+      fullPath: '/news/'
+      preLoaderRoute: typeof AdminNewsIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/_admin/news/$id': {
+      id: '/_admin/news/$id'
+      path: '/news/$id'
+      fullPath: '/news/$id'
+      preLoaderRoute: typeof AdminNewsIdRouteImport
+      parentRoute: typeof AdminRoute
+    }
   }
 }
 
+interface AdminRouteChildren {
+  AdminDashboardRoute: typeof AdminDashboardRoute
+  AdminPublicationsRoute: typeof AdminPublicationsRoute
+  AdminSourcesRoute: typeof AdminSourcesRoute
+  AdminNewsIdRoute: typeof AdminNewsIdRoute
+  AdminNewsIndexRoute: typeof AdminNewsIndexRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminDashboardRoute: AdminDashboardRoute,
+  AdminPublicationsRoute: AdminPublicationsRoute,
+  AdminSourcesRoute: AdminSourcesRoute,
+  AdminNewsIdRoute: AdminNewsIdRoute,
+  AdminNewsIndexRoute: AdminNewsIndexRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRouteWithChildren,
+  LoginRoute: LoginRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
