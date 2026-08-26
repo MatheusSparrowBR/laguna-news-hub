@@ -12,8 +12,11 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteImport } from './routes/_admin'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as AdminAnalyticsRouteImport } from './routes/_admin.analytics'
 import { Route as AdminDashboardRouteImport } from './routes/_admin.dashboard'
+import { Route as AdminInstagramRouteImport } from './routes/_admin.instagram'
 import { Route as AdminPublicationsRouteImport } from './routes/_admin.publications'
+import { Route as AdminSettingsRouteImport } from './routes/_admin.settings'
 import { Route as AdminSourcesRouteImport } from './routes/_admin.sources'
 import { Route as AdminNewsIndexRouteImport } from './routes/_admin.news.index'
 import { Route as AdminNewsIdRouteImport } from './routes/_admin.news.$id'
@@ -32,14 +35,29 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminAnalyticsRoute = AdminAnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminDashboardRoute = AdminDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminInstagramRoute = AdminInstagramRouteImport.update({
+  id: '/instagram',
+  path: '/instagram',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminPublicationsRoute = AdminPublicationsRouteImport.update({
   id: '/publications',
   path: '/publications',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSettingsRoute = AdminSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminSourcesRoute = AdminSourcesRouteImport.update({
@@ -61,8 +79,11 @@ const AdminNewsIdRoute = AdminNewsIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/analytics': typeof AdminAnalyticsRoute
   '/dashboard': typeof AdminDashboardRoute
+  '/instagram': typeof AdminInstagramRoute
   '/publications': typeof AdminPublicationsRoute
+  '/settings': typeof AdminSettingsRoute
   '/sources': typeof AdminSourcesRoute
   '/news/$id': typeof AdminNewsIdRoute
   '/news/': typeof AdminNewsIndexRoute
@@ -70,8 +91,11 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/analytics': typeof AdminAnalyticsRoute
   '/dashboard': typeof AdminDashboardRoute
+  '/instagram': typeof AdminInstagramRoute
   '/publications': typeof AdminPublicationsRoute
+  '/settings': typeof AdminSettingsRoute
   '/sources': typeof AdminSourcesRoute
   '/news/$id': typeof AdminNewsIdRoute
   '/news': typeof AdminNewsIndexRoute
@@ -81,8 +105,11 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_admin': typeof AdminRouteWithChildren
   '/login': typeof LoginRoute
+  '/_admin/analytics': typeof AdminAnalyticsRoute
   '/_admin/dashboard': typeof AdminDashboardRoute
+  '/_admin/instagram': typeof AdminInstagramRoute
   '/_admin/publications': typeof AdminPublicationsRoute
+  '/_admin/settings': typeof AdminSettingsRoute
   '/_admin/sources': typeof AdminSourcesRoute
   '/_admin/news/$id': typeof AdminNewsIdRoute
   '/_admin/news/': typeof AdminNewsIndexRoute
@@ -92,8 +119,11 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/login'
+    | '/analytics'
     | '/dashboard'
+    | '/instagram'
     | '/publications'
+    | '/settings'
     | '/sources'
     | '/news/$id'
     | '/news/'
@@ -101,8 +131,11 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/login'
+    | '/analytics'
     | '/dashboard'
+    | '/instagram'
     | '/publications'
+    | '/settings'
     | '/sources'
     | '/news/$id'
     | '/news'
@@ -111,8 +144,11 @@ export interface FileRouteTypes {
     | '/'
     | '/_admin'
     | '/login'
+    | '/_admin/analytics'
     | '/_admin/dashboard'
+    | '/_admin/instagram'
     | '/_admin/publications'
+    | '/_admin/settings'
     | '/_admin/sources'
     | '/_admin/news/$id'
     | '/_admin/news/'
@@ -147,6 +183,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_admin/analytics': {
+      id: '/_admin/analytics'
+      path: '/analytics'
+      fullPath: '/analytics'
+      preLoaderRoute: typeof AdminAnalyticsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/_admin/dashboard': {
       id: '/_admin/dashboard'
       path: '/dashboard'
@@ -154,11 +197,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminDashboardRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/_admin/instagram': {
+      id: '/_admin/instagram'
+      path: '/instagram'
+      fullPath: '/instagram'
+      preLoaderRoute: typeof AdminInstagramRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/_admin/publications': {
       id: '/_admin/publications'
       path: '/publications'
       fullPath: '/publications'
       preLoaderRoute: typeof AdminPublicationsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/_admin/settings': {
+      id: '/_admin/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AdminSettingsRouteImport
       parentRoute: typeof AdminRoute
     }
     '/_admin/sources': {
@@ -186,16 +243,22 @@ declare module '@tanstack/react-router' {
 }
 
 interface AdminRouteChildren {
+  AdminAnalyticsRoute: typeof AdminAnalyticsRoute
   AdminDashboardRoute: typeof AdminDashboardRoute
+  AdminInstagramRoute: typeof AdminInstagramRoute
   AdminPublicationsRoute: typeof AdminPublicationsRoute
+  AdminSettingsRoute: typeof AdminSettingsRoute
   AdminSourcesRoute: typeof AdminSourcesRoute
   AdminNewsIdRoute: typeof AdminNewsIdRoute
   AdminNewsIndexRoute: typeof AdminNewsIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminAnalyticsRoute: AdminAnalyticsRoute,
   AdminDashboardRoute: AdminDashboardRoute,
+  AdminInstagramRoute: AdminInstagramRoute,
   AdminPublicationsRoute: AdminPublicationsRoute,
+  AdminSettingsRoute: AdminSettingsRoute,
   AdminSourcesRoute: AdminSourcesRoute,
   AdminNewsIdRoute: AdminNewsIdRoute,
   AdminNewsIndexRoute: AdminNewsIndexRoute,
