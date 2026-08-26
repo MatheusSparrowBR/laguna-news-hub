@@ -19,7 +19,20 @@ function hora(h: number, m = 0, diasAtras = 0): string {
   return d.toISOString();
 }
 
-export const mockNews: NewsItem[] = [
+/** Notícia como ela chega das fontes, antes da análise simulada da IA. */
+type NoticiaBruta = Omit<
+  NewsItem,
+  | "cidade"
+  | "estado"
+  | "importanciaNota"
+  | "confiancaIA"
+  | "duplicada"
+  | "grupoDuplicidade"
+  | "explicacaoIA"
+  | "gerado"
+>;
+
+const noticiasBrutas: NoticiaBruta[] = [
   {
     id: "n1",
     titulo: "Acidente causa lentidão em trecho da BR-101 em Laguna",
