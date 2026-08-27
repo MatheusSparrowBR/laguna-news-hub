@@ -7,6 +7,7 @@ import { EmptyState } from "@/components/common/EmptyState";
 import { NewsFilters } from "@/components/news/NewsFilters";
 import { NewsList } from "@/components/news/NewsList";
 import type { NewsActionHandlers } from "@/components/news/NewsActions";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { filtrarNoticias, filtrosIniciais } from "@/lib/newsFilter";
 import { listarFontes } from "@/services/mockService";
@@ -78,6 +79,17 @@ function NewsPage() {
         </Button>
       }
     >
+      <div className="mb-3 flex items-center gap-2">
+        <Badge variant="outline" className="border-green-300 text-green-700 dark:border-green-700 dark:text-green-400">
+          Real
+        </Badge>
+        <span className="text-xs text-muted-foreground">= coletada automaticamente</span>
+        <Badge variant="outline" className="ml-2 border-amber-300 text-amber-700 dark:border-amber-700 dark:text-amber-400">
+          Demo
+        </Badge>
+        <span className="text-xs text-muted-foreground">= dado de demonstração</span>
+      </div>
+
       <NewsFilters filtros={filtros} onChange={setFiltros} fontes={fontes} />
 
       <p className="mt-4 text-sm text-muted-foreground">

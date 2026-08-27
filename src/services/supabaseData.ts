@@ -197,7 +197,7 @@ export async function removerFonte(id: string) {
 const SELECT_NEWS = `
   id, title, original_content, source_url, image_url, city, state,
   importance_score, ai_confidence, is_duplicate, duplicate_group_id,
-  status, published_at, discovered_at,
+  status, published_at, discovered_at, is_demo,
   categories ( name ),
   sources ( name ),
   news_analysis ( summary, instagram_title, instagram_caption, hashtags, suggested_art_text, moderation_status, moderation_notes )
@@ -218,6 +218,7 @@ type LinhaNews = {
   status: string;
   published_at: string | null;
   discovered_at: string;
+  is_demo: boolean;
   categories: { name: string } | null;
   sources: { name: string } | null;
   news_analysis:
@@ -266,6 +267,7 @@ function mapearNoticia(linha: LinhaNews): NewsItem {
       hashtags: analise?.hashtags ?? "",
       textoArte: analise?.suggested_art_text ?? linha.title,
     },
+    isDemo: linha.is_demo,
   };
 }
 

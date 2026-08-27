@@ -88,6 +88,8 @@ export interface NewsItem {
   grupoDuplicidade?: string;
   explicacaoIA: string;
   gerado: ConteudoGerado;
+  // Campo para diferenciar demo de real
+  isDemo?: boolean;
 }
 
 export interface Publication {

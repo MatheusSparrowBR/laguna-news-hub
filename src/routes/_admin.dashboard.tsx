@@ -1,9 +1,12 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import {
   AlertTriangle,
   CheckCircle2,
+  Clock,
   Eye,
   Newspaper,
+  Rss,
   TrendingUp,
   Users,
 } from "lucide-react";
@@ -14,13 +17,17 @@ import { EmptyState } from "@/components/common/EmptyState";
 import { PageContainer, SectionCard } from "@/components/layout/PageContainer";
 import { PublicationsChart, ReachChart } from "@/components/dashboard/OverviewChart";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   listarNoticias,
   listarPublicacoes,
   obterEstatisticasInstagram,
   obterMetricasDiarias,
 } from "@/services/mockService";
-import { ehHoje, formatarNumero } from "@/lib/format";
+import { ehHoje, formatarDataHora, formatarNumero } from "@/lib/format";
+import { useModoDados } from "@/services/dataMode";
+import { obterUltimaExecucao, type UltimaExecucao } from "@/services/collectNews";
+import { obterProjetoAtual } from "@/services/supabaseData";
 
 export const Route = createFileRoute("/_admin/dashboard")({
   head: () => ({
@@ -42,10 +49,22 @@ export const Route = createFileRoute("/_admin/dashboard")({
 });
 
 function DashboardPage() {
+  const modo = useModoDados();
   const noticias = listarNoticias();
   const publicacoes = listarPublicacoes();
   const metricas = obterMetricasDiarias();
   const instagram = obterEstatisticasInstagram();
+  const [ultimaExecucao, setUltimaExecucao] = useState<UltimaExecucao | null>(null);
+
+  useEffect(() => {
+    if (modo === "banco") {
+      obterProjetoAtual().then((proj) => {
+        if (proj) {
+          obterUltimaExecucao(proj.id).then(setUltimaExecucao).catch(console.error);
+        }
+      }).catch(console.error);
+    }
+  }, [modo]);
 
   const encontradasHoje = noticias.filter((n) => ehHoje(n.horario)).length;
   const aguardando = noticias.filter((n) => n.status === "aguardando_aprovacao").length;
@@ -115,6 +134,49 @@ function DashboardPage() {
           descricao="por publicação"
         />
       </div>
+
+      {/* Última atualização das fontes */}
+      {modo === "banco" && (
+        <div className="mt-6">
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-sm font-medium">
+                <Rss className="size-4" />
+                Última atualização das fontes
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {ultimaExecucao ? (
+                <div className="grid gap-3 sm:grid-cols-4">
+                  <div className="flex items-center gap-2">
+                    <Clock className="size-4 text-muted-foreground" />
+                    <div>
+                      <p className="text-xs text-muted-foreground">Horário</p>
+                      <p className="text-sm font-medium">{formatarDataHora(ultimaExecucao.started_at)}</p>
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Status</p>
+                    <p className="text-sm font-medium capitalize">{ultimaExecucao.status}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Novas notícias</p>
+                    <p className="text-sm font-medium">{ultimaExecucao.items_processed}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Erros</p>
+                    <p className="text-sm font-medium">{ultimaExecucao.error_message ?? "Nenhum"}</p>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  Nenhuma coleta realizada. Vá até Fontes e clique em "Verificar fontes agora".
+                </p>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
         <SectionCard titulo="Publicações por dia">
