@@ -1,41 +1,36 @@
-import type { ReactNode } from "react";
 import { Header } from "./Header";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-export function PageContainer({
-  titulo,
-  descricao,
-  acoes,
-  children,
-}: {
+interface PageContainerProps {
   titulo: string;
-  descricao?: string | undefined;
-  acoes?: ReactNode | undefined;
-  children: ReactNode;
-}) {
+  descricao?: string;
+  acoes?: React.ReactNode;
+  children: React.ReactNode;
+}
+
+export function PageContainer({ titulo, descricao, acoes, children }: PageContainerProps) {
   return (
-    <>
+    <div className="flex min-h-screen flex-col">
       <Header titulo={titulo} descricao={descricao} acoes={acoes} />
-      <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-8">{children}</div>
-    </>
+      <main className="flex-1 px-4 py-6 sm:px-6">{children}</main>
+    </div>
   );
 }
 
-export function SectionCard({
-  titulo,
-  acao,
-  children,
-}: {
+interface SectionCardProps {
   titulo: string;
-  acao?: ReactNode;
-  children: ReactNode;
-}) {
+  acao?: React.ReactNode;
+  children: React.ReactNode;
+}
+
+export function SectionCard({ titulo, acao, children }: SectionCardProps) {
   return (
-    <section className="rounded-xl border border-border bg-card shadow-card">
-      <div className="flex items-center justify-between gap-3 border-b border-border px-5 py-4">
-        <h2 className="font-display text-base font-semibold text-foreground">{titulo}</h2>
+    <Card>
+      <CardHeader className="flex flex-row items-center justify-between pb-2">
+        <CardTitle className="text-base">{titulo}</CardTitle>
         {acao}
-      </div>
-      <div className="p-5">{children}</div>
-    </section>
+      </CardHeader>
+      <CardContent>{children}</CardContent>
+    </Card>
   );
 }

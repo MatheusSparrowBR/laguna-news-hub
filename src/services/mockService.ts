@@ -1,3 +1,7 @@
+/**
+ * Serviço de dados mock. Centraliza o acesso aos dados simulados
+ * para facilitar a troca futura por Supabase.
+ */
 import {
   mockDailyMetrics,
   mockInstagramStats,
@@ -5,12 +9,7 @@ import {
   mockPublications,
   mockSources,
 } from "@/data/mock";
-import type { NewsItem, Publication, Source } from "@/lib/types";
-
-/**
- * Camada de serviço. Hoje devolve dados simulados; no futuro cada função
- * passará a consultar o Supabase, sem precisar alterar as telas.
- */
+import type { DailyMetric, NewsItem, Publication, Source } from "@/lib/types";
 
 export function listarNoticias(): NewsItem[] {
   return [...mockNews].sort(
@@ -29,10 +28,10 @@ export function listarPublicacoes(): Publication[] {
 }
 
 export function listarFontes(): Source[] {
-  return mockSources;
+  return [...mockSources];
 }
 
-export function obterMetricasDiarias() {
+export function obterMetricasDiarias(): DailyMetric[] {
   return mockDailyMetrics;
 }
 

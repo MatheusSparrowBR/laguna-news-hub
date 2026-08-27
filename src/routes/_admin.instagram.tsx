@@ -1,16 +1,20 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
-import { Eye, Instagram, TrendingUp, Users } from "lucide-react";
-import { PageContainer, SectionCard } from "@/components/layout/PageContainer";
+import {
+  Eye,
+  Instagram,
+  TrendingUp,
+  Users,
+  Wifi,
+  WifiOff,
+} from "lucide-react";
+import { PageContainer } from "@/components/layout/PageContainer";
 import { MetricCard } from "@/components/common/MetricCard";
-import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { obterEstatisticasInstagram, listarPublicacoes } from "@/services/mockService";
-import { formatarDataHora, formatarNumero } from "@/lib/format";
+import { Badge } from "@/components/ui/badge";
+import { obterEstatisticasInstagram } from "@/services/mockService";
+import { formatarNumero } from "@/lib/format";
 import { NOME_DO_PERFIL } from "@/config/app";
-import { StatusBadge } from "@/components/common/StatusBadge";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_admin/instagram")({
@@ -19,13 +23,7 @@ export const Route = createFileRoute("/_admin/instagram")({
       { title: "Instagram | Projeto Notícias Laguna" },
       {
         name: "description",
-        content:
-          "Situação da conexão com o Instagram, agenda de publicações e desempenho do perfil de notícias de Laguna.",
-      },
-      { property: "og:title", content: "Instagram | Projeto Notícias Laguna" },
-      {
-        property: "og:description",
-        content: "Conexão e agenda de publicações do perfil de notícias de Laguna - SC.",
+        content: "Monitore o desempenho do perfil do Instagram e conecte sua conta.",
       },
     ],
   }),
@@ -34,108 +32,116 @@ export const Route = createFileRoute("/_admin/instagram")({
 
 function InstagramPage() {
   const stats = obterEstatisticasInstagram();
-  const agendadas = listarPublicacoes().filter((p) => p.status === "agendada");
-  const [confirmarConexao, setConfirmarConexao] = useState(false);
 
   return (
     <PageContainer
       titulo="Instagram"
-      descricao={`Perfil configurado: ${NOME_DO_PERFIL}`}
+      descricao="Desempenho e conexão com o perfil do Instagram."
     >
-      <SectionCard titulo="Conexão da conta">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-start gap-3">
-            <span className="flex size-10 items-center justify-center rounded-lg bg-primary-soft text-primary">
-              <Instagram className="size-5" />
-            </span>
-            <div>
-              <p className="font-display text-sm font-semibold text-foreground">
-                {NOME_DO_PERFIL}
-              </p>
-              <p className="mt-0.5 text-xs text-muted-foreground">
-                {stats.contaConectada
-                  ? "Conta conectada"
-                  : "Conta ainda não conectada — integração oficial será ativada em etapa futura."}
-              </p>
+      {/* Conexão */}
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-base">
+            <Instagram className="size-5" />
+            Conta conectada
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex size-12 items-center justify-center rounded-full bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600">
+                <Instagram className="size-6 text-white" />
+              </div>
+              <div>
+                <p className="font-semibold text-foreground">{NOME_DO_PERFIL}</p>
+                <div className="flex items-center gap-1.5">
+                  {stats.contaConectada ? (
+                    <>
+                      <Wifi className="size-3 text-green-500" />
+                      <span className="text-xs text-green-600">Conectada</span>
+                    </>
+                  ) : (
+                    <>
+                      <WifiOff className="size-3 text-amber-500" />
+                      <span className="text-xs text-amber-600">Não conectada</span>
+                    </>
+                  )}
+                </div>
+              </div>
             </div>
+            <Button
+              variant={stats.contaConectada ? "outline" : "default"}
+              onClick={() =>
+                toast.info(
+                  "Conexão com a API do Instagram será implementada em breve.",
+                )
+              }
+            >
+              {stats.contaConectada ? "Reconectar" : "Conectar conta"}
+            </Button>
           </div>
-          <Button onClick={() => setConfirmarConexao(true)}>Conectar conta</Button>
-        </div>
+        </CardContent>
+      </Card>
 
-        <div className="mt-5 grid gap-4 sm:grid-cols-2">
-          <div className="space-y-2">
-            <Label htmlFor="perfil">Nome do perfil</Label>
-            <Input id="perfil" defaultValue={NOME_DO_PERFIL} />
-            <p className="text-xs text-muted-foreground">
-              Definido em src/config/app.ts (NOME_DO_PERFIL).
-            </p>
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="fuso">Fuso horário das publicações</Label>
-            <Input id="fuso" defaultValue="America/Sao_Paulo" readOnly />
-          </div>
-        </div>
-      </SectionCard>
-
-      <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      {/* Métricas */}
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <MetricCard
           titulo="Seguidores"
           valor={formatarNumero(stats.seguidores)}
           icone={Users}
+          descricao="total do perfil"
         />
         <MetricCard
-          titulo="Crescimento (7 dias)"
+          titulo="Crescimento semanal"
           valor={`${stats.crescimentoSemana}%`}
           icone={TrendingUp}
           variacao={stats.crescimentoSemana}
+          descricao="últimos 7 dias"
         />
         <MetricCard
           titulo="Alcance hoje"
           valor={formatarNumero(stats.alcanceHoje)}
           icone={Eye}
+          descricao="contas alcançadas"
         />
         <MetricCard
-          titulo="Alcance (7 dias)"
+          titulo="Alcance 7 dias"
           valor={formatarNumero(stats.alcance7dias)}
           icone={Eye}
+          descricao="contas alcançadas"
         />
       </div>
 
-      <div className="mt-6">
-        <SectionCard titulo="Publicações agendadas">
-          {agendadas.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Nenhuma publicação agendada.</p>
-          ) : (
-            <div className="space-y-3">
-              {agendadas.map((p) => (
-                <div
-                  key={p.id}
-                  className="flex flex-col gap-2 rounded-xl border border-border p-4 sm:flex-row sm:items-center sm:justify-between"
-                >
-                  <div>
-                    <p className="font-display text-sm font-semibold text-foreground">
-                      {p.titulo}
-                    </p>
-                    <p className="mt-0.5 text-xs text-muted-foreground">
-                      {formatarDataHora(p.horario)} · Template: {p.template}
-                    </p>
-                  </div>
-                  <StatusBadge tipo="publicacao" valor={p.status} />
-                </div>
-              ))}
+      {/* Engajamento */}
+      <Card className="mt-6">
+        <CardHeader>
+          <CardTitle className="text-base">Engajamento</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center gap-4">
+            <div className="rounded-lg border p-4 text-center">
+              <p className="text-3xl font-bold text-foreground">{stats.engajamentoMedio}%</p>
+              <p className="text-xs text-muted-foreground">Taxa média por publicação</p>
             </div>
-          )}
-        </SectionCard>
-      </div>
+            <div className="flex-1">
+              <p className="text-sm text-muted-foreground">
+                O engajamento médio mede curtidas, comentários e compartilhamentos em relação ao
+                número de seguidores. Quando a conta for conectada, essas métricas serão atualizadas
+                em tempo real.
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
-      <ConfirmationDialog
-        aberto={confirmarConexao}
-        onOpenChange={setConfirmarConexao}
-        titulo="Conectar conta do Instagram?"
-        descricao="A integração oficial ainda não está implementada nesta etapa do projeto."
-        textoConfirmar="Entendi"
-        onConfirmar={() => toast.info("Integração será ativada em etapa futura")}
-      />
+      {/* Info */}
+      <div className="mt-6 rounded-lg border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-950">
+        <p className="text-sm text-amber-800 dark:text-amber-200">
+          <strong>Nota:</strong> Os dados exibidos são simulados. Para ativar as métricas reais,
+          conecte a conta do Instagram pela API oficial (Meta Graph API). Isso será implementado
+          nas próximas etapas do projeto.
+        </p>
+      </div>
     </PageContainer>
   );
 }

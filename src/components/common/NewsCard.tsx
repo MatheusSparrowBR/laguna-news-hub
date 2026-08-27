@@ -1,41 +1,31 @@
 import { Link } from "@tanstack/react-router";
-import { Clock, Radio } from "lucide-react";
+import { Clock } from "lucide-react";
+import { StatusBadge } from "./StatusBadge";
+import { CategoryBadge } from "./CategoryBadge";
 import type { NewsItem } from "@/lib/types";
 import { formatarHora } from "@/lib/format";
-import { CategoryBadge } from "./CategoryBadge";
-import { StatusBadge } from "./StatusBadge";
-import { cn } from "@/lib/utils";
 
 export function NewsCard({ noticia }: { noticia: NewsItem }) {
-  const urgente = noticia.importancia === "urgente";
-
   return (
     <Link
       to="/news/$id"
       params={{ id: noticia.id }}
-      className={cn(
-        "block rounded-xl border bg-card p-4 shadow-card transition-shadow hover:shadow-elevated",
-        urgente ? "border-destructive/40" : "border-border",
-      )}
+      className="group flex items-start gap-3 rounded-lg border p-3 transition-colors hover:bg-accent"
     >
-      <div className="flex flex-wrap items-center gap-2">
-        <CategoryBadge categoria={noticia.categoria} />
-        <StatusBadge tipo="noticia" valor={noticia.status} />
-        <StatusBadge tipo="importancia" valor={noticia.importancia} />
-      </div>
-      <h3 className="mt-3 font-display text-base font-semibold leading-snug text-foreground">
-        {noticia.titulo}
-      </h3>
-      <p className="mt-1.5 line-clamp-2 text-sm text-muted-foreground">{noticia.resumo}</p>
-      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
-        <span className="flex items-center gap-1.5">
-          <Radio className="size-3.5" />
-          {noticia.fonte}
-        </span>
-        <span className="flex items-center gap-1.5">
-          <Clock className="size-3.5" />
-          {formatarHora(noticia.horario)}
-        </span>
+      <div className="min-w-0 flex-1">
+        <p className="line-clamp-1 text-sm font-medium text-foreground group-hover:text-primary">
+          {noticia.gerado.titulo || noticia.titulo}
+        </p>
+        <p className="mt-1 line-clamp-1 text-xs text-muted-foreground">{noticia.resumo}</p>
+        <div className="mt-2 flex flex-wrap items-center gap-2">
+          <StatusBadge status={noticia.status} />
+          <CategoryBadge categoria={noticia.categoria} />
+          <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+            <Clock className="size-3" />
+            {formatarHora(noticia.horario)}
+          </span>
+          <span className="text-xs text-muted-foreground">• {noticia.fonte}</span>
+        </div>
       </div>
     </Link>
   );

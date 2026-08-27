@@ -1,37 +1,26 @@
-import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 import type { Categoria } from "@/lib/types";
 
-const estilos: Record<Categoria, string> = {
-  Urgente: "bg-destructive-soft text-destructive border-destructive/25",
-  Trânsito: "bg-warning-soft text-warning-foreground border-warning/30",
-  Segurança: "bg-destructive-soft text-destructive border-destructive/20",
-  Prefeitura: "bg-primary-soft text-primary border-primary/20",
-  Cidade: "bg-secondary text-secondary-foreground border-border",
-  Eventos: "bg-primary-soft text-primary border-primary/20",
-  Turismo: "bg-success-soft text-success border-success/20",
-  Clima: "bg-warning-soft text-warning-foreground border-warning/30",
-  Esportes: "bg-success-soft text-success border-success/20",
-  Economia: "bg-secondary text-secondary-foreground border-border",
-  Educação: "bg-primary-soft text-primary border-primary/20",
-  Saúde: "bg-success-soft text-success border-success/20",
+const corCategoria: Record<string, string> = {
+  Urgente: "bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300",
+  Trânsito: "bg-orange-100 text-orange-800 dark:bg-orange-950 dark:text-orange-300",
+  Segurança: "bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300",
+  Prefeitura: "bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300",
+  Cidade: "bg-teal-100 text-teal-800 dark:bg-teal-950 dark:text-teal-300",
+  Eventos: "bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300",
+  Turismo: "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300",
+  Clima: "bg-sky-100 text-sky-800 dark:bg-sky-950 dark:text-sky-300",
+  Esportes: "bg-lime-100 text-lime-800 dark:bg-lime-950 dark:text-lime-300",
+  Economia: "bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300",
+  Educação: "bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300",
+  Saúde: "bg-pink-100 text-pink-800 dark:bg-pink-950 dark:text-pink-300",
 };
 
-export function CategoryBadge({
-  categoria,
-  className,
-}: {
-  categoria: Categoria;
-  className?: string;
-}) {
+export function CategoryBadge({ categoria }: { categoria: Categoria | string }) {
+  const classe = corCategoria[categoria] || "";
   return (
-    <span
-      className={cn(
-        "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium",
-        estilos[categoria],
-        className,
-      )}
-    >
+    <Badge variant="outline" className={classe}>
       {categoria}
-    </span>
+    </Badge>
   );
 }

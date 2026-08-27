@@ -1,67 +1,45 @@
-import { Bookmark, Heart, MessageCircle, Send } from "lucide-react";
+import { Heart, MessageCircle, Send, Bookmark } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { NOME_DO_PERFIL } from "@/config/app";
-import { formatarNumero } from "@/lib/format";
-import type { Categoria } from "@/lib/types";
-import { ArtePreview } from "./ArtePreview";
+import type { NewsItem } from "@/lib/types";
 
-/** Mockup de como a publicação apareceria no Instagram. Apenas pré-visualização. */
-export function InstagramPreview({
-  categoria,
-  titulo,
-  legenda,
-  hashtags,
-  textoArte,
-  curtidas,
-  comentarios,
-}: {
-  categoria: Categoria;
-  titulo: string;
-  legenda: string;
-  hashtags: string;
-  textoArte: string;
-  curtidas: number;
-  comentarios: number;
-}) {
+export function InstagramPreview({ noticia }: { noticia: NewsItem }) {
   return (
-    <div className="mx-auto w-full max-w-sm overflow-hidden rounded-xl border border-border bg-card shadow-card">
-      <div className="flex items-center gap-3 border-b border-border px-4 py-3">
-        <div className="flex size-9 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
-          NL
+    <Card className="max-w-sm mx-auto">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-sm">Preview do Instagram</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        {/* Header do post */}
+        <div className="flex items-center gap-2">
+          <div className="size-8 rounded-full bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600" />
+          <span className="text-sm font-semibold text-foreground">{NOME_DO_PERFIL}</span>
         </div>
-        <div className="min-w-0">
-          <p className="truncate text-sm font-semibold text-foreground">{NOME_DO_PERFIL}</p>
-          <p className="text-xs text-muted-foreground">Laguna - SC</p>
+
+        {/* Imagem simulada (arte) */}
+        <div className="aspect-square w-full rounded-md bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center p-6">
+          <p className="text-center font-display text-lg font-bold leading-tight text-white">
+            {noticia.gerado.textoArte}
+          </p>
         </div>
-      </div>
 
-      <ArtePreview categoria={categoria} texto={textoArte} className="rounded-none" />
-
-      <div className="px-4 py-3">
-        <div className="flex items-center gap-4 text-muted-foreground">
-          <Heart className="size-5" />
-          <MessageCircle className="size-5" />
-          <Send className="size-5" />
-          <Bookmark className="ml-auto size-5" />
+        {/* Ações */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Heart className="size-5 text-foreground" />
+            <MessageCircle className="size-5 text-foreground" />
+            <Send className="size-5 text-foreground" />
+          </div>
+          <Bookmark className="size-5 text-foreground" />
         </div>
-        <p className="mt-2 text-sm font-semibold text-foreground">
-          {formatarNumero(curtidas)} curtidas
-        </p>
-        <p className="mt-1.5 text-sm leading-relaxed text-foreground">
-          <span className="font-semibold">{NOME_DO_PERFIL}</span>{" "}
-          <span className="font-medium">{titulo}</span>
-        </p>
-        <p className="mt-1 whitespace-pre-line text-sm leading-relaxed text-muted-foreground">
-          {legenda}
-        </p>
-        {hashtags && <p className="mt-1 text-sm text-primary">{hashtags}</p>}
-        <p className="mt-2 text-xs text-muted-foreground">
-          Ver todos os {formatarNumero(comentarios)} comentários
-        </p>
-      </div>
 
-      <p className="border-t border-border bg-secondary px-4 py-2 text-center text-xs text-muted-foreground">
-        Pré-visualização simulada — nada é enviado ao Instagram nesta etapa.
-      </p>
-    </div>
+        {/* Legenda */}
+        <div className="text-sm">
+          <span className="font-semibold text-foreground">{NOME_DO_PERFIL}</span>{" "}
+          <span className="text-foreground">{noticia.gerado.legenda}</span>
+        </div>
+        <p className="text-xs text-primary">{noticia.gerado.hashtags}</p>
+      </CardContent>
+    </Card>
   );
 }

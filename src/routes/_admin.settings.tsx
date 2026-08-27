@@ -1,14 +1,22 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PageContainer, SectionCard } from "@/components/layout/PageContainer";
+import { Save } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
+import { PageContainer } from "@/components/layout/PageContainer";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
-import { CategoryBadge } from "@/components/common/CategoryBadge";
-import { CATEGORIAS } from "@/lib/types";
-import { APP_NAME, CIDADE_COMPLETA, NOME_DO_PERFIL } from "@/config/app";
-import { toast } from "sonner";
+import { Separator } from "@/components/ui/separator";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { APP_NAME, CIDADE, ESTADO, NOME_DO_PERFIL } from "@/config/app";
 
 export const Route = createFileRoute("/_admin/settings")({
   head: () => ({
@@ -16,13 +24,7 @@ export const Route = createFileRoute("/_admin/settings")({
       { title: "Configurações | Projeto Notícias Laguna" },
       {
         name: "description",
-        content:
-          "Ajuste nome do perfil, categorias, horários de publicação e preferências do painel de notícias de Laguna.",
-      },
-      { property: "og:title", content: "Configurações | Projeto Notícias Laguna" },
-      {
-        property: "og:description",
-        content: "Preferências do painel de notícias de Laguna - SC.",
+        content: "Ajuste as configurações do sistema de notícias.",
       },
     ],
   }),
@@ -30,91 +32,153 @@ export const Route = createFileRoute("/_admin/settings")({
 });
 
 function SettingsPage() {
+  const [perfil, setPerfil] = useState(NOME_DO_PERFIL);
+  const [cidade, setCidade] = useState(CIDADE);
+  const [estado, setEstado] = useState(ESTADO);
+  const [coletaAutomatica, setColetaAutomatica] = useState(true);
+  const [intervaloColeta, setIntervaloColeta] = useState("30");
+  const [aprovacaoAutomatica, setAprovacaoAutomatica] = useState(false);
+  const [confiancaMinima, setConfiancaMinima] = useState("85");
+
+  const handleSalvar = () => {
+    toast.success("Configurações salvas (simulado — os dados não persistem ainda).");
+  };
+
   return (
-    <PageContainer titulo="Configurações" descricao="Preferências gerais do painel">
+    <PageContainer
+      titulo="Configurações"
+      descricao="Ajuste os parâmetros do sistema."
+      acoes={
+        <Button size="sm" onClick={handleSalvar}>
+          <Save className="size-4" />
+          Salvar
+        </Button>
+      }
+    >
       <div className="grid gap-6 lg:grid-cols-2">
-        <SectionCard titulo="Identidade do projeto">
-          <div className="space-y-4">
+        {/* Perfil */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Perfil</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="nome-projeto">Nome do projeto</Label>
-              <Input id="nome-projeto" defaultValue={APP_NAME} />
+              <Label htmlFor="perfil">Usuário do Instagram</Label>
+              <Input
+                id="perfil"
+                value={perfil}
+                onChange={(e) => setPerfil(e.target.value)}
+                placeholder="@seuperfil"
+              />
             </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="cidade">Cidade</Label>
+                <Input
+                  id="cidade"
+                  value={cidade}
+                  onChange={(e) => setCidade(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="estado">Estado</Label>
+                <Input
+                  id="estado"
+                  value={estado}
+                  onChange={(e) => setEstado(e.target.value)}
+                  maxLength={2}
+                />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Coleta */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Coleta de notícias</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium">Coleta automática</p>
+                <p className="text-xs text-muted-foreground">
+                  Buscar notícias nas fontes automaticamente
+                </p>
+              </div>
+              <Switch
+                checked={coletaAutomatica}
+                onCheckedChange={setColetaAutomatica}
+                aria-label="Ativar coleta automática"
+              />
+            </div>
+            <Separator />
             <div className="space-y-2">
-              <Label htmlFor="perfil-ig">Nome do perfil no Instagram</Label>
-              <Input id="perfil-ig" defaultValue={NOME_DO_PERFIL} />
+              <Label>Intervalo de coleta</Label>
+              <Select value={intervaloColeta} onValueChange={setIntervaloColeta}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="15">A cada 15 minutos</SelectItem>
+                  <SelectItem value="30">A cada 30 minutos</SelectItem>
+                  <SelectItem value="60">A cada 1 hora</SelectItem>
+                  <SelectItem value="120">A cada 2 horas</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* IA */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Inteligência Artificial</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium">Aprovação automática</p>
+                <p className="text-xs text-muted-foreground">
+                  Aprovar notícias com confiança alta automaticamente
+                </p>
+              </div>
+              <Switch
+                checked={aprovacaoAutomatica}
+                onCheckedChange={setAprovacaoAutomatica}
+                aria-label="Ativar aprovação automática"
+              />
+            </div>
+            <Separator />
+            <div className="space-y-2">
+              <Label htmlFor="confianca">Confiança mínima para aprovação (%)</Label>
+              <Input
+                id="confianca"
+                type="number"
+                min={50}
+                max={100}
+                value={confiancaMinima}
+                onChange={(e) => setConfiancaMinima(e.target.value)}
+              />
               <p className="text-xs text-muted-foreground">
-                Valor padrão definido em src/config/app.ts (NOME_DO_PERFIL).
+                Notícias com confiança abaixo deste valor serão marcadas para revisão obrigatória.
               </p>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="cidade">Cidade alvo</Label>
-              <Input id="cidade" defaultValue={CIDADE_COMPLETA} readOnly />
-            </div>
-          </div>
-        </SectionCard>
+          </CardContent>
+        </Card>
 
-        <SectionCard titulo="Coleta e automação">
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="intervalo">Intervalo de coleta (minutos)</Label>
-              <Input id="intervalo" type="number" defaultValue={30} />
-            </div>
-            <div className="flex items-center justify-between gap-4 rounded-lg border border-border p-3">
-              <div>
-                <p className="text-sm font-medium text-foreground">Detectar duplicadas</p>
-                <p className="text-xs text-muted-foreground">
-                  Marca automaticamente notícias repetidas.
-                </p>
-              </div>
-              <Switch defaultChecked />
-            </div>
-            <div className="flex items-center justify-between gap-4 rounded-lg border border-border p-3">
-              <div>
-                <p className="text-sm font-medium text-foreground">Aprovar manualmente</p>
-                <p className="text-xs text-muted-foreground">
-                  Nada é publicado sem sua confirmação.
-                </p>
-              </div>
-              <Switch defaultChecked />
-            </div>
-            <div className="flex items-center justify-between gap-4 rounded-lg border border-border p-3">
-              <div>
-                <p className="text-sm font-medium text-foreground">Alerta de urgentes</p>
-                <p className="text-xs text-muted-foreground">
-                  Destaca notícias urgentes no dashboard.
-                </p>
-              </div>
-              <Switch defaultChecked />
-            </div>
-          </div>
-        </SectionCard>
-
-        <SectionCard titulo="Categorias monitoradas">
-          <div className="flex flex-wrap gap-2">
-            {CATEGORIAS.map((c) => (
-              <CategoryBadge key={c} categoria={c} />
-            ))}
-          </div>
-          <p className="mt-4 text-xs text-muted-foreground">
-            As categorias são definidas em src/lib/types.ts.
-          </p>
-        </SectionCard>
-
-        <SectionCard titulo="Modelo de legenda">
-          <Textarea
-            className="min-h-32"
-            defaultValue={`{EMOJI} {CATEGORIA} | {TITULO}\n\n{RESUMO}\n\nFonte: {FONTE}\n${NOME_DO_PERFIL}`}
-          />
-          <p className="mt-2 text-xs text-muted-foreground">
-            As variáveis entre chaves serão preenchidas automaticamente na etapa de geração.
-          </p>
-        </SectionCard>
-      </div>
-
-      <div className="mt-6 flex justify-end">
-        <Button onClick={() => toast.success("Configurações salvas (simulado)")}>
-          Salvar configurações
-        </Button>
+        {/* Sobre */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Sobre o sistema</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2 text-sm text-muted-foreground">
+            <p><strong className="text-foreground">{APP_NAME}</strong></p>
+            <p>Versão: 0.1.0 (MVP com dados simulados)</p>
+            <p>Stack: TanStack Start + React + Tailwind + shadcn/ui + Supabase</p>
+            <p>Status: Em desenvolvimento — dados simulados, sem conexão real com fontes ou Instagram.</p>
+          </CardContent>
+        </Card>
       </div>
     </PageContainer>
   );

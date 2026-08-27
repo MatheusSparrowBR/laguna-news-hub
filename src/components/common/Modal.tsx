@@ -1,37 +1,28 @@
-import type { ReactNode } from "react";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
 
-export function Modal({
-  aberto,
-  onOpenChange,
-  titulo,
-  descricao,
-  children,
-  rodape,
-}: {
+interface ModalProps {
   aberto: boolean;
   onOpenChange: (aberto: boolean) => void;
   titulo: string;
-  descricao?: string | undefined;
-  children?: ReactNode;
-  rodape?: ReactNode;
-}) {
+  descricao?: string;
+  children: React.ReactNode;
+}
+
+export function Modal({ aberto, onOpenChange, titulo, descricao, children }: ModalProps) {
   return (
     <Dialog open={aberto} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg">
+      <DialogContent>
         <DialogHeader>
-          <DialogTitle className="font-display">{titulo}</DialogTitle>
+          <DialogTitle>{titulo}</DialogTitle>
           {descricao && <DialogDescription>{descricao}</DialogDescription>}
         </DialogHeader>
         {children}
-        {rodape && <DialogFooter>{rodape}</DialogFooter>}
       </DialogContent>
     </Dialog>
   );

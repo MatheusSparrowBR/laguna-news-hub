@@ -8,7 +8,16 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { cn } from "@/lib/utils";
+
+interface ConfirmationDialogProps {
+  aberto: boolean;
+  onOpenChange: (aberto: boolean) => void;
+  titulo: string;
+  descricao: string;
+  textoConfirmar?: string;
+  textoCancelar?: string;
+  onConfirmar: () => void;
+}
 
 export function ConfirmationDialog({
   aberto,
@@ -17,35 +26,18 @@ export function ConfirmationDialog({
   descricao,
   textoConfirmar = "Confirmar",
   textoCancelar = "Cancelar",
-  destrutivo = false,
   onConfirmar,
-}: {
-  aberto: boolean;
-  onOpenChange: (aberto: boolean) => void;
-  titulo: string;
-  descricao?: string;
-  textoConfirmar?: string;
-  textoCancelar?: string;
-  destrutivo?: boolean;
-  onConfirmar: () => void;
-}) {
+}: ConfirmationDialogProps) {
   return (
     <AlertDialog open={aberto} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle className="font-display">{titulo}</AlertDialogTitle>
-          {descricao && <AlertDialogDescription>{descricao}</AlertDialogDescription>}
+          <AlertDialogTitle>{titulo}</AlertDialogTitle>
+          <AlertDialogDescription>{descricao}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>{textoCancelar}</AlertDialogCancel>
-          <AlertDialogAction
-            onClick={onConfirmar}
-            className={cn(
-              destrutivo && "bg-destructive text-destructive-foreground hover:bg-destructive/90",
-            )}
-          >
-            {textoConfirmar}
-          </AlertDialogAction>
+          <AlertDialogAction onClick={onConfirmar}>{textoConfirmar}</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

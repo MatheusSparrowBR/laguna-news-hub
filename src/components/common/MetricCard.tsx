@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Card, CardContent } from "@/components/ui/card";
 
 interface MetricCardProps {
   titulo: string;
@@ -7,7 +7,7 @@ interface MetricCardProps {
   icone: LucideIcon;
   descricao?: string;
   variacao?: number;
-  destaque?: "padrao" | "alerta" | "urgente";
+  destaque?: "alerta" | "urgente";
 }
 
 export function MetricCard({
@@ -16,39 +16,48 @@ export function MetricCard({
   icone: Icone,
   descricao,
   variacao,
-  destaque = "padrao",
+  destaque,
 }: MetricCardProps) {
-  const iconeBg = {
-    padrao: "bg-primary-soft text-primary",
-    alerta: "bg-warning-soft text-warning-foreground",
-    urgente: "bg-destructive-soft text-destructive",
-  }[destaque];
-
   return (
-    <div className="rounded-xl border border-border bg-card p-5 shadow-card">
-      <div className="flex items-start justify-between gap-3">
-        <p className="text-sm font-medium text-muted-foreground">{titulo}</p>
-        <span className={cn("flex size-9 items-center justify-center rounded-lg", iconeBg)}>
-          <Icone className="size-4.5" />
-        </span>
-      </div>
-      <p className="mt-3 font-display text-3xl font-semibold tracking-tight text-foreground">
-        {valor}
-      </p>
-      <div className="mt-1 flex items-center gap-2">
-        {typeof variacao === "number" && (
-          <span
-            className={cn(
-              "text-xs font-semibold",
-              variacao >= 0 ? "text-success" : "text-destructive",
-            )}
-          >
-            {variacao >= 0 ? "+" : ""}
-            {variacao}%
-          </span>
-        )}
-        {descricao && <span className="text-xs text-muted-foreground">{descricao}</span>}
-      </div>
-    </div>
+    <Card
+      className={`transition-shadow hover:shadow-md ${
+        destaque === "urgente"
+          ? "border-red-200 dark:border-red-800"
+          : destaque === "alerta"
+            ? "border-amber-200 dark:border-amber-800"
+            : ""
+      }`}
+    >
+      <CardContent className="flex items-start gap-3 pt-5">
+        <div
+          className={`rounded-lg p-2.5 ${
+            destaque === "urgente"
+              ? "bg-red-100 text-red-600 dark:bg-red-950 dark:text-red-400"
+              : destaque === "alerta"
+                ? "bg-amber-100 text-amber-600 dark:bg-amber-950 dark:text-amber-400"
+                : "bg-primary/10 text-primary"
+          }`}
+        >
+          <Icone className="size-5" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-xs font-medium text-muted-foreground">{titulo}</p>
+          <p className="mt-0.5 text-2xl font-bold tracking-tight text-foreground">{valor}</p>
+          {descricao && (
+            <p className="mt-0.5 text-xs text-muted-foreground">{descricao}</p>
+          )}
+          {variacao !== undefined && (
+            <p
+              className={`mt-0.5 text-xs font-medium ${
+                variacao >= 0 ? "text-green-600" : "text-red-600"
+              }`}
+            >
+              {variacao >= 0 ? "+" : ""}
+              {variacao}%
+            </p>
+          )}
+        </div>
+      </CardContent>
+    </Card>
   );
 }

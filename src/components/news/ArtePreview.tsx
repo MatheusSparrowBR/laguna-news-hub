@@ -1,41 +1,21 @@
-import { cn } from "@/lib/utils";
-import type { Categoria } from "@/lib/types";
-import { NOME_DO_PERFIL } from "@/config/app";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-/**
- * Placeholder visual da arte da publicação.
- * Nesta etapa não há geração real de imagem: é apenas uma simulação.
- */
-export function ArtePreview({
-  categoria,
-  texto,
-  className,
-}: {
-  categoria: Categoria;
-  texto: string;
-  className?: string;
-}) {
-  const urgente = categoria === "Urgente" || categoria === "Clima" || categoria === "Segurança";
-
+export function ArtePreview({ textoArte }: { textoArte: string }) {
   return (
-    <div
-      style={{
-        backgroundImage: urgente
-          ? "linear-gradient(150deg, var(--destructive) 0%, var(--primary) 100%)"
-          : "linear-gradient(150deg, var(--primary) 0%, var(--primary) 60%, var(--sidebar-primary) 100%)",
-      }}
-      className={cn(
-        "relative flex aspect-square w-full flex-col justify-between overflow-hidden rounded-lg p-5 text-white",
-        className,
-      )}
-    >
-      <span className="w-fit rounded-full bg-white/15 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide">
-        {categoria}
-      </span>
-      <p className="whitespace-pre-line font-display text-xl font-bold leading-tight sm:text-2xl">
-        {texto || "Texto da arte ainda não definido"}
-      </p>
-      <span className="text-xs font-medium text-white/80">{NOME_DO_PERFIL}</span>
-    </div>
+    <Card className="max-w-sm mx-auto">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-sm">Preview da arte</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="aspect-square w-full rounded-lg bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center p-8">
+          <p className="whitespace-pre-line text-center font-display text-xl font-bold leading-tight text-white">
+            {textoArte}
+          </p>
+        </div>
+        <p className="mt-3 text-xs text-muted-foreground text-center">
+          Simulação visual — a arte final será gerada com o template escolhido.
+        </p>
+      </CardContent>
+    </Card>
   );
 }

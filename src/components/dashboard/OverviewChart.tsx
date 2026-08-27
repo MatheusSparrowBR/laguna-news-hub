@@ -1,79 +1,42 @@
 import {
   Bar,
   BarChart,
-  CartesianGrid,
-  Legend,
-  Line,
-  LineChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
+  Area,
+  AreaChart,
 } from "recharts";
 import type { DailyMetric } from "@/lib/types";
 
-const eixo = {
-  stroke: "var(--muted-foreground)",
-  fontSize: 12,
-};
-
 export function PublicationsChart({ dados }: { dados: DailyMetric[] }) {
   return (
-    <div className="h-64 w-full">
-      <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={dados}>
-          <CartesianGrid vertical={false} stroke="var(--border)" />
-          <XAxis dataKey="dia" tickLine={false} axisLine={false} {...eixo} />
-          <YAxis tickLine={false} axisLine={false} {...eixo} />
-          <Tooltip
-            contentStyle={{
-              borderRadius: 12,
-              border: "1px solid var(--border)",
-              background: "var(--card)",
-              fontSize: 12,
-            }}
-          />
-          <Legend wrapperStyle={{ fontSize: 12 }} />
-          <Bar
-            dataKey="publicacoes"
-            name="Publicações"
-            fill="var(--chart-1)"
-            radius={[6, 6, 0, 0]}
-            maxBarSize={38}
-          />
-        </BarChart>
-      </ResponsiveContainer>
-    </div>
+    <ResponsiveContainer width="100%" height={220}>
+      <BarChart data={dados}>
+        <XAxis dataKey="dia" tick={{ fontSize: 12 }} />
+        <YAxis tick={{ fontSize: 12 }} />
+        <Tooltip />
+        <Bar dataKey="publicacoes" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+      </BarChart>
+    </ResponsiveContainer>
   );
 }
 
 export function ReachChart({ dados }: { dados: DailyMetric[] }) {
   return (
-    <div className="h-64 w-full">
-      <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={dados}>
-          <CartesianGrid vertical={false} stroke="var(--border)" />
-          <XAxis dataKey="dia" tickLine={false} axisLine={false} {...eixo} />
-          <YAxis tickLine={false} axisLine={false} {...eixo} />
-          <Tooltip
-            contentStyle={{
-              borderRadius: 12,
-              border: "1px solid var(--border)",
-              background: "var(--card)",
-              fontSize: 12,
-            }}
-          />
-          <Legend wrapperStyle={{ fontSize: 12 }} />
-          <Line
-            type="monotone"
-            dataKey="alcance"
-            name="Alcance"
-            stroke="var(--chart-2)"
-            strokeWidth={2.5}
-            dot={{ r: 3 }}
-          />
-        </LineChart>
-      </ResponsiveContainer>
-    </div>
+    <ResponsiveContainer width="100%" height={220}>
+      <AreaChart data={dados}>
+        <XAxis dataKey="dia" tick={{ fontSize: 12 }} />
+        <YAxis tick={{ fontSize: 12 }} />
+        <Tooltip />
+        <Area
+          type="monotone"
+          dataKey="alcance"
+          stroke="hsl(var(--primary))"
+          fill="hsl(var(--primary) / 0.15)"
+        />
+      </AreaChart>
+    </ResponsiveContainer>
   );
 }

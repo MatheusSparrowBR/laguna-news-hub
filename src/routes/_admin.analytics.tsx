@@ -1,10 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Eye, Heart, Send, TrendingUp } from "lucide-react";
+import { useMemo } from "react";
+import { BarChart3, Eye, Newspaper, Send, TrendingUp } from "lucide-react";
 import { PageContainer, SectionCard } from "@/components/layout/PageContainer";
 import { MetricCard } from "@/components/common/MetricCard";
 import { PublicationsChart, ReachChart } from "@/components/dashboard/OverviewChart";
-import { CategoryBadge } from "@/components/common/CategoryBadge";
 import {
+  listarNoticias,
   listarPublicacoes,
   obterEstatisticasInstagram,
   obterMetricasDiarias,
@@ -17,13 +18,7 @@ export const Route = createFileRoute("/_admin/analytics")({
       { title: "Analytics | Projeto Notícias Laguna" },
       {
         name: "description",
-        content:
-          "Métricas de alcance, engajamento e desempenho das publicações de notícias de Laguna.",
-      },
-      { property: "og:title", content: "Analytics | Projeto Notícias Laguna" },
-      {
-        property: "og:description",
-        content: "Métricas das publicações de notícias de Laguna - SC.",
+        content: "Análise de desempenho do perfil e das publicações.",
       },
     ],
   }),
@@ -31,34 +26,44 @@ export const Route = createFileRoute("/_admin/analytics")({
 });
 
 function AnalyticsPage() {
-  const metricas = obterMetricasDiarias();
-  const stats = obterEstatisticasInstagram();
-  const publicadas = listarPublicacoes().filter((p) => p.status === "publicada");
+  const noticias = useMemo(() => listarNoticias(), []);
+  const publicacoes = useMemo(() => listarPublicacoes(), []);
+  const metricas = useMemo(() => obterMetricasDiarias(), []);
+  const instagram = useMemo(() => obterEstatisticasInstagram(), []);
 
-  const totalPublicacoes = metricas.reduce((soma, m) => soma + m.publicacoes, 0);
-  const totalCurtidas = publicadas.reduce((soma, p) => soma + p.curtidas, 0);
-
-  const melhores = [...publicadas].sort((a, b) => b.visualizacoes - a.visualizacoes);
+  const totalPublicadas = publicacoes.filter((p) => p.status === "publicada").length;
+  const totalVisualizacoes = publicacoes.reduce((acc, p) => acc + p.visualizacoes, 0);
+  const totalCurtidas = publicacoes.reduce((acc, p) => acc + p.curtidas, 0);
 
   return (
-    <PageContainer titulo="Analytics" descricao="Últimos 7 dias (dados simulados)">
+    <PageContainer
+      titulo="Analytics"
+      descricao="Visão analítica do desempenho (dados simulados)."
+    >
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <MetricCard
-          titulo="Publicações (7 dias)"
-          valor={totalPublicacoes}
+          titulo="Total de notícias"
+          valor={noticias.length}
+          icone={Newspaper}
+          descricao="no banco de dados"
+        />
+        <MetricCard
+          titulo="Publicações"
+          valor={totalPublicadas}
           icone={Send}
+          descricao="enviadas ao Instagram"
         />
         <MetricCard
-          titulo="Alcance (7 dias)"
-          valor={formatarNumero(stats.alcance7dias)}
+          titulo="Visualizações totais"
+          valor={formatarNumero(totalVisualizacoes)}
           icone={Eye}
+          descricao="todas as publicações"
         />
-        <MetricCard titulo="Curtidas" valor={formatarNumero(totalCurtidas)} icone={Heart} />
         <MetricCard
-          titulo="Engajamento médio"
-          valor={`${stats.engajamentoMedio}%`}
+          titulo="Curtidas totais"
+          valor={formatarNumero(totalCurtidas)}
           icone={TrendingUp}
-          variacao={stats.crescimentoSemana}
+          descricao="todas as publicações"
         />
       </div>
 
@@ -71,35 +76,38 @@ function AnalyticsPage() {
         </SectionCard>
       </div>
 
+      {/* Distribuição por categoria */}
       <div className="mt-6">
-        <SectionCard titulo="Publicações com melhor desempenho">
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[560px] text-sm">
-              <thead>
-                <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
-                  <th className="pb-3 pr-4 font-medium">Título</th>
-                  <th className="pb-3 pr-4 font-medium">Categoria</th>
-                  <th className="pb-3 pr-4 font-medium">Visualizações</th>
-                  <th className="pb-3 font-medium">Curtidas</th>
-                </tr>
-              </thead>
-              <tbody>
-                {melhores.map((p) => (
-                  <tr key={p.id} className="border-b border-border/70 last:border-0">
-                    <td className="py-3 pr-4 font-medium text-foreground">{p.titulo}</td>
-                    <td className="py-3 pr-4">
-                      <CategoryBadge categoria={p.categoria} />
-                    </td>
-                    <td className="py-3 pr-4 text-muted-foreground">
-                      {formatarNumero(p.visualizacoes)}
-                    </td>
-                    <td className="py-3 text-muted-foreground">{formatarNumero(p.curtidas)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        <SectionCard titulo="Distribuição por categoria">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {Object.entries(
+              noticias.reduce(
+                (acc, n) => {
+                  acc[n.categoria] = (acc[n.categoria] || 0) + 1;
+                  return acc;
+                },
+                {} as Record<string, number>,
+              ),
+            )
+              .sort((a, b) => b[1] - a[1])
+              .map(([cat, count]) => (
+                <div
+                  key={cat}
+                  className="flex items-center justify-between rounded-lg border p-3"
+                >
+                  <span className="text-sm font-medium text-foreground">{cat}</span>
+                  <span className="text-sm text-muted-foreground">{count}</span>
+                </div>
+              ))}
           </div>
         </SectionCard>
+      </div>
+
+      <div className="mt-6 rounded-lg border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-950">
+        <p className="text-sm text-amber-800 dark:text-amber-200">
+          <strong>Nota:</strong> Todos os dados são simulados. Analytics reais serão carregados
+          quando o Supabase e a API do Instagram estiverem integrados.
+        </p>
       </div>
     </PageContainer>
   );
