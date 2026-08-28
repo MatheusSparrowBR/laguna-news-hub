@@ -27,21 +27,69 @@ export interface UltimaExecucao {
   error_message: string | null;
 }
 
+/**
+ * Registra uma execução manual de coleta.
+ * Como não estamos usando Edge Functions, esta função apenas
+ * registra o run na tabela automation_runs e retorna um resultado
+ * informativo baseado nas fontes cadastradas.
+ *
+ * A coleta real de RSS/sites deve ser implementada futuramente
+ * via cron job ou outro mecanismo server-side.
+ */
 export async function executarColetaDeNoticias(projectId: string): Promise<CollectNewsResult> {
-  const { data, error } = await supabase.functions.invoke("collect-news", {
-    body: { project_id: projectId },
-  });
+  // Buscar fontes ativas do projeto
+  const { data: fontes, error: erroFontes } = await supabase
+    .from("sources")
+    .select("id, name, source_type, active")
+    .eq("project_id", projectId)
+    .eq("active", true);
 
-  if (error) {
-    throw new Error(error.message ?? "Erro ao chamar a função de coleta");
+  if (erroFontes) {
+    throw new Error(erroFontes.message ?? "Erro ao buscar fontes");
   }
 
-  // The edge function may return an error inside the JSON body
-  if (data && typeof data === "object" && "error" in data) {
-    throw new Error((data as { error: string }).error);
+  const sourcesChecked = (fontes ?? []).length;
+
+  // Registrar a execução na tabela automation_runs
+  const { data: run, error: erroRun } = await supabase
+    .from("automation_runs")
+    .insert({
+      project_id: projectId,
+      run_type: "source_scan",
+      status: "completed",
+      started_at: new Date().toISOString(),
+      completed_at: new Date().toISOString(),
+      items_processed: 0,
+      error_message: sourcesChecked === 0 ? "Nenhuma fonte ativa encontrada" : null,
+    })
+    .select("id")
+    .single();
+
+  if (erroRun) {
+    throw new Error(erroRun.message ?? "Erro ao registrar execução");
   }
 
-  return data as CollectNewsResult;
+  const logs = (fontes ?? []).map((f) => ({
+    source_id: f.id,
+    source_name: f.name,
+    found: 0,
+    new: 0,
+    duplicate: 0,
+    error: f.source_type === "website"
+      ? "Coleta automática de websites ainda não implementada"
+      : "Coleta server-side não disponível no momento (Edge Functions desabilitadas)",
+  }));
+
+  return {
+    run_id: run?.id ?? "",
+    status: "completed",
+    sources_checked: sourcesChecked,
+    total_found: 0,
+    total_new: 0,
+    total_duplicate: 0,
+    total_errors: sourcesChecked > 0 ? sourcesChecked : 0,
+    logs,
+  };
 }
 
 export async function obterUltimaExecucao(projectId: string): Promise<UltimaExecucao | null> {
