@@ -59,7 +59,7 @@ export function Sidebar({ onNavegar }: { onNavegar?: () => void }) {
         titulo="Sair da conta?"
         descricao="Você voltará para a tela de login."
         textoConfirmar="Sair"
-        onConfirmar={() => navigate({ to: "/login" })}
+        onConfirmar={handleSair}
       />
     </div>
   );
