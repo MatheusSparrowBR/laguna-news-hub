@@ -2,7 +2,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-automation-secret",
 };
 
 interface SourceRow {
@@ -44,8 +44,7 @@ function extractItems(xml: string): FeedItem[] {
     while ((match = entryRegex.exec(xml)) !== null) {
       const block = match[1];
       const title = extractTag(block, "title");
-      // Atom link is usually <link href="..." />
-      const linkMatch = block.match(/<link[^>]*href=["']([^"']+)["'][^>]*\/?>/)
+      const linkMatch = block.match(/<link[^>]*href=["']([^"']+)["'][^>]*\/?>/);
       const link = linkMatch ? linkMatch[1] : extractTag(block, "link");
       const pubDate = extractTag(block, "published") || extractTag(block, "updated");
       const description = extractTag(block, "summary") || extractTag(block, "content");
@@ -60,12 +59,10 @@ function extractItems(xml: string): FeedItem[] {
 }
 
 function extractTag(block: string, tag: string): string | null {
-  // Try CDATA first
   const cdataRegex = new RegExp(`<${tag}[^>]*><!\\[CDATA\\[([\\s\\S]*?)\\]\\]><\\/${tag}>`, "i");
   const cdataMatch = block.match(cdataRegex);
   if (cdataMatch) return cdataMatch[1].trim();
 
-  // Plain text content
   const regex = new RegExp(`<${tag}[^>]*>([\\s\\S]*?)<\\/${tag}>`, "i");
   const match = block.match(regex);
   return match ? match[1].trim() : null;
@@ -79,7 +76,49 @@ function decodeEntities(str: string): string {
     .replace(/&quot;/g, '"')
     .replace(/&#39;/g, "'")
     .replace(/&#x27;/g, "'")
-    .replace(/<[^>]+>/g, ""); // strip any remaining HTML tags
+    .replace(/<[^>]+>/g, "");
+}
+
+/**
+ * Authentication strategy:
+ * 1. User-authenticated calls: validates JWT from Authorization header.
+ *    The user must be authenticated (any valid Supabase user).
+ * 2. Automation calls (future cron/scheduler): validates a shared secret
+ *    via x-automation-secret header. The secret must be stored in
+ *    Supabase Vault as AUTOMATION_SECRET.
+ *
+ * The admin client uses SERVICE_ROLE_KEY stored in Supabase Vault.
+ * This avoids using SUPABASE_SERVICE_ROLE_KEY or SUPABASE_SECRET_KEY directly.
+ */
+async function authenticate(req: Request, supabaseUrl: string, publishableKey: string): Promise<{ authenticated: boolean; error?: string }> {
+  const authHeader = req.headers.get("authorization");
+  const automationSecret = req.headers.get("x-automation-secret");
+
+  // Strategy 1: Automation secret (for cron/scheduler)
+  if (automationSecret) {
+    const expectedSecret = Deno.env.get("AUTOMATION_SECRET") ?? "";
+    if (!expectedSecret) {
+      return { authenticated: false, error: "AUTOMATION_SECRET not configured" };
+    }
+    if (automationSecret === expectedSecret) {
+      return { authenticated: true };
+    }
+    return { authenticated: false, error: "Invalid automation secret" };
+  }
+
+  // Strategy 2: User JWT
+  if (authHeader && authHeader.startsWith("Bearer ")) {
+    const token = authHeader.replace("Bearer ", "");
+    // Create a temporary client just to verify the user token
+    const verifyClient = createClient(supabaseUrl, publishableKey);
+    const { data: { user }, error } = await verifyClient.auth.getUser(token);
+    if (error || !user) {
+      return { authenticated: false, error: "Invalid or expired token" };
+    }
+    return { authenticated: true };
+  }
+
+  return { authenticated: false, error: "No authentication provided" };
 }
 
 Deno.serve(async (req) => {
@@ -89,6 +128,19 @@ Deno.serve(async (req) => {
   }
 
   try {
+    const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
+    // Publishable key for JWT verification (auto-injected by Supabase runtime)
+    const publishableKey = Deno.env.get("SUPABASE_ANON_KEY") ?? "";
+
+    // Authenticate the request
+    const auth = await authenticate(req, supabaseUrl, publishableKey);
+    if (!auth.authenticated) {
+      return new Response(
+        JSON.stringify({ error: auth.error ?? "Unauthorized" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     const { project_id } = await req.json();
 
     if (!project_id) {
@@ -98,18 +150,20 @@ Deno.serve(async (req) => {
       );
     }
 
-    const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
-    // Use the new secret key variable (set in Supabase Vault/Secrets)
-    const supabaseSecretKey = Deno.env.get("SUPABASE_SECRET_KEY") ?? Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+    // SERVICE_ROLE_KEY: stored in Supabase Vault (Edge Function Secrets).
+    // NOT using SUPABASE_SERVICE_ROLE_KEY or SUPABASE_SECRET_KEY.
+    // Configure this secret in: Supabase Dashboard > Edge Functions > Secrets
+    const serviceRoleKey = Deno.env.get("SERVICE_ROLE_KEY") ?? "";
 
-    if (!supabaseSecretKey) {
+    if (!serviceRoleKey) {
       return new Response(
-        JSON.stringify({ error: "SUPABASE_SECRET_KEY not configured in Edge Function secrets" }),
+        JSON.stringify({ error: "SERVICE_ROLE_KEY not configured in Edge Function secrets" }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    const supabase = createClient(supabaseUrl, supabaseSecretKey);
+    // Admin client for privileged operations (bypasses RLS)
+    const supabase = createClient(supabaseUrl, serviceRoleKey);
 
     // Create automation run record
     const { data: run, error: runError } = await supabase
@@ -188,7 +242,7 @@ Deno.serve(async (req) => {
             continue;
           }
 
-          // Insert new news item into the "news" table with correct columns
+          // Insert new news item
           const { error: insertError } = await supabase
             .from("news")
             .insert({
@@ -206,8 +260,8 @@ Deno.serve(async (req) => {
             });
 
           if (insertError) {
-            console.error(`Insert error for ${item.link}: ${insertError.message}`);
-            sourceDuplicate++; // likely unique constraint
+            // Likely unique constraint violation
+            sourceDuplicate++;
           } else {
             sourceNew++;
           }
