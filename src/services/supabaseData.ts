@@ -180,7 +180,13 @@ export async function criarFonte(
   projectId: string,
   valores: { name: string; url: string; source_type: string; rss_url?: string | null },
 ) {
-  const { error } = await supabase.from("sources").insert({ project_id: projectId, ...valores });
+  const { error } = await supabase.from("sources").insert({
+    project_id: projectId,
+    name: valores.name,
+    url: valores.url,
+    source_type: valores.source_type as "rss" | "website" | "api" | "official",
+    rss_url: valores.rss_url ?? undefined,
+  });
   if (error) throw error;
 }
 
