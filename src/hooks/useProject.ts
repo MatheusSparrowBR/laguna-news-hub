@@ -1,11 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
-import { obterProjetoAtual } from "@/services/supabaseData";
+import { obterProjetoAtual, type ProjetoAtual } from "@/services/supabaseData";
 
-export function useProject(enabled = true) {
-  return useQuery({
+export function useProject() {
+  return useQuery<ProjetoAtual | null>({
     queryKey: ["projeto-atual"],
-    queryFn: obterProjetoAtual,
-    enabled,
-    staleTime: 5 * 60 * 1000,
+    queryFn: async () => {
+      const projeto = await obterProjetoAtual();
+      return projeto;
+    },
+    staleTime: 1000 * 60 * 5,
+    retry: 2,
   });
 }

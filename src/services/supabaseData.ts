@@ -94,8 +94,16 @@ function categoriaValida(nome: string | null | undefined): Categoria {
 
 /** Garante o perfil do administrador e devolve o projeto dele. */
 export async function obterProjetoAtual(): Promise<ProjetoAtual | null> {
-  const { error: erroRpc } = await supabase.rpc("claim_admin_project", {});
-  if (erroRpc) throw erroRpc;
+  // Tenta executar o RPC, mas não interrompe se falhar
+  // (a função pode não existir no banco remoto)
+  try {
+    const { error: erroRpc } = await supabase.rpc("claim_admin_project", {});
+    if (erroRpc) {
+      console.warn("[obterProjetoAtual] RPC claim_admin_project falhou (ignorando):", erroRpc.message);
+    }
+  } catch (e) {
+    console.warn("[obterProjetoAtual] Exceção ao chamar RPC (ignorando):", e);
+  }
 
   const { data, error } = await supabase
     .from("projects")
@@ -103,7 +111,13 @@ export async function obterProjetoAtual(): Promise<ProjetoAtual | null> {
     .order("created_at")
     .limit(1)
     .maybeSingle();
-  if (error) throw error;
+  if (error) {
+    console.error("[obterProjetoAtual] Erro ao buscar projeto:", error.message);
+    throw error;
+  }
+  if (!data) {
+    console.warn("[obterProjetoAtual] Nenhum projeto encontrado na tabela projects.");
+  }
   return data ?? null;
 }
 
@@ -200,12 +214,15 @@ export async function removerFonte(id: string) {
   if (error) throw error;
 }
 
+// Query sem LEFT JOIN em categories — usa category_id direto
+// O join em categories/sources pode retornar 0 rows se a FK for NULL
+// e o PostgREST usar inner join implícito. Usando left join explícito:
 const SELECT_NEWS = `
   id, title, original_content, source_url, image_url, city, state,
   importance_score, ai_confidence, is_duplicate, duplicate_group_id,
   status, published_at, discovered_at, is_demo,
-  categories ( name ),
-  sources ( name ),
+  categories:category_id ( name ),
+  sources:source_id ( name ),
   news_analysis ( summary, instagram_title, instagram_caption, hashtags, suggested_art_text, moderation_status, moderation_notes )
 `;
 
@@ -245,13 +262,19 @@ function mapearNoticia(linha: LinhaNews): NewsItem {
   const analise = Array.isArray(linha.news_analysis)
     ? (linha.news_analysis[0] ?? null)
     : linha.news_analysis;
-  const categoria = categoriaValida(linha.categories?.name);
+  const categoria = categoriaValida(
+    linha.categories && typeof linha.categories === "object" && "name" in linha.categories
+      ? linha.categories.name
+      : null,
+  );
   const resumo = analise?.summary ?? "";
 
   return {
     id: linha.id,
     titulo: linha.title,
-    fonte: linha.sources?.name ?? "Cadastro manual",
+    fonte: linha.sources && typeof linha.sources === "object" && "name" in linha.sources
+      ? linha.sources.name
+      : "Cadastro manual",
     url: linha.source_url ?? "",
     horario: linha.published_at ?? linha.discovered_at,
     categoria,
@@ -262,8 +285,8 @@ function mapearNoticia(linha: LinhaNews): NewsItem {
     cidade: linha.city ?? "",
     estado: linha.state ?? "",
     importanciaNota: nota,
-    confiancaIA: linha.ai_confidence,
-    duplicada: linha.is_duplicate,
+    confiancaIA: linha.ai_confidence ?? 0,
+    duplicada: linha.is_duplicate ?? false,
     ...(linha.duplicate_group_id ? { grupoDuplicidade: linha.duplicate_group_id } : {}),
     explicacaoIA: analise?.moderation_notes ?? "Análise ainda não registrada para esta notícia.",
     gerado: {
@@ -273,7 +296,7 @@ function mapearNoticia(linha: LinhaNews): NewsItem {
       hashtags: analise?.hashtags ?? "",
       textoArte: analise?.suggested_art_text ?? linha.title,
     },
-    isDemo: linha.is_demo,
+    isDemo: linha.is_demo ?? false,
   };
 }
 
@@ -283,7 +306,14 @@ export async function obterNoticias(projectId: string): Promise<NewsItem[]> {
     .select(SELECT_NEWS)
     .eq("project_id", projectId)
     .order("discovered_at", { ascending: false });
-  if (error) throw error;
+
+  if (error) {
+    console.error("[obterNoticias] Erro na query:", error.message, error.details, error.hint);
+    throw error;
+  }
+
+  console.log(`[obterNoticias] Retornadas ${(data ?? []).length} notícias para project ${projectId}`);
+
   return ((data ?? []) as unknown as LinhaNews[]).map(mapearNoticia);
 }
 
