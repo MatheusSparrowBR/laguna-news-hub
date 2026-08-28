@@ -5,7 +5,7 @@ import {
   Rss,
   Share2,
   Plus,
-  Play,
+  RefreshCw,
   Loader2,
   AlertCircle,
   CheckCircle2,
@@ -41,9 +41,7 @@ import { useProject } from "@/hooks/useProject";
 import { useFontes, useCriarFonte, useAlterarFonteAtiva } from "@/services/queries";
 import { useModoDados } from "@/services/dataMode";
 import {
-  executarColetaDeNoticias,
   obterUltimaExecucao,
-  type CollectNewsResult,
   type UltimaExecucao,
 } from "@/services/collectNews";
 import { useQueryClient } from "@tanstack/react-query";
@@ -87,7 +85,7 @@ function SourcesPage() {
   const alterarFonte = useAlterarFonteAtiva();
   const [ultimaExecucao, setUltimaExecucao] = useState<UltimaExecucao | null>(null);
   const [carregandoExecucao, setCarregandoExecucao] = useState(false);
-  const [coletando, setColetando] = useState(false);
+  const [atualizando, setAtualizando] = useState(false);
   const [dialogAberto, setDialogAberto] = useState(false);
 
   const carregarUltimaExecucao = () => {
@@ -104,47 +102,19 @@ function SourcesPage() {
     carregarUltimaExecucao();
   }, [modo, projeto?.id]);
 
-  const handleColetar = async () => {
+  const handleAtualizar = async () => {
     if (!projeto?.id) return;
-    setColetando(true);
+    setAtualizando(true);
     try {
-      const resultado: CollectNewsResult = await executarColetaDeNoticias(projeto.id);
-
-      const mensagem = [
-        `Fontes verificadas: ${resultado.sources_checked}`,
-        `Notícias encontradas: ${resultado.total_found}`,
-        `Novas: ${resultado.total_new}`,
-        `Duplicadas: ${resultado.total_duplicate}`,
-        resultado.total_errors > 0 ? `Erros: ${resultado.total_errors}` : null,
-      ]
-        .filter(Boolean)
-        .join(" | ");
-
-      if (resultado.total_errors > 0 && resultado.total_new === 0) {
-        toast.error("Coleta com erros", { description: mensagem });
-      } else if (resultado.total_errors > 0) {
-        toast.warning("Coleta parcial", { description: mensagem });
-      } else {
-        toast.success("Coleta concluída", { description: mensagem });
-      }
-
-      // Log detalhado por fonte
-      resultado.logs.forEach((log) => {
-        if (log.error) {
-          toast.error(`${log.source_name}: ${log.error}`);
-        }
-      });
-
-      // Atualizar dados
-      carregarUltimaExecucao();
-      queryClient.invalidateQueries({ queryKey: ["noticias"] });
-      queryClient.invalidateQueries({ queryKey: ["fontes"] });
+      await queryClient.invalidateQueries({ queryKey: ["noticias", projeto.id] });
+      await queryClient.invalidateQueries({ queryKey: ["fontes", projeto.id] });
+      toast.success("Lista de notícias atualizada com sucesso!");
     } catch (err: any) {
-      toast.error("Erro ao executar coleta", {
+      toast.error("Erro ao atualizar dados", {
         description: err.message ?? "Erro desconhecido",
       });
     } finally {
-      setColetando(false);
+      setAtualizando(false);
     }
   };
 
@@ -158,15 +128,15 @@ function SourcesPage() {
             <Button
               size="sm"
               variant="outline"
-              onClick={handleColetar}
-              disabled={!projeto?.id || coletando}
+              onClick={handleAtualizar}
+              disabled={!projeto?.id || atualizando}
             >
-              {coletando ? (
+              {atualizando ? (
                 <Loader2 className="size-4 animate-spin" />
               ) : (
-                <Play className="size-4" />
+                <RefreshCw className="size-4" />
               )}
-              {coletando ? "Coletando..." : "Verificar fontes agora"}
+              {atualizando ? "Atualizando..." : "Atualizar notícias"}
             </Button>
           )}
           {modo === "banco" ? (
@@ -232,7 +202,7 @@ function SourcesPage() {
               </div>
             ) : (
               <p className="text-sm text-muted-foreground">
-                Nenhuma coleta realizada ainda. Clique em "Verificar fontes agora" para iniciar.
+                Nenhuma coleta realizada ainda. A coleta de notícias é feita automaticamente via integração externa.
               </p>
             )}
           </CardContent>
