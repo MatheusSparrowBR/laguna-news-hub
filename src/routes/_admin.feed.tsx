@@ -30,21 +30,19 @@ import { useNoticias, useAlterarStatusNoticia } from "@/services/queries";
 import { CATEGORIAS } from "@/lib/types";
 import type { NewsItem } from "@/lib/types";
 
-export const Route = createFileRoute("/_admin/feed")(
-  {
-    head: () => ({
-      meta: [
-        { title: "Feed | Projeto Notícias Laguna" },
-        {
-          name: "description",
-          content:
-            "Feed de notícias e gestão de posts — aprove, rejeite e copie conteúdo para Instagram.",
-        },
-      ],
-    }),
-    component: FeedPage,
-  },
-);
+export const Route = createFileRoute("/_admin/feed")({
+  head: () => ({
+    meta: [
+      { title: "Feed | Projeto Notícias Laguna" },
+      {
+        name: "description",
+        content:
+          "Feed de notícias e gestão de posts — aprove, rejeite e copie conteúdo para Instagram.",
+      },
+    ],
+  }),
+  component: FeedPage,
+});
 
 type FiltroStatus = "todos" | "pendente" | "aprovado" | "rejeitado";
 type Ordenacao = "urgencia" | "data";
@@ -177,7 +175,7 @@ function FeedNewsCard({
             className="bg-green-600 hover:bg-green-700 text-white"
           >
             <CheckCircle2 className="mr-1 size-4" />
-            Aprovar Post
+            Aprovar
           </Button>
           <Button
             size="sm"
@@ -239,7 +237,11 @@ function FeedPage() {
 
   const handleAprovar = async (n: NewsItem) => {
     await alterarStatus.mutateAsync({ id: n.id, status: "aprovada" });
-    toast.success("Post aprovado!");
+    const texto = [n.gerado.legenda, n.gerado.hashtags].filter(Boolean).join("\n\n");
+    if (texto) {
+      await navigator.clipboard?.writeText(texto);
+    }
+    toast.success("Post aprovado e legenda copiada!");
   };
 
   const handleRejeitar = async (n: NewsItem) => {
@@ -248,7 +250,7 @@ function FeedPage() {
   };
 
   const handleCopiarLegenda = (n: NewsItem) => {
-    const texto = `${n.gerado.legenda}\n\n${n.gerado.hashtags}`;
+    const texto = [n.gerado.legenda, n.gerado.hashtags].filter(Boolean).join("\n\n");
     navigator.clipboard?.writeText(texto);
     toast.success("Legenda copiada para a área de transferência");
   };
