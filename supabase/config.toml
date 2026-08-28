@@ -7,6 +7,8 @@ project_id = "joqfrsovxrvpjdunvtvk"
 verify_jwt = false
 
 [functions.analyze-news]
-# verify_jwt = true: only authenticated users can call this function.
-# The Supabase gateway validates the JWT before forwarding the request.
-verify_jwt = true
+# verify_jwt = false: the function validates the user JWT internally via
+# supabase.auth.getUser(token). This avoids gateway-level JWT rejection
+# when the client uses new-style publishable keys (sb_publishable_*) that
+# alter the Authorization header flow. CORS is handled manually in the function.
+verify_jwt = false

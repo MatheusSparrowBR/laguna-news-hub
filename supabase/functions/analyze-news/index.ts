@@ -4,7 +4,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
  * analyze-news Edge Function
  *
  * Receives { project_id, news_id } and performs AI analysis on a single news item.
- * Authentication: user JWT only (verified by Supabase gateway + validated internally).
+ * Authentication: user JWT validated internally (verify_jwt = false in config).
  *
  * Requires OPENAI_API_KEY secret configured in Supabase Edge Function secrets.
  */
@@ -154,7 +154,8 @@ Deno.serve(async (req) => {
     return jsonResponse({ error: "Method not allowed" }, 405);
   }
 
-  console.log("analyze-news request received");
+  // Diagnostic log — confirms POST reached the function
+  console.log("analyze-news POST received");
 
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
@@ -166,7 +167,7 @@ Deno.serve(async (req) => {
       return jsonResponse({ error: "Server configuration error" }, 500);
     }
 
-    // Authenticate user via JWT
+    // Extract JWT from Authorization header
     const authHeader = req.headers.get("authorization");
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return jsonResponse({ error: "Authentication required. Send Authorization: Bearer <JWT>" }, 401);
@@ -174,12 +175,17 @@ Deno.serve(async (req) => {
 
     const token = authHeader.replace("Bearer ", "");
 
-    // Skip if token is just the anon key (no user session)
+    // Reject if token is just the anon/publishable key (no user session)
     if (token === anonKey) {
       return jsonResponse({ error: "Authentication required. Please log in." }, 401);
     }
 
-    // Verify the user JWT
+    // Also reject new-style publishable keys used as token
+    if (token.startsWith("sb_publishable_") || token.startsWith("sb_secret_")) {
+      return jsonResponse({ error: "Authentication required. Please log in." }, 401);
+    }
+
+    // Verify the user JWT using the anon key client
     const authClient = createClient(supabaseUrl, anonKey || serviceRoleKey, {
       auth: { persistSession: false, autoRefreshToken: false },
     });
@@ -190,6 +196,7 @@ Deno.serve(async (req) => {
     }
 
     const userId = user.id;
+    console.log("analyze-news authenticated user:", userId);
 
     // Parse body
     let body: { project_id?: string; news_id?: string };
@@ -252,6 +259,9 @@ Deno.serve(async (req) => {
       .from("news")
       .update({ status: "analyzing" })
       .eq("id", news_id);
+
+    // Diagnostic: confirm we reached the pre-OpenAI stage
+    console.log("analyze-news: pre-OpenAI stage reached for news_id:", news_id);
 
     // Call OpenAI
     const sourceName = (newsItem as any).sources?.name ?? "Fonte desconhecida";
@@ -327,6 +337,7 @@ Deno.serve(async (req) => {
 
     // Return full result
     const result = {
+      success: true,
       news_id,
       project_id,
       status: newStatus,

@@ -16,6 +16,7 @@ export interface AnalysisData {
 }
 
 export interface AnalyzeNewsResult {
+  success: boolean;
   news_id: string;
   project_id: string;
   status: string;
