@@ -45,7 +45,7 @@ function extractItems(xml: string): FeedItem[] {
       const block = match[1];
       const title = extractTag(block, "title");
       // Atom link is usually <link href="..." />
-      const linkMatch = block.match(/<link[^>]*href=["']([^"']+)["'][^>]*\/?>/);
+      const linkMatch = block.match(/<link[^>]*href=["']([^"']+)["'][^>]*\/?>/)
       const link = linkMatch ? linkMatch[1] : extractTag(block, "link");
       const pubDate = extractTag(block, "published") || extractTag(block, "updated");
       const description = extractTag(block, "summary") || extractTag(block, "content");
@@ -99,9 +99,17 @@ Deno.serve(async (req) => {
     }
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
-    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+    // Use the new secret key variable (set in Supabase Vault/Secrets)
+    const supabaseSecretKey = Deno.env.get("SUPABASE_SECRET_KEY") ?? Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
 
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    if (!supabaseSecretKey) {
+      return new Response(
+        JSON.stringify({ error: "SUPABASE_SECRET_KEY not configured in Edge Function secrets" }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const supabase = createClient(supabaseUrl, supabaseSecretKey);
 
     // Create automation run record
     const { data: run, error: runError } = await supabase
