@@ -2672,7 +2672,7 @@
       "file_type": "code",
       "norm_label": "createsupabaseadminclient()",
       "source_file": "src/integrations/supabase/client.server.ts",
-      "source_location": "L32"
+      "source_location": "L35"
     },
     {
       "id": "src_integrations_supabase_client_server_createsupabasefetch",
@@ -2683,7 +2683,7 @@
       "file_type": "code",
       "norm_label": "createsupabasefetch()",
       "source_file": "src/integrations/supabase/client.server.ts",
-      "source_location": "L12"
+      "source_location": "L15"
     },
     {
       "id": "src_integrations_supabase_client_server_isnewsupabaseapikey",
@@ -2694,7 +2694,7 @@
       "file_type": "code",
       "norm_label": "isnewsupabaseapikey()",
       "source_file": "src/integrations/supabase/client.server.ts",
-      "source_location": "L8"
+      "source_location": "L11"
     },
     {
       "id": "src_integrations_supabase_previewauthstorage_brokeredpreviewstorage",
@@ -7906,7 +7906,7 @@
       "file_type": "code",
       "norm_label": "supabaseadmin",
       "source_file": "src/integrations/supabase/client.server.ts",
-      "source_location": "L64"
+      "source_location": "L67"
     },
     {
       "id": "src_integrations_supabase_previewauthstorage",
@@ -11073,7 +11073,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/integrations/supabase/client.server.ts",
-      "source_location": "L48",
+      "source_location": "L51",
       "weight": 1.0
     },
     {
@@ -11085,7 +11085,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/integrations/supabase/client.server.ts",
-      "source_location": "L23",
+      "source_location": "L26",
       "weight": 1.0
     },
     {
@@ -15045,7 +15045,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/integrations/supabase/client.server.ts",
-      "source_location": "L6",
+      "source_location": "L9",
       "weight": 1.0
     },
     {
@@ -19425,7 +19425,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/integrations/supabase/client.server.ts",
-      "source_location": "L6",
+      "source_location": "L9",
       "weight": 1.0
     },
     {
@@ -25671,13 +25671,24 @@
     },
     {
       "source": "src_integrations_supabase_client_server",
+      "target": "src_integrations_supabase_client_server_isnewsupabaseapikey",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/integrations/supabase/client.server.ts",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "src_integrations_supabase_client_server",
       "target": "src_integrations_supabase_client_server_createsupabasefetch",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/integrations/supabase/client.server.ts",
-      "source_location": "L12",
+      "source_location": "L15",
       "weight": 1.0
     },
     {
@@ -25688,7 +25699,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/integrations/supabase/client.server.ts",
-      "source_location": "L32",
+      "source_location": "L35",
       "weight": 1.0
     },
     {
@@ -25699,18 +25710,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/integrations/supabase/client.server.ts",
-      "source_location": "L64",
-      "weight": 1.0
-    },
-    {
-      "source": "src_integrations_supabase_client_server",
-      "target": "src_integrations_supabase_client_server_isnewsupabaseapikey",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/integrations/supabase/client.server.ts",
-      "source_location": "L8",
+      "source_location": "L67",
       "weight": 1.0
     },
     {
@@ -28183,5 +28183,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "b39fc513cc9c9c7ade21e54152ae801b3f0f5091"
+  "built_at_commit": "317497ec841f5bc4671ba5bfc3d257cbb780d5d4"
 }
