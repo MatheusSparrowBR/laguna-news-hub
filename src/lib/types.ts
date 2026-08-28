@@ -15,18 +15,23 @@ export const CATEGORIAS = [
 
 export type Categoria = (typeof CATEGORIAS)[number];
 
-export type Importancia = "baixa" | "media" | "alta" | "urgente";
+export const IMPORTANCIAS = ["baixa", "media", "alta", "urgente"] as const;
 
-export type NewsStatus =
-  | "nova"
-  | "em_analise"
-  | "aguardando_aprovacao"
-  | "aprovada"
-  | "publicada"
-  | "ignorada"
-  | "duplicada"
-  | "revisao_obrigatoria"
-  | "rejeitada";
+export type Importancia = (typeof IMPORTANCIAS)[number];
+
+export const NEWS_STATUS = [
+  "nova",
+  "em_analise",
+  "aguardando_aprovacao",
+  "aprovada",
+  "publicada",
+  "ignorada",
+  "duplicada",
+  "revisao_obrigatoria",
+  "rejeitada",
+] as const;
+
+export type NewsStatus = (typeof NEWS_STATUS)[number];
 
 export interface NewsItem {
   id: string;
