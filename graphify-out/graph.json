@@ -661,7 +661,7 @@
       "file_type": "code",
       "norm_label": "analysisresult",
       "source_file": "supabase/functions/analyze-news/index.ts",
-      "source_location": "L25"
+      "source_location": "L26"
     },
     {
       "id": "src_components_common_metriccard_metriccardprops",
@@ -2493,7 +2493,7 @@
       "file_type": "code",
       "norm_label": "callopenai()",
       "source_file": "supabase/functions/analyze-news/index.ts",
-      "source_location": "L88"
+      "source_location": "L89"
     },
     {
       "id": "supabase_functions_analyze_news_index_jsonresponse",
@@ -2504,7 +2504,7 @@
       "file_type": "code",
       "norm_label": "jsonresponse()",
       "source_file": "supabase/functions/analyze-news/index.ts",
-      "source_location": "L18"
+      "source_location": "L19"
     },
     {
       "id": "src_integrations_supabase_cron_auth_authenticatecronrequest",
@@ -28743,7 +28743,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "supabase/functions/analyze-news/index.ts",
-      "source_location": "L18",
+      "source_location": "L19",
       "weight": 1.0
     },
     {
@@ -28754,7 +28754,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "supabase/functions/analyze-news/index.ts",
-      "source_location": "L25",
+      "source_location": "L26",
       "weight": 1.0
     },
     {
@@ -28765,7 +28765,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "supabase/functions/analyze-news/index.ts",
-      "source_location": "L88",
+      "source_location": "L89",
       "weight": 1.0
     },
     {
@@ -29390,5 +29390,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "40593f9bfdf128fbb7be7402a6a8c4c34c001669"
+  "built_at_commit": "b7dd8c2b125f3a52f9e2396748d0c4666d8a6f54"
 }
