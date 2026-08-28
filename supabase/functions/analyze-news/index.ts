@@ -1,83 +1,14 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { withSupabase } from "npm:@supabase/server@^1";
 
 /**
  * analyze-news Edge Function
  *
  * Receives { project_id, news_id } and performs AI analysis on a single news item.
- * Authentication: user JWT validated internally (verify_jwt = false in config).
+ * Authentication and CORS handled by @supabase/server withSupabase({ auth: 'user' }).
  *
  * Requires OPENAI_API_KEY secret configured in Supabase Edge Function secrets.
- *
- * CORS: handled ENTIRELY in this function with an explicit origin allowlist.
- * The Supabase gateway MUST NOT override these headers (verify_jwt = false ensures
- * the gateway passes the request through without adding its own CORS).
  */
-
-// ─── CORS ALLOWLIST ───────────────────────────────────────────────────────────
-// ONLY these origins may call this function. NEVER add SUPABASE_URL here.
-const ALLOWED_ORIGINS = [
-  "https://laguna-news-hub.lovable.app",
-  "http://localhost:3000",
-  "http://localhost:5173",
-] as const;
-
-/**
- * Checks if the given origin is in the allowlist.
- */
-function isOriginAllowed(origin: string | null): origin is string {
-  if (!origin) return false;
-  return (ALLOWED_ORIGINS as readonly string[]).includes(origin);
-}
-
-/**
- * Builds CORS headers for a given allowed origin.
- */
-function buildCorsHeaders(origin: string): Record<string, string> {
-  return {
-    "Access-Control-Allow-Origin": origin,
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
-    "Access-Control-Allow-Headers": "authorization, apikey, x-client-info, content-type",
-    "Access-Control-Allow-Credentials": "true",
-    "Access-Control-Max-Age": "86400",
-    "Vary": "Origin",
-  };
-}
-
-/**
- * Returns a JSON response with proper CORS headers.
- * @param data - response body object
- * @param status - HTTP status code
- * @param origin - the allowed origin string (already validated)
- */
-function jsonResponse(
-  data: Record<string, unknown>,
-  status: number,
-  origin: string,
-): Response {
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-    "Vary": "Origin",
-  };
-  // Always attach CORS for allowed origin
-  if (origin) {
-    headers["Access-Control-Allow-Origin"] = origin;
-    headers["Access-Control-Allow-Credentials"] = "true";
-  }
-  return new Response(JSON.stringify(data), { status, headers });
-}
-
-/**
- * Response when origin is not in allowlist — no CORS headers exposed.
- */
-function forbiddenOriginResponse(): Response {
-  return new Response(
-    JSON.stringify({ error: "Origin not allowed" }),
-    {
-      status: 403,
-      headers: { "Content-Type": "application/json", "Vary": "Origin" },
-    },
-  );
-}
 
 // ─── OPENAI ───────────────────────────────────────────────────────────────────
 
@@ -212,292 +143,230 @@ Retorne SOMENTE o JSON de análise, sem markdown, sem explicação fora do JSON.
 
 // ─── MAIN HANDLER ─────────────────────────────────────────────────────────────
 
-Deno.serve(async (req: Request): Promise<Response> => {
-  const origin = req.headers.get("origin") ?? req.headers.get("Origin") ?? "";
-  const originOk = isOriginAllowed(origin);
+export default {
+  fetch: withSupabase(
+    { auth: "user" },
+    async (req: Request, ctx: any): Promise<Response> => {
+      console.log("analyze-news POST received");
 
-  // Diagnostic log (safe — no secrets)
-  console.log("analyze-news", req.method, "|", "origin:", origin || "(empty)", "|", "allowed:", originOk);
+      // ── METHOD CHECK ───────────────────────────────────────────────────────
+      if (req.method !== "POST") {
+        return Response.json({ error: "Method not allowed" }, { status: 405 });
+      }
 
-  // ── PREFLIGHT ──────────────────────────────────────────────────────────────
-  if (req.method === "OPTIONS") {
-    console.log("analyze-news OPTIONS", originOk ? "ALLOWED" : "BLOCKED");
-    if (!originOk) {
-      return forbiddenOriginResponse();
-    }
-    return new Response(null, {
-      status: 204,
-      headers: buildCorsHeaders(origin),
-    });
-  }
+      try {
+        // ── GET AUTHENTICATED USER FROM CONTEXT ────────────────────────────
+        const user = ctx.user;
+        if (!user) {
+          return Response.json(
+            { error: "Authentication required. Please log in." },
+            { status: 401 },
+          );
+        }
 
-  // ── BLOCK DISALLOWED ORIGINS ───────────────────────────────────────────────
-  if (!originOk) {
-    console.log("analyze-news BLOCKED: origin not in allowlist");
-    return forbiddenOriginResponse();
-  }
+        const userId = user.id;
+        console.log("analyze-news authenticated user:", userId);
 
-  // From here on, origin is guaranteed to be in the allowlist.
-  const allowedOrigin = origin;
+        // ── PARSE BODY ─────────────────────────────────────────────────────
+        let body: { project_id?: string; news_id?: string };
+        try {
+          body = await req.json();
+        } catch {
+          return Response.json({ error: "Invalid JSON body" }, { status: 400 });
+        }
 
-  // ── METHOD CHECK ───────────────────────────────────────────────────────────
-  if (req.method !== "POST") {
-    return jsonResponse({ error: "Method not allowed" }, 405, allowedOrigin);
-  }
+        const { project_id, news_id } = body;
 
-  // Diagnostic: POST reached the function
-  console.log("analyze-news POST received", {
-    timestamp: new Date().toISOString(),
-    hasAuth: !!req.headers.get("authorization"),
-    hasApikey: !!req.headers.get("apikey"),
-    contentType: req.headers.get("content-type"),
-  });
+        if (!project_id || !news_id) {
+          return Response.json(
+            { error: "project_id and news_id are required" },
+            { status: 400 },
+          );
+        }
 
-  try {
-    // ── ENVIRONMENT ────────────────────────────────────────────────────────
-    const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
-    const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
-    const anonKey = Deno.env.get("SUPABASE_ANON_KEY") ?? "";
+        // ── ADMIN CLIENT (for DB operations) ──────────────────────────────
+        const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
+        const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
 
-    if (!supabaseUrl || !serviceRoleKey) {
-      console.error("Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY");
-      return jsonResponse({ error: "Server configuration error" }, 500, allowedOrigin);
-    }
+        if (!supabaseUrl || !serviceRoleKey) {
+          console.error("Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY");
+          return Response.json(
+            { error: "Server configuration error" },
+            { status: 500 },
+          );
+        }
 
-    // ── AUTHENTICATION ─────────────────────────────────────────────────────
-    const authHeader = req.headers.get("authorization");
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return jsonResponse(
-        { error: "Authentication required. Send Authorization: Bearer <JWT>" },
-        401,
-        allowedOrigin,
-      );
-    }
+        const supabase = createClient(supabaseUrl, serviceRoleKey, {
+          auth: { persistSession: false, autoRefreshToken: false },
+        });
 
-    const token = authHeader.replace("Bearer ", "");
+        // ── VALIDATE OWNERSHIP ─────────────────────────────────────────────
+        const { data: project, error: projectError } = await supabase
+          .from("projects")
+          .select("id, owner_id")
+          .eq("id", project_id)
+          .maybeSingle();
 
-    // Reject if token is just the anon/publishable key (no user session)
-    if (token === anonKey) {
-      return jsonResponse(
-        { error: "Authentication required. Please log in." },
-        401,
-        allowedOrigin,
-      );
-    }
+        if (projectError) {
+          console.error("Project query error:", projectError.message);
+          return Response.json(
+            { error: "Failed to validate project" },
+            { status: 500 },
+          );
+        }
 
-    // Reject new-style keys used as token
-    if (token.startsWith("sb_publishable_") || token.startsWith("sb_secret_")) {
-      return jsonResponse(
-        { error: "Authentication required. Please log in." },
-        401,
-        allowedOrigin,
-      );
-    }
+        if (!project) {
+          return Response.json({ error: "Project not found" }, { status: 404 });
+        }
 
-    // Verify the user JWT via Supabase Auth
-    const authClient = createClient(supabaseUrl, anonKey || serviceRoleKey, {
-      auth: { persistSession: false, autoRefreshToken: false },
-    });
+        if (project.owner_id !== userId) {
+          return Response.json(
+            { error: "Forbidden: you do not own this project" },
+            { status: 403 },
+          );
+        }
 
-    const {
-      data: { user },
-      error: userError,
-    } = await authClient.auth.getUser(token);
+        // ── FETCH NEWS ITEM ───────────────────────────────────────────────
+        const { data: newsItem, error: newsError } = await supabase
+          .from("news")
+          .select(
+            "id, title, original_content, source_url, project_id, source_id, sources(name)",
+          )
+          .eq("id", news_id)
+          .eq("project_id", project_id)
+          .maybeSingle();
 
-    if (userError || !user) {
-      return jsonResponse({ error: "Invalid or expired token" }, 401, allowedOrigin);
-    }
+        if (newsError) {
+          console.error("News query error:", newsError.message);
+          return Response.json(
+            { error: "Failed to fetch news item" },
+            { status: 500 },
+          );
+        }
 
-    const userId = user.id;
-    console.log("analyze-news authenticated user:", userId);
+        if (!newsItem) {
+          return Response.json(
+            { error: "News item not found in this project" },
+            { status: 404 },
+          );
+        }
 
-    // ── PARSE BODY ─────────────────────────────────────────────────────────
-    let body: { project_id?: string; news_id?: string };
-    try {
-      body = await req.json();
-    } catch {
-      return jsonResponse({ error: "Invalid JSON body" }, 400, allowedOrigin);
-    }
+        // ── UPDATE STATUS TO ANALYZING ────────────────────────────────────
+        await supabase
+          .from("news")
+          .update({ status: "analyzing" })
+          .eq("id", news_id);
 
-    const { project_id, news_id } = body;
+        console.log("analyze-news: calling OpenAI for news_id:", news_id);
 
-    if (!project_id || !news_id) {
-      return jsonResponse(
-        { error: "project_id and news_id are required" },
-        400,
-        allowedOrigin,
-      );
-    }
+        // ── CALL OPENAI ───────────────────────────────────────────────────
+        const sourceName =
+          (newsItem as any).sources?.name ?? "Fonte desconhecida";
+        let analysis: AnalysisResult;
+        try {
+          analysis = await callOpenAI(
+            newsItem.title,
+            newsItem.original_content ?? "",
+            newsItem.source_url ?? "",
+            sourceName,
+          );
+        } catch (aiError: any) {
+          // Revert status on AI failure
+          await supabase
+            .from("news")
+            .update({ status: "new" })
+            .eq("id", news_id);
 
-    // ── ADMIN CLIENT (for DB operations only) ─────────────────────────────
-    const supabase = createClient(supabaseUrl, serviceRoleKey, {
-      auth: { persistSession: false, autoRefreshToken: false },
-    });
+          console.error("OpenAI error:", aiError.message);
+          return Response.json(
+            { error: `AI analysis failed: ${aiError.message}` },
+            { status: 502 },
+          );
+        }
 
-    // ── VALIDATE OWNERSHIP ─────────────────────────────────────────────────
-    const { data: project, error: projectError } = await supabase
-      .from("projects")
-      .select("id, owner_id")
-      .eq("id", project_id)
-      .maybeSingle();
+        // ── DETERMINE STATUS ──────────────────────────────────────────────
+        let newStatus: string;
+        if (!analysis.is_relevant_to_laguna) {
+          newStatus = "ignored";
+        } else if (analysis.moderation_status === "review_required") {
+          newStatus = "review_required";
+        } else if (analysis.moderation_status === "rejected") {
+          newStatus = "review_required";
+        } else if (analysis.relevance_confidence < 80) {
+          newStatus = "review_required";
+        } else {
+          newStatus = "awaiting_approval";
+        }
 
-    if (projectError) {
-      console.error("Project query error:", projectError.message);
-      return jsonResponse({ error: "Failed to validate project" }, 500, allowedOrigin);
-    }
+        // ── SAVE ANALYSIS ─────────────────────────────────────────────────
+        const { error: upsertError } = await supabase
+          .from("news_analysis")
+          .upsert(
+            {
+              news_id,
+              summary: analysis.summary,
+              instagram_title: analysis.instagram_title,
+              instagram_caption: analysis.instagram_caption,
+              hashtags: analysis.hashtags,
+              suggested_art_text: analysis.suggested_art_text,
+              moderation_status: analysis.moderation_status,
+              moderation_notes: analysis.moderation_notes,
+              analyzed_at: new Date().toISOString(),
+            },
+            { onConflict: "news_id" },
+          );
 
-    if (!project) {
-      return jsonResponse({ error: "Project not found" }, 404, allowedOrigin);
-    }
+        if (upsertError) {
+          console.error("Failed to save news_analysis:", upsertError.message);
+          return Response.json(
+            { error: "Failed to save analysis results" },
+            { status: 500 },
+          );
+        }
 
-    if (project.owner_id !== userId) {
-      return jsonResponse(
-        { error: "Forbidden: you do not own this project" },
-        403,
-        allowedOrigin,
-      );
-    }
+        // ── UPDATE NEWS RECORD ────────────────────────────────────────────
+        const { error: updateError } = await supabase
+          .from("news")
+          .update({
+            status: newStatus as any,
+            importance_score: analysis.importance_score,
+            ai_confidence: analysis.relevance_confidence,
+          })
+          .eq("id", news_id);
 
-    // ── FETCH NEWS ITEM ───────────────────────────────────────────────────
-    const { data: newsItem, error: newsError } = await supabase
-      .from("news")
-      .select(
-        "id, title, original_content, source_url, project_id, source_id, sources(name)",
-      )
-      .eq("id", news_id)
-      .eq("project_id", project_id)
-      .maybeSingle();
+        if (updateError) {
+          console.error("Failed to update news status:", updateError.message);
+        }
 
-    if (newsError) {
-      console.error("News query error:", newsError.message);
-      return jsonResponse({ error: "Failed to fetch news item" }, 500, allowedOrigin);
-    }
-
-    if (!newsItem) {
-      return jsonResponse(
-        { error: "News item not found in this project" },
-        404,
-        allowedOrigin,
-      );
-    }
-
-    // ── UPDATE STATUS TO ANALYZING ────────────────────────────────────────
-    await supabase
-      .from("news")
-      .update({ status: "analyzing" })
-      .eq("id", news_id);
-
-    console.log("analyze-news: calling OpenAI for news_id:", news_id);
-
-    // ── CALL OPENAI ───────────────────────────────────────────────────────
-    const sourceName =
-      (newsItem as any).sources?.name ?? "Fonte desconhecida";
-    let analysis: AnalysisResult;
-    try {
-      analysis = await callOpenAI(
-        newsItem.title,
-        newsItem.original_content ?? "",
-        newsItem.source_url ?? "",
-        sourceName,
-      );
-    } catch (aiError: any) {
-      // Revert status on AI failure
-      await supabase
-        .from("news")
-        .update({ status: "new" })
-        .eq("id", news_id);
-
-      console.error("OpenAI error:", aiError.message);
-      return jsonResponse(
-        { error: `AI analysis failed: ${aiError.message}` },
-        502,
-        allowedOrigin,
-      );
-    }
-
-    // ── DETERMINE STATUS ──────────────────────────────────────────────────
-    let newStatus: string;
-    if (!analysis.is_relevant_to_laguna) {
-      newStatus = "ignored";
-    } else if (analysis.moderation_status === "review_required") {
-      newStatus = "review_required";
-    } else if (analysis.moderation_status === "rejected") {
-      newStatus = "review_required";
-    } else if (analysis.relevance_confidence < 80) {
-      newStatus = "review_required";
-    } else {
-      newStatus = "awaiting_approval";
-    }
-
-    // ── SAVE ANALYSIS ─────────────────────────────────────────────────────
-    const { error: upsertError } = await supabase
-      .from("news_analysis")
-      .upsert(
-        {
+        // ── RETURN RESULT ─────────────────────────────────────────────────
+        const result = {
+          success: true,
           news_id,
-          summary: analysis.summary,
-          instagram_title: analysis.instagram_title,
-          instagram_caption: analysis.instagram_caption,
-          hashtags: analysis.hashtags,
-          suggested_art_text: analysis.suggested_art_text,
-          moderation_status: analysis.moderation_status,
-          moderation_notes: analysis.moderation_notes,
-          analyzed_at: new Date().toISOString(),
-        },
-        { onConflict: "news_id" },
-      );
+          project_id,
+          status: newStatus,
+          analysis: {
+            is_relevant_to_laguna: analysis.is_relevant_to_laguna,
+            relevance_confidence: analysis.relevance_confidence,
+            category: analysis.category,
+            importance_score: analysis.importance_score,
+            summary: analysis.summary,
+            instagram_title: analysis.instagram_title,
+            instagram_caption: analysis.instagram_caption,
+            hashtags: analysis.hashtags,
+            suggested_art_text: analysis.suggested_art_text,
+            moderation_status: analysis.moderation_status,
+            moderation_notes: analysis.moderation_notes,
+          },
+        };
 
-    if (upsertError) {
-      console.error("Failed to save news_analysis:", upsertError.message);
-      return jsonResponse(
-        { error: "Failed to save analysis results" },
-        500,
-        allowedOrigin,
-      );
-    }
-
-    // ── UPDATE NEWS RECORD ────────────────────────────────────────────────
-    const { error: updateError } = await supabase
-      .from("news")
-      .update({
-        status: newStatus as any,
-        importance_score: analysis.importance_score,
-        ai_confidence: analysis.relevance_confidence,
-      })
-      .eq("id", news_id);
-
-    if (updateError) {
-      console.error("Failed to update news status:", updateError.message);
-    }
-
-    // ── RETURN RESULT ─────────────────────────────────────────────────────
-    const result = {
-      success: true,
-      news_id,
-      project_id,
-      status: newStatus,
-      analysis: {
-        is_relevant_to_laguna: analysis.is_relevant_to_laguna,
-        relevance_confidence: analysis.relevance_confidence,
-        category: analysis.category,
-        importance_score: analysis.importance_score,
-        summary: analysis.summary,
-        instagram_title: analysis.instagram_title,
-        instagram_caption: analysis.instagram_caption,
-        hashtags: analysis.hashtags,
-        suggested_art_text: analysis.suggested_art_text,
-        moderation_status: analysis.moderation_status,
-        moderation_notes: analysis.moderation_notes,
-      },
-    };
-
-    return jsonResponse(result, 200, allowedOrigin);
-  } catch (err: any) {
-    console.error("Unhandled error in analyze-news:", err.message);
-    return jsonResponse(
-      { error: err.message ?? "Internal error" },
-      500,
-      allowedOrigin,
-    );
-  }
-});
+        return Response.json(result, { status: 200 });
+      } catch (err: any) {
+        console.error("Unhandled error in analyze-news:", err.message);
+        return Response.json(
+          { error: err.message ?? "Internal error" },
+          { status: 500 },
+        );
+      }
+    },
+  ),
+};
