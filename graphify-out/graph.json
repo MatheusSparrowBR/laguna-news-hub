@@ -97,7 +97,7 @@
       "file_type": "code",
       "norm_label": "filtrostatus",
       "source_file": "src/routes/_admin.feed.tsx",
-      "source_location": "L49"
+      "source_location": "L47"
     },
     {
       "id": "src_routes_admin_feed_ordenacao",
@@ -109,7 +109,7 @@
       "file_type": "code",
       "norm_label": "ordenacao",
       "source_file": "src/routes/_admin.feed.tsx",
-      "source_location": "L50"
+      "source_location": "L48"
     },
     {
       "id": "src_services_collectnews_collectnewsresult",
@@ -1220,7 +1220,7 @@
       "file_type": "code",
       "norm_label": "copybox()",
       "source_file": "src/routes/_admin.feed.tsx",
-      "source_location": "L84"
+      "source_location": "L82"
     },
     {
       "id": "src_routes_admin_feed_feednewscard",
@@ -1231,7 +1231,7 @@
       "file_type": "code",
       "norm_label": "feednewscard()",
       "source_file": "src/routes/_admin.feed.tsx",
-      "source_location": "L106"
+      "source_location": "L104"
     },
     {
       "id": "src_routes_admin_feed_feedpage",
@@ -1242,7 +1242,7 @@
       "file_type": "code",
       "norm_label": "feedpage()",
       "source_file": "src/routes/_admin.feed.tsx",
-      "source_location": "L201"
+      "source_location": "L199"
     },
     {
       "id": "src_routes_admin_feed_mapstatustofilter",
@@ -1253,7 +1253,7 @@
       "file_type": "code",
       "norm_label": "mapstatustofilter()",
       "source_file": "src/routes/_admin.feed.tsx",
-      "source_location": "L65"
+      "source_location": "L63"
     },
     {
       "id": "src_routes_admin_feed_statuslabel",
@@ -1264,7 +1264,7 @@
       "file_type": "code",
       "norm_label": "statuslabel()",
       "source_file": "src/routes/_admin.feed.tsx",
-      "source_location": "L52"
+      "source_location": "L50"
     },
     {
       "id": "src_routes_admin_feed_urgencybadge",
@@ -1275,7 +1275,7 @@
       "file_type": "code",
       "norm_label": "urgencybadge()",
       "source_file": "src/routes/_admin.feed.tsx",
-      "source_location": "L71"
+      "source_location": "L69"
     },
     {
       "id": "src_routes_admin_instagram_instagrampage",
@@ -11301,7 +11301,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/_admin.feed.tsx",
-      "source_location": "L117",
+      "source_location": "L115",
       "weight": 1.0
     },
     {
@@ -11313,7 +11313,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/_admin.feed.tsx",
-      "source_location": "L202",
+      "source_location": "L200",
       "weight": 1.0
     },
     {
@@ -11325,7 +11325,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/_admin.feed.tsx",
-      "source_location": "L208",
+      "source_location": "L206",
       "weight": 1.0
     },
     {
@@ -11337,7 +11337,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/_admin.feed.tsx",
-      "source_location": "L209",
+      "source_location": "L207",
       "weight": 1.0
     },
     {
@@ -11349,7 +11349,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/_admin.feed.tsx",
-      "source_location": "L220",
+      "source_location": "L218",
       "weight": 1.0
     },
     {
@@ -26246,7 +26246,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/_admin.feed.tsx",
-      "source_location": "L106",
+      "source_location": "L104",
       "weight": 1.0
     },
     {
@@ -26268,7 +26268,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/_admin.feed.tsx",
-      "source_location": "L49",
+      "source_location": "L47",
       "weight": 1.0
     },
     {
@@ -26279,7 +26279,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/_admin.feed.tsx",
-      "source_location": "L50",
+      "source_location": "L48",
       "weight": 1.0
     },
     {
@@ -26290,7 +26290,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/_admin.feed.tsx",
-      "source_location": "L52",
+      "source_location": "L50",
       "weight": 1.0
     },
     {
@@ -26301,7 +26301,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/_admin.feed.tsx",
-      "source_location": "L65",
+      "source_location": "L63",
       "weight": 1.0
     },
     {
@@ -26312,7 +26312,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/_admin.feed.tsx",
-      "source_location": "L71",
+      "source_location": "L69",
       "weight": 1.0
     },
     {
@@ -26323,7 +26323,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/_admin.feed.tsx",
-      "source_location": "L84",
+      "source_location": "L82",
       "weight": 1.0
     },
     {
@@ -28010,7 +28010,7 @@
       "confidence_score": 0.85,
       "context": "collection",
       "source_file": "src/routes/_admin.feed.tsx",
-      "source_location": "L45",
+      "source_location": "L44",
       "weight": 1.0
     },
     {
@@ -28147,5 +28147,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "3925e8f0df7c75e40697b1a1a618a2184f030d87"
+  "built_at_commit": "3449d06fbba2e4ffea17199f6d08caedb91b3816"
 }
