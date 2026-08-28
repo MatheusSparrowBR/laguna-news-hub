@@ -8,51 +8,78 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
  *
  * Requires OPENAI_API_KEY secret configured in Supabase Edge Function secrets.
  *
- * CORS: handled manually with explicit origin allowlist.
- * The gateway must NOT override these headers.
+ * CORS: handled ENTIRELY in this function with an explicit origin allowlist.
+ * The Supabase gateway MUST NOT override these headers (verify_jwt = false ensures
+ * the gateway passes the request through without adding its own CORS).
  */
 
-// Allowed origins — only these frontends can call this function.
-const ALLOWED_ORIGINS: string[] = [
+// ─── CORS ALLOWLIST ───────────────────────────────────────────────────────────
+// ONLY these origins may call this function. NEVER add SUPABASE_URL here.
+const ALLOWED_ORIGINS = [
   "https://laguna-news-hub.lovable.app",
   "http://localhost:3000",
   "http://localhost:5173",
-];
+] as const;
 
 /**
- * Returns CORS headers for the given request origin.
- * If origin is in the allowlist, sets Access-Control-Allow-Origin to that origin.
- * Otherwise returns null (caller should block the request).
+ * Checks if the given origin is in the allowlist.
  */
-function getCorsHeaders(origin: string | null): Record<string, string> | null {
-  if (!origin || !ALLOWED_ORIGINS.includes(origin)) {
-    return null;
-  }
+function isOriginAllowed(origin: string | null): origin is string {
+  if (!origin) return false;
+  return (ALLOWED_ORIGINS as readonly string[]).includes(origin);
+}
 
+/**
+ * Builds CORS headers for a given allowed origin.
+ */
+function buildCorsHeaders(origin: string): Record<string, string> {
   return {
     "Access-Control-Allow-Origin": origin,
     "Access-Control-Allow-Methods": "POST, OPTIONS",
-    "Access-Control-Allow-Headers": "authorization, apikey, content-type, x-client-info",
+    "Access-Control-Allow-Headers": "authorization, apikey, x-client-info, content-type",
     "Access-Control-Allow-Credentials": "true",
     "Access-Control-Max-Age": "86400",
     "Vary": "Origin",
   };
 }
 
-function jsonResponse(body: Record<string, unknown>, status: number, corsHeaders: Record<string, string>): Response {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
+/**
+ * Returns a JSON response with proper CORS headers.
+ * @param data - response body object
+ * @param status - HTTP status code
+ * @param origin - the allowed origin string (already validated)
+ */
+function jsonResponse(
+  data: Record<string, unknown>,
+  status: number,
+  origin: string,
+): Response {
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    "Vary": "Origin",
+  };
+  // Always attach CORS for allowed origin
+  if (origin) {
+    headers["Access-Control-Allow-Origin"] = origin;
+    headers["Access-Control-Allow-Credentials"] = "true";
+  }
+  return new Response(JSON.stringify(data), { status, headers });
 }
 
-/** Blocked response when origin is not allowed */
-function blockedResponse(): Response {
-  return new Response(JSON.stringify({ error: "Origin not allowed" }), {
-    status: 403,
-    headers: { "Content-Type": "application/json", "Vary": "Origin" },
-  });
+/**
+ * Response when origin is not in allowlist — no CORS headers exposed.
+ */
+function forbiddenOriginResponse(): Response {
+  return new Response(
+    JSON.stringify({ error: "Origin not allowed" }),
+    {
+      status: 403,
+      headers: { "Content-Type": "application/json", "Vary": "Origin" },
+    },
+  );
 }
+
+// ─── OPENAI ───────────────────────────────────────────────────────────────────
 
 interface AnalysisResult {
   is_relevant_to_laguna: boolean;
@@ -117,7 +144,12 @@ IMPORTANTE:
 - O instagram_caption deve ser informativo, direto, sem sensacionalismo.
 - Hashtags devem incluir #Laguna #LagunaSC e outras relevantes ao tema.`;
 
-async function callOpenAI(newsTitle: string, newsContent: string, sourceUrl: string, sourceName: string): Promise<AnalysisResult> {
+async function callOpenAI(
+  newsTitle: string,
+  newsContent: string,
+  sourceUrl: string,
+  sourceName: string,
+): Promise<AnalysisResult> {
   const openaiKey = Deno.env.get("OPENAI_API_KEY");
   if (!openaiKey) {
     throw new Error("OPENAI_API_KEY not configured");
@@ -154,7 +186,9 @@ Retorne SOMENTE o JSON de análise, sem markdown, sem explicação fora do JSON.
 
   if (!response.ok) {
     const errorBody = await response.text();
-    throw new Error(`OpenAI API error (${response.status}): ${errorBody.substring(0, 200)}`);
+    throw new Error(
+      `OpenAI API error (${response.status}): ${errorBody.substring(0, 200)}`,
+    );
   }
 
   const data = await response.json();
@@ -176,109 +210,131 @@ Retorne SOMENTE o JSON de análise, sem markdown, sem explicação fora do JSON.
   return parsed;
 }
 
-Deno.serve(async (req) => {
-  const origin = req.headers.get("origin");
-  const cors = getCorsHeaders(origin);
+// ─── MAIN HANDLER ─────────────────────────────────────────────────────────────
 
-  // Log for diagnostics (no secrets)
-  console.log("analyze-news request:", {
-    method: req.method,
-    origin: origin ?? "(none)",
-    originAllowed: cors !== null,
-    timestamp: new Date().toISOString(),
-  });
+Deno.serve(async (req: Request): Promise<Response> => {
+  const origin = req.headers.get("origin") ?? req.headers.get("Origin") ?? "";
+  const originOk = isOriginAllowed(origin);
 
-  // CORS preflight
+  // Diagnostic log (safe — no secrets)
+  console.log("analyze-news", req.method, "|", "origin:", origin || "(empty)", "|", "allowed:", originOk);
+
+  // ── PREFLIGHT ──────────────────────────────────────────────────────────────
   if (req.method === "OPTIONS") {
-    if (!cors) {
-      console.log("analyze-news OPTIONS blocked: origin not in allowlist");
-      return blockedResponse();
+    console.log("analyze-news OPTIONS", originOk ? "ALLOWED" : "BLOCKED");
+    if (!originOk) {
+      return forbiddenOriginResponse();
     }
-    return new Response(null, { status: 204, headers: cors });
+    return new Response(null, {
+      status: 204,
+      headers: buildCorsHeaders(origin),
+    });
   }
 
-  // Block non-allowed origins for all other methods
-  if (!cors) {
-    console.log("analyze-news blocked: origin not in allowlist");
-    return blockedResponse();
+  // ── BLOCK DISALLOWED ORIGINS ───────────────────────────────────────────────
+  if (!originOk) {
+    console.log("analyze-news BLOCKED: origin not in allowlist");
+    return forbiddenOriginResponse();
   }
 
-  // Only POST allowed beyond preflight
+  // From here on, origin is guaranteed to be in the allowlist.
+  const allowedOrigin = origin;
+
+  // ── METHOD CHECK ───────────────────────────────────────────────────────────
   if (req.method !== "POST") {
-    return jsonResponse({ error: "Method not allowed" }, 405, cors);
+    return jsonResponse({ error: "Method not allowed" }, 405, allowedOrigin);
   }
 
-  // Diagnostic log — confirms POST reached the function
+  // Diagnostic: POST reached the function
   console.log("analyze-news POST received", {
     timestamp: new Date().toISOString(),
-    url: req.url,
     hasAuth: !!req.headers.get("authorization"),
     hasApikey: !!req.headers.get("apikey"),
     contentType: req.headers.get("content-type"),
-    corsOrigin: cors["Access-Control-Allow-Origin"],
   });
 
   try {
+    // ── ENVIRONMENT ────────────────────────────────────────────────────────
     const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
     const anonKey = Deno.env.get("SUPABASE_ANON_KEY") ?? "";
 
     if (!supabaseUrl || !serviceRoleKey) {
       console.error("Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY");
-      return jsonResponse({ error: "Server configuration error" }, 500, cors);
+      return jsonResponse({ error: "Server configuration error" }, 500, allowedOrigin);
     }
 
-    // Extract JWT from Authorization header
+    // ── AUTHENTICATION ─────────────────────────────────────────────────────
     const authHeader = req.headers.get("authorization");
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return jsonResponse({ error: "Authentication required. Send Authorization: Bearer <JWT>" }, 401, cors);
+      return jsonResponse(
+        { error: "Authentication required. Send Authorization: Bearer <JWT>" },
+        401,
+        allowedOrigin,
+      );
     }
 
     const token = authHeader.replace("Bearer ", "");
 
     // Reject if token is just the anon/publishable key (no user session)
     if (token === anonKey) {
-      return jsonResponse({ error: "Authentication required. Please log in." }, 401, cors);
+      return jsonResponse(
+        { error: "Authentication required. Please log in." },
+        401,
+        allowedOrigin,
+      );
     }
 
-    // Also reject new-style publishable keys used as token
+    // Reject new-style keys used as token
     if (token.startsWith("sb_publishable_") || token.startsWith("sb_secret_")) {
-      return jsonResponse({ error: "Authentication required. Please log in." }, 401, cors);
+      return jsonResponse(
+        { error: "Authentication required. Please log in." },
+        401,
+        allowedOrigin,
+      );
     }
 
-    // Verify the user JWT
+    // Verify the user JWT via Supabase Auth
     const authClient = createClient(supabaseUrl, anonKey || serviceRoleKey, {
       auth: { persistSession: false, autoRefreshToken: false },
     });
 
-    const { data: { user }, error: userError } = await authClient.auth.getUser(token);
+    const {
+      data: { user },
+      error: userError,
+    } = await authClient.auth.getUser(token);
+
     if (userError || !user) {
-      return jsonResponse({ error: "Invalid or expired token" }, 401, cors);
+      return jsonResponse({ error: "Invalid or expired token" }, 401, allowedOrigin);
     }
 
     const userId = user.id;
     console.log("analyze-news authenticated user:", userId);
 
-    // Parse body
+    // ── PARSE BODY ─────────────────────────────────────────────────────────
     let body: { project_id?: string; news_id?: string };
     try {
       body = await req.json();
     } catch {
-      return jsonResponse({ error: "Invalid JSON body" }, 400, cors);
+      return jsonResponse({ error: "Invalid JSON body" }, 400, allowedOrigin);
     }
 
     const { project_id, news_id } = body;
 
     if (!project_id || !news_id) {
-      return jsonResponse({ error: "project_id and news_id are required" }, 400, cors);
+      return jsonResponse(
+        { error: "project_id and news_id are required" },
+        400,
+        allowedOrigin,
+      );
     }
 
-    // Admin client for DB operations
+    // ── ADMIN CLIENT (for DB operations only) ─────────────────────────────
     const supabase = createClient(supabaseUrl, serviceRoleKey, {
       auth: { persistSession: false, autoRefreshToken: false },
     });
 
-    // Validate project and ownership
+    // ── VALIDATE OWNERSHIP ─────────────────────────────────────────────────
     const { data: project, error: projectError } = await supabase
       .from("projects")
       .select("id, owner_id")
@@ -287,44 +343,55 @@ Deno.serve(async (req) => {
 
     if (projectError) {
       console.error("Project query error:", projectError.message);
-      return jsonResponse({ error: "Failed to validate project" }, 500, cors);
+      return jsonResponse({ error: "Failed to validate project" }, 500, allowedOrigin);
     }
 
     if (!project) {
-      return jsonResponse({ error: "Project not found" }, 404, cors);
+      return jsonResponse({ error: "Project not found" }, 404, allowedOrigin);
     }
 
     if (project.owner_id !== userId) {
-      return jsonResponse({ error: "Forbidden: you do not own this project" }, 403, cors);
+      return jsonResponse(
+        { error: "Forbidden: you do not own this project" },
+        403,
+        allowedOrigin,
+      );
     }
 
-    // Fetch the news item
+    // ── FETCH NEWS ITEM ───────────────────────────────────────────────────
     const { data: newsItem, error: newsError } = await supabase
       .from("news")
-      .select("id, title, original_content, source_url, project_id, source_id, sources(name)")
+      .select(
+        "id, title, original_content, source_url, project_id, source_id, sources(name)",
+      )
       .eq("id", news_id)
       .eq("project_id", project_id)
       .maybeSingle();
 
     if (newsError) {
       console.error("News query error:", newsError.message);
-      return jsonResponse({ error: "Failed to fetch news item" }, 500, cors);
+      return jsonResponse({ error: "Failed to fetch news item" }, 500, allowedOrigin);
     }
 
     if (!newsItem) {
-      return jsonResponse({ error: "News item not found in this project" }, 404, cors);
+      return jsonResponse(
+        { error: "News item not found in this project" },
+        404,
+        allowedOrigin,
+      );
     }
 
-    // Update news status to analyzing
+    // ── UPDATE STATUS TO ANALYZING ────────────────────────────────────────
     await supabase
       .from("news")
       .update({ status: "analyzing" })
       .eq("id", news_id);
 
-    console.log("analyze-news: pre-OpenAI stage reached for news_id:", news_id);
+    console.log("analyze-news: calling OpenAI for news_id:", news_id);
 
-    // Call OpenAI
-    const sourceName = (newsItem as any).sources?.name ?? "Fonte desconhecida";
+    // ── CALL OPENAI ───────────────────────────────────────────────────────
+    const sourceName =
+      (newsItem as any).sources?.name ?? "Fonte desconhecida";
     let analysis: AnalysisResult;
     try {
       analysis = await callOpenAI(
@@ -341,10 +408,14 @@ Deno.serve(async (req) => {
         .eq("id", news_id);
 
       console.error("OpenAI error:", aiError.message);
-      return jsonResponse({ error: `AI analysis failed: ${aiError.message}` }, 502, cors);
+      return jsonResponse(
+        { error: `AI analysis failed: ${aiError.message}` },
+        502,
+        allowedOrigin,
+      );
     }
 
-    // Determine news status based on analysis
+    // ── DETERMINE STATUS ──────────────────────────────────────────────────
     let newStatus: string;
     if (!analysis.is_relevant_to_laguna) {
       newStatus = "ignored";
@@ -358,7 +429,7 @@ Deno.serve(async (req) => {
       newStatus = "awaiting_approval";
     }
 
-    // Save analysis to news_analysis table
+    // ── SAVE ANALYSIS ─────────────────────────────────────────────────────
     const { error: upsertError } = await supabase
       .from("news_analysis")
       .upsert(
@@ -378,10 +449,14 @@ Deno.serve(async (req) => {
 
     if (upsertError) {
       console.error("Failed to save news_analysis:", upsertError.message);
-      return jsonResponse({ error: "Failed to save analysis results" }, 500, cors);
+      return jsonResponse(
+        { error: "Failed to save analysis results" },
+        500,
+        allowedOrigin,
+      );
     }
 
-    // Update news record
+    // ── UPDATE NEWS RECORD ────────────────────────────────────────────────
     const { error: updateError } = await supabase
       .from("news")
       .update({
@@ -395,7 +470,7 @@ Deno.serve(async (req) => {
       console.error("Failed to update news status:", updateError.message);
     }
 
-    // Return full result
+    // ── RETURN RESULT ─────────────────────────────────────────────────────
     const result = {
       success: true,
       news_id,
@@ -416,9 +491,13 @@ Deno.serve(async (req) => {
       },
     };
 
-    return jsonResponse(result, 200, cors);
+    return jsonResponse(result, 200, allowedOrigin);
   } catch (err: any) {
     console.error("Unhandled error in analyze-news:", err.message);
-    return jsonResponse({ error: err.message ?? "Internal error" }, 500, cors);
+    return jsonResponse(
+      { error: err.message ?? "Internal error" },
+      500,
+      allowedOrigin,
+    );
   }
 });
