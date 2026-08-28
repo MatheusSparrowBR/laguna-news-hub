@@ -296,7 +296,7 @@ export async function obterNoticiaPorId(id: string): Promise<NewsItem | null> {
 export async function alterarStatusNoticia(id: string, status: NewsStatus) {
   const { error } = await supabase
     .from("news")
-    .update({ status: statusParaBanco[status] })
+    .update({ status: statusParaBanco[status] as "new" | "analyzing" | "awaiting_approval" | "approved" | "published" | "ignored" | "duplicate" | "review_required" })
     .eq("id", id);
   if (error) throw error;
 }
