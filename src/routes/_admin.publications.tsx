@@ -3,12 +3,14 @@ import { useMemo, useState } from "react";
 import { Send, Eye, Heart, MessageCircle } from "lucide-react";
 import { PageContainer, SectionCard } from "@/components/layout/PageContainer";
 import { EmptyState } from "@/components/common/EmptyState";
+import { LoadingState } from "@/components/common/LoadingState";
 import { StatusBadge } from "@/components/common/StatusBadge";
 import { CategoryBadge } from "@/components/common/CategoryBadge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { listarPublicacoes } from "@/services/mockService";
+import { useProject } from "@/hooks/useProject";
+import { usePublicacoes } from "@/services/queries";
 import { formatarDataHora, formatarNumero } from "@/lib/format";
 import type { Publication, PublicationStatus } from "@/lib/types";
 
@@ -34,7 +36,8 @@ const statusTabs: { value: "todas" | PublicationStatus; label: string }[] = [
 ];
 
 function PublicationsPage() {
-  const publicacoes = useMemo(() => listarPublicacoes(), []);
+  const { data: projeto } = useProject();
+  const { data: publicacoes = [], isLoading, error } = usePublicacoes(projeto?.id);
   const [tab, setTab] = useState<string>("todas");
 
   const filtradas = useMemo(
@@ -45,7 +48,7 @@ function PublicationsPage() {
   return (
     <PageContainer
       titulo="Publicações"
-      descricao="Gerencie as publicações no Instagram (dados simulados)."
+      descricao="Gerencie as publicações no Instagram."
     >
       <Tabs value={tab} onValueChange={setTab}>
         <TabsList>
@@ -58,7 +61,11 @@ function PublicationsPage() {
 
         {statusTabs.map((s) => (
           <TabsContent key={s.value} value={s.value} className="mt-4">
-            {filtradas.length === 0 ? (
+            {isLoading ? (
+              <LoadingState titulo="Carregando publicações..." />
+            ) : error ? (
+              <EmptyState titulo="Erro ao carregar" descricao={error.message} />
+            ) : filtradas.length === 0 ? (
               <EmptyState
                 icone={Send}
                 titulo="Nenhuma publicação"
@@ -101,7 +108,7 @@ function PublicationDetailCard({ publicacao }: { publicacao: Publication }) {
         </p>
 
         {publicacao.status === "publicada" && (
-          <div className="flex items-center gap-4 pt-2 border-t">
+          <div className="flex items-center gap-4 border-t pt-2">
             <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
               <Eye className="size-3.5" />
               {formatarNumero(publicacao.visualizacoes)}
