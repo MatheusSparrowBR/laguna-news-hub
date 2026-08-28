@@ -68,9 +68,16 @@ function LoginPage() {
       }
     } catch (err) {
       const message = err instanceof Error ? err.message : "Erro ao acessar";
-      if (message.toLowerCase().includes("email not confirmed")) {
+      const msgLower = message.toLowerCase();
+
+      if (msgLower.includes("email signups are disabled") || msgLower.includes("signups not allowed")) {
+        toast.error(
+          "Criação de contas por e-mail está desabilitada no Supabase. Acesse o painel do Supabase > Authentication > Providers > Email e ative 'Enable Email Signup'.",
+          { duration: 10000 }
+        );
+      } else if (msgLower.includes("email not confirmed")) {
         toast.error("E-mail ainda não confirmado. Verifique sua caixa de entrada e spam.");
-      } else if (message.toLowerCase().includes("invalid login credentials")) {
+      } else if (msgLower.includes("invalid login credentials")) {
         toast.error("E-mail ou senha incorretos.");
       } else {
         toast.error(message);
