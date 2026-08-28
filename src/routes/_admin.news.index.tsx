@@ -4,14 +4,16 @@ import { Newspaper, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { EmptyState } from "@/components/common/EmptyState";
+import { LoadingState } from "@/components/common/LoadingState";
 import { NewsFilters } from "@/components/news/NewsFilters";
 import { NewsList } from "@/components/news/NewsList";
 import type { NewsActionHandlers } from "@/components/news/NewsActions";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { filtrarNoticias, filtrosIniciais } from "@/lib/newsFilter";
-import { listarFontes } from "@/services/mockService";
-import { alterarStatus, recarregarNoticias, useNoticias } from "@/services/newsStore";
+import { useProject } from "@/hooks/useProject";
+import { useNoticias, useFontes, useAlterarStatusNoticia } from "@/services/queries";
+import { useModoDados } from "@/services/dataMode";
 
 export const Route = createFileRoute("/_admin/news/")({
   head: () => ({
@@ -33,27 +35,36 @@ export const Route = createFileRoute("/_admin/news/")({
 });
 
 function NewsPage() {
-  const noticias = useNoticias();
+  const { data: projeto } = useProject();
+  const modo = useModoDados();
+  const {
+    data: noticias = [],
+    isLoading,
+    error,
+    refetch,
+  } = useNoticias(projeto?.id);
+  const { data: fontes = [] } = useFontes(projeto?.id);
+  const alterarStatus = useAlterarStatusNoticia();
   const [filtros, setFiltros] = useState(filtrosIniciais);
-  const fontes = useMemo(() => listarFontes().map((f) => f.nome), []);
 
+  const nomesFontes = useMemo(() => fontes.map((f) => f.nome), [fontes]);
   const filtradas = useMemo(() => filtrarNoticias(noticias, filtros), [noticias, filtros]);
 
   const handlers: NewsActionHandlers = {
-    onAprovar: (n) => {
-      alterarStatus(n.id, "aprovada");
-      toast.success("Notícia aprovada (simulado)");
+    onAprovar: async (n) => {
+      await alterarStatus.mutateAsync({ id: n.id, status: "aprovada" });
+      toast.success("Notícia aprovada");
     },
-    onIgnorar: (n) => {
-      alterarStatus(n.id, "ignorada");
-      toast.success("Notícia ignorada (simulado)");
+    onIgnorar: async (n) => {
+      await alterarStatus.mutateAsync({ id: n.id, status: "ignorada" });
+      toast.success("Notícia ignorada");
     },
-    onRejeitar: (n) => {
-      alterarStatus(n.id, "rejeitada");
-      toast.success("Notícia rejeitada (simulado)");
+    onRejeitar: async (n) => {
+      await alterarStatus.mutateAsync({ id: n.id, status: "rejeitada" });
+      toast.success("Notícia rejeitada");
     },
-    onPublicar: (n) => {
-      alterarStatus(n.id, "publicada");
+    onPublicar: async (n) => {
+      await alterarStatus.mutateAsync({ id: n.id, status: "publicada" });
       toast.success("Publicação simulada — Instagram ainda não conectado");
     },
     onCopiarLegenda: (n) => {
@@ -70,34 +81,37 @@ function NewsPage() {
         <Button
           size="sm"
           onClick={() => {
-            recarregarNoticias();
-            toast.success("Notícias atualizadas (dados simulados)");
+            refetch();
+            toast.success("Notícias atualizadas");
           }}
+          disabled={isLoading}
         >
           <RefreshCw className="size-4" />
           Atualizar notícias
         </Button>
       }
     >
-      <div className="mb-3 flex items-center gap-2">
-        <Badge variant="outline" className="border-green-300 text-green-700 dark:border-green-700 dark:text-green-400">
-          Real
+      <div className="mb-3 flex flex-wrap items-center gap-2">
+        <Badge variant="outline" className={modo === "banco" ? "border-green-300 text-green-700" : "border-amber-300 text-amber-700"}>
+          {modo === "banco" ? "Dados reais" : "Demonstração"}
         </Badge>
-        <span className="text-xs text-muted-foreground">= coletada automaticamente</span>
-        <Badge variant="outline" className="ml-2 border-amber-300 text-amber-700 dark:border-amber-700 dark:text-amber-400">
-          Demo
-        </Badge>
-        <span className="text-xs text-muted-foreground">= dado de demonstração</span>
+        <span className="text-xs text-muted-foreground">
+          {modo === "banco" ? "conectado ao banco" : "dados simulados"}
+        </span>
       </div>
 
-      <NewsFilters filtros={filtros} onChange={setFiltros} fontes={fontes} />
+      <NewsFilters filtros={filtros} onChange={setFiltros} fontes={nomesFontes} />
 
       <p className="mt-4 text-sm text-muted-foreground">
         {filtradas.length} de {noticias.length} notícia(s)
       </p>
 
       <div className="mt-3">
-        {filtradas.length === 0 ? (
+        {isLoading ? (
+          <LoadingState titulo="Carregando notícias..." />
+        ) : error ? (
+          <EmptyState titulo="Erro ao carregar notícias" descricao={error.message} />
+        ) : filtradas.length === 0 ? (
           <EmptyState
             icone={Newspaper}
             titulo="Nenhuma notícia encontrada"

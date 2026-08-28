@@ -2,10 +2,10 @@ import type { NewsItem } from "./types";
 
 export interface FiltrosNoticia {
   busca: string;
-  status?: string;
-  categoria?: string;
-  importancia?: string;
-  fonte?: string;
+  status?: string | undefined;
+  categoria?: string | undefined;
+  importancia?: string | undefined;
+  fonte?: string | undefined;
 }
 
 export const filtrosIniciais: FiltrosNoticia = {

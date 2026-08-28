@@ -110,7 +110,8 @@ export interface Source {
   id: string;
   nome: string;
   url: string;
-  tipo: "site" | "rss" | "rede_social";
+  tipo: "site" | "rss" | "api" | "official";
+  rssUrl?: string | null;
   ativa: boolean;
   ultimaColeta: string;
   noticiasColetadas: number;

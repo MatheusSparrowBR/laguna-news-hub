@@ -4,10 +4,17 @@ import { useState } from "react";
 import { navItems } from "./navigation";
 import { APP_NAME, CIDADE_COMPLETA } from "@/config/app";
 import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
+import { useAuth } from "@/hooks/useAuth";
 
 export function Sidebar({ onNavegar }: { onNavegar?: () => void }) {
   const navigate = useNavigate();
+  const { signOut } = useAuth();
   const [confirmarSaida, setConfirmarSaida] = useState(false);
+
+  const handleSair = async () => {
+    await signOut();
+    navigate({ to: "/login", replace: true });
+  };
 
   return (
     <div className="flex h-full flex-col bg-sidebar text-sidebar-foreground">
@@ -52,7 +59,7 @@ export function Sidebar({ onNavegar }: { onNavegar?: () => void }) {
         titulo="Sair da conta?"
         descricao="Você voltará para a tela de login."
         textoConfirmar="Sair"
-        onConfirmar={() => navigate({ to: "/login" })}
+        onConfirmar={handleSair}
       />
     </div>
   );

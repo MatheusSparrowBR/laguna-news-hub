@@ -146,7 +146,6 @@ export type Database = {
           id: string
           image_url: string | null
           importance_score: number
-          is_demo: boolean
           is_duplicate: boolean
           original_content: string | null
           project_id: string
@@ -168,7 +167,6 @@ export type Database = {
           id?: string
           image_url?: string | null
           importance_score?: number
-          is_demo?: boolean
           is_duplicate?: boolean
           original_content?: string | null
           project_id: string
@@ -190,7 +188,6 @@ export type Database = {
           id?: string
           image_url?: string | null
           importance_score?: number
-          is_demo?: boolean
           is_duplicate?: boolean
           original_content?: string | null
           project_id?: string

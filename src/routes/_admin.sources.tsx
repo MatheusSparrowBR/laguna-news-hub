@@ -1,23 +1,46 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
-import { Globe, Rss, Share2, Plus, Play, Loader2, AlertCircle, CheckCircle2, Clock } from "lucide-react";
+import { useEffect, useState } from "react";
+import {
+  Globe,
+  Rss,
+  Share2,
+  Plus,
+  Play,
+  Loader2,
+  AlertCircle,
+  CheckCircle2,
+  Clock,
+} from "lucide-react";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { EmptyState } from "@/components/common/EmptyState";
+import { LoadingState } from "@/components/common/LoadingState";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { formatarDataHora } from "@/lib/format";
 import type { Source } from "@/lib/types";
 import { toast } from "sonner";
+import { useProject } from "@/hooks/useProject";
+import { useFontes, useCriarFonte, useAlterarFonteAtiva } from "@/services/queries";
 import { useModoDados } from "@/services/dataMode";
-import { listarFontes } from "@/services/mockService";
-import { obterFontes, obterProjetoAtual, criarFonte, alterarFonteAtiva } from "@/services/supabaseData";
-import { executarColetaDeNoticias, obterUltimaExecucao, type CollectNewsResult, type UltimaExecucao } from "@/services/collectNews";
+import { obterUltimaExecucao, type UltimaExecucao } from "@/services/collectNews";
 
 export const Route = createFileRoute("/_admin/sources")({
   head: () => ({
@@ -35,73 +58,42 @@ export const Route = createFileRoute("/_admin/sources")({
 const tipoIcone = {
   site: Globe,
   rss: Rss,
-  rede_social: Share2,
+  api: Share2,
+  official: Share2,
 } as const;
 
 const tipoLabel = {
   site: "Site",
   rss: "RSS",
-  rede_social: "Rede social",
+  api: "API",
+  official: "Oficial",
 } as const;
 
 function SourcesPage() {
   const modo = useModoDados();
-  const [fontes, setFontes] = useState<Source[]>([]);
-  const [projectId, setProjectId] = useState<string | null>(null);
-  const [carregando, setCarregando] = useState(true);
-  const [coletando, setColetando] = useState(false);
+  const { data: projeto } = useProject();
+  const {
+    data: fontes = [],
+    isLoading,
+    error,
+  } = useFontes(projeto?.id);
+  const alterarFonte = useAlterarFonteAtiva();
   const [ultimaExecucao, setUltimaExecucao] = useState<UltimaExecucao | null>(null);
-  const [resultadoColeta, setResultadoColeta] = useState<CollectNewsResult | null>(null);
+  const [carregandoExecucao, setCarregandoExecucao] = useState(false);
   const [dialogAberto, setDialogAberto] = useState(false);
 
-  const carregarDados = async () => {
-    setCarregando(true);
-    try {
-      if (modo === "demo") {
-        setFontes(listarFontes());
-        setProjectId(null);
-      } else {
-        const projeto = await obterProjetoAtual();
-        if (projeto) {
-          setProjectId(projeto.id);
-          const fontesDb = await obterFontes(projeto.id);
-          setFontes(fontesDb);
-          const ultima = await obterUltimaExecucao(projeto.id);
-          setUltimaExecucao(ultima);
-        }
-      }
-    } catch (err) {
-      console.error(err);
-      toast.error("Erro ao carregar fontes");
-    } finally {
-      setCarregando(false);
-    }
-  };
-
   useEffect(() => {
-    carregarDados();
-  }, [modo]);
+    if (modo === "banco" && projeto?.id) {
+      setCarregandoExecucao(true);
+      obterUltimaExecucao(projeto.id)
+        .then(setUltimaExecucao)
+        .catch(() => setUltimaExecucao(null))
+        .finally(() => setCarregandoExecucao(false));
+    }
+  }, [modo, projeto?.id]);
 
   const handleColetar = async () => {
-    if (!projectId) {
-      toast.error("Projeto não encontrado");
-      return;
-    }
-    setColetando(true);
-    setResultadoColeta(null);
-    try {
-      const resultado = await executarColetaDeNoticias(projectId);
-      setResultadoColeta(resultado);
-      toast.success(
-        `Coleta finalizada: ${resultado.total_new} notícia(s) nova(s) de ${resultado.sources_checked} fonte(s)`
-      );
-      // Refresh data
-      await carregarDados();
-    } catch (err: any) {
-      toast.error(err.message ?? "Erro ao executar coleta");
-    } finally {
-      setColetando(false);
-    }
+    toast.info("Coleta automática será implementada nas próximas etapas.");
   };
 
   return (
@@ -115,25 +107,19 @@ function SourcesPage() {
               size="sm"
               variant="outline"
               onClick={handleColetar}
-              disabled={coletando || !projectId}
+              disabled={!projeto?.id}
             >
-              {coletando ? (
-                <Loader2 className="size-4 animate-spin" />
-              ) : (
-                <Play className="size-4" />
-              )}
+              <Play className="size-4" />
               Verificar fontes agora
             </Button>
           )}
-          {modo === "banco" && (
+          {modo === "banco" ? (
             <AddSourceDialog
-              projectId={projectId}
+              projectId={projeto?.id}
               open={dialogAberto}
               onOpenChange={setDialogAberto}
-              onCreated={carregarDados}
             />
-          )}
-          {modo === "demo" && (
+          ) : (
             <Button
               size="sm"
               onClick={() => toast.info("Cadastro de fontes disponível no modo banco.")}
@@ -152,36 +138,10 @@ function SourcesPage() {
             <CardTitle className="text-sm font-medium">Status da coleta</CardTitle>
           </CardHeader>
           <CardContent>
-            {resultadoColeta ? (
-              <div className="grid gap-3 sm:grid-cols-4">
-                <div className="flex items-center gap-2">
-                  <Clock className="size-4 text-muted-foreground" />
-                  <div>
-                    <p className="text-xs text-muted-foreground">Última execução</p>
-                    <p className="text-sm font-medium">Agora</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Rss className="size-4 text-muted-foreground" />
-                  <div>
-                    <p className="text-xs text-muted-foreground">Fontes verificadas</p>
-                    <p className="text-sm font-medium">{resultadoColeta.sources_checked}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="size-4 text-green-600" />
-                  <div>
-                    <p className="text-xs text-muted-foreground">Notícias novas</p>
-                    <p className="text-sm font-medium">{resultadoColeta.total_new}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <AlertCircle className="size-4 text-red-500" />
-                  <div>
-                    <p className="text-xs text-muted-foreground">Erros</p>
-                    <p className="text-sm font-medium">{resultadoColeta.total_errors}</p>
-                  </div>
-                </div>
+            {carregandoExecucao ? (
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Loader2 className="size-4 animate-spin" />
+                Carregando...
               </div>
             ) : ultimaExecucao ? (
               <div className="grid gap-3 sm:grid-cols-4">
@@ -202,7 +162,7 @@ function SourcesPage() {
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="size-4 text-green-600" />
                   <div>
-                    <p className="text-xs text-muted-foreground">Notícias novas</p>
+                    <p className="text-xs text-muted-foreground">Itens processados</p>
                     <p className="text-sm font-medium">{ultimaExecucao.items_processed}</p>
                   </div>
                 </div>
@@ -215,16 +175,18 @@ function SourcesPage() {
                 </div>
               </div>
             ) : (
-              <p className="text-sm text-muted-foreground">Nenhuma coleta realizada ainda. Clique em "Verificar fontes agora" para iniciar.</p>
+              <p className="text-sm text-muted-foreground">
+                Nenhuma coleta realizada ainda. Clique em "Verificar fontes agora" para iniciar.
+              </p>
             )}
           </CardContent>
         </Card>
       )}
 
-      {carregando ? (
-        <div className="flex items-center justify-center py-12">
-          <Loader2 className="size-6 animate-spin text-muted-foreground" />
-        </div>
+      {isLoading ? (
+        <LoadingState titulo="Carregando fontes..." />
+      ) : error ? (
+        <EmptyState titulo="Erro ao carregar fontes" descricao={error.message} />
       ) : fontes.length === 0 ? (
         <EmptyState
           icone={Rss}
@@ -238,8 +200,14 @@ function SourcesPage() {
               key={fonte.id}
               fonte={fonte}
               modo={modo}
-              projectId={projectId}
-              onToggle={carregarDados}
+              onToggle={async (checked) => {
+                if (modo === "demo") {
+                  toast.info("Alteração de status simulada — mude para modo banco.");
+                  return;
+                }
+                await alterarFonte.mutateAsync({ id: fonte.id, active: checked });
+                toast.success(checked ? "Fonte ativada" : "Fonte desativada");
+              }}
             />
           ))}
         </div>
@@ -251,30 +219,14 @@ function SourcesPage() {
 function SourceCard({
   fonte,
   modo,
-  projectId,
   onToggle,
 }: {
   fonte: Source;
   modo: string;
-  projectId: string | null;
-  onToggle: () => void;
+  onToggle: (checked: boolean) => Promise<void>;
 }) {
   const Icone = tipoIcone[fonte.tipo];
   const isWebsiteSemRss = fonte.tipo === "site";
-
-  const handleToggle = async (checked: boolean) => {
-    if (modo === "demo") {
-      toast.info("Alteração de status simulada — mude para modo banco.");
-      return;
-    }
-    try {
-      await alterarFonteAtiva(fonte.id, checked);
-      toast.success(checked ? "Fonte ativada" : "Fonte desativada");
-      onToggle();
-    } catch {
-      toast.error("Erro ao alterar status da fonte");
-    }
-  };
 
   return (
     <Card className="transition-shadow hover:shadow-md">
@@ -286,7 +238,7 @@ function SourceCard({
           </div>
           <Switch
             checked={fonte.ativa}
-            onCheckedChange={handleToggle}
+            onCheckedChange={onToggle}
             aria-label={`Ativar/desativar ${fonte.nome}`}
           />
         </div>
@@ -308,7 +260,7 @@ function SourceCard({
         </a>
 
         {isWebsiteSemRss && (
-          <p className="text-xs text-amber-600 dark:text-amber-400">
+          <p className="text-xs text-amber-600">
             Coleta automática ainda não configurada para esta fonte.
           </p>
         )}
@@ -326,18 +278,16 @@ function AddSourceDialog({
   projectId,
   open,
   onOpenChange,
-  onCreated,
 }: {
-  projectId: string | null;
+  projectId?: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onCreated: () => void;
 }) {
+  const criarFonte = useCriarFonte();
   const [nome, setNome] = useState("");
   const [url, setUrl] = useState("");
   const [rssUrl, setRssUrl] = useState("");
   const [tipo, setTipo] = useState<string>("rss");
-  const [salvando, setSalvando] = useState(false);
 
   const handleSalvar = async () => {
     if (!projectId) return;
@@ -350,26 +300,19 @@ function AddSourceDialog({
       return;
     }
 
-    setSalvando(true);
-    try {
-      await criarFonte(projectId, {
-        name: nome.trim(),
-        url: url.trim(),
-        source_type: tipo,
-        rss_url: tipo === "rss" ? rssUrl.trim() : null,
-      });
-      toast.success("Fonte cadastrada com sucesso!");
-      setNome("");
-      setUrl("");
-      setRssUrl("");
-      setTipo("rss");
-      onOpenChange(false);
-      onCreated();
-    } catch (err: any) {
-      toast.error(err.message ?? "Erro ao cadastrar fonte");
-    } finally {
-      setSalvando(false);
-    }
+    await criarFonte.mutateAsync({
+      projectId,
+      name: nome.trim(),
+      url: url.trim(),
+      source_type: tipo,
+      rss_url: tipo === "rss" ? rssUrl.trim() : null,
+    });
+    toast.success("Fonte cadastrada com sucesso!");
+    setNome("");
+    setUrl("");
+    setRssUrl("");
+    setTipo("rss");
+    onOpenChange(false);
   };
 
   return (
@@ -412,6 +355,8 @@ function AddSourceDialog({
               <SelectContent>
                 <SelectItem value="rss">RSS</SelectItem>
                 <SelectItem value="website">Website</SelectItem>
+                <SelectItem value="api">API</SelectItem>
+                <SelectItem value="official">Oficial</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -431,8 +376,12 @@ function AddSourceDialog({
               Coleta automática ainda não disponível para websites. Apenas fontes RSS são coletadas automaticamente.
             </p>
           )}
-          <Button onClick={handleSalvar} disabled={salvando} className="w-full">
-            {salvando ? <Loader2 className="size-4 animate-spin" /> : null}
+          <Button
+            onClick={handleSalvar}
+            disabled={criarFonte.isPending || !projectId}
+            className="w-full"
+          >
+            {criarFonte.isPending ? <Loader2 className="size-4 animate-spin" /> : null}
             Salvar fonte
           </Button>
         </div>

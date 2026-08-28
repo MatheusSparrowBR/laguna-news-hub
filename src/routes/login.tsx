@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { APP_NAME, CIDADE_COMPLETA } from "@/config/app";
+import { useAuth } from "@/hooks/useAuth";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
@@ -23,20 +24,36 @@ export const Route = createFileRoute("/login")({
 
 function LoginPage() {
   const navigate = useNavigate();
+  const { session, loading, signIn, signUp } = useAuth();
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [carregando, setCarregando] = useState(false);
+  const [modoCriar, setModoCriar] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Se já estiver autenticado, vai para o dashboard
+  if (!loading && session) {
+    navigate({ to: "/dashboard", replace: true });
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!email || !senha) return;
     setCarregando(true);
 
-    // Simula login
-    setTimeout(() => {
+    try {
+      if (modoCriar) {
+        await signUp(email, senha);
+        toast.success("Conta criada. Verifique seu e-mail para confirmar.");
+      } else {
+        await signIn(email, senha);
+        toast.success("Login realizado");
+        navigate({ to: "/dashboard", replace: true });
+      }
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Erro ao acessar");
+    } finally {
       setCarregando(false);
-      toast.success("Login realizado (simulado)");
-      navigate({ to: "/dashboard" });
-    }, 800);
+    }
   };
 
   return (
@@ -52,7 +69,9 @@ function LoginPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-center text-base">Entrar no painel</CardTitle>
+            <CardTitle className="text-center text-base">
+              {modoCriar ? "Criar conta de administrador" : "Entrar no painel"}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -77,17 +96,24 @@ function LoginPage() {
                   value={senha}
                   onChange={(e) => setSenha(e.target.value)}
                   required
-                  autoComplete="current-password"
+                  autoComplete={modoCriar ? "new-password" : "current-password"}
+                  minLength={6}
                 />
               </div>
-              <Button type="submit" className="w-full" disabled={carregando}>
-                {carregando ? "Entrando..." : "Entrar"}
+              <Button type="submit" className="w-full" disabled={carregando || loading}>
+                {carregando ? (modoCriar ? "Criando..." : "Entrando...") : modoCriar ? "Criar conta" : "Entrar"}
               </Button>
             </form>
 
-            <p className="mt-4 text-center text-xs text-muted-foreground">
-              Login simulado — qualquer e-mail e senha funcionam.
-            </p>
+            <div className="mt-4 text-center">
+              <button
+                type="button"
+                onClick={() => setModoCriar((v) => !v)}
+                className="text-xs text-muted-foreground underline hover:text-foreground"
+              >
+                {modoCriar ? "Já tenho uma conta" : "Criar conta de administrador"}
+              </button>
+            </div>
           </CardContent>
         </Card>
       </div>

@@ -1,12 +1,9 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
 import {
   AlertTriangle,
   CheckCircle2,
-  Clock,
   Eye,
   Newspaper,
-  Rss,
   TrendingUp,
   Users,
 } from "lucide-react";
@@ -14,57 +11,72 @@ import { MetricCard } from "@/components/common/MetricCard";
 import { NewsCard } from "@/components/common/NewsCard";
 import { PublicationCard } from "@/components/common/PublicationCard";
 import { EmptyState } from "@/components/common/EmptyState";
+import { LoadingState } from "@/components/common/LoadingState";
 import { PageContainer, SectionCard } from "@/components/layout/PageContainer";
 import { PublicationsChart, ReachChart } from "@/components/dashboard/OverviewChart";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  listarNoticias,
-  listarPublicacoes,
-  obterEstatisticasInstagram,
-  obterMetricasDiarias,
-} from "@/services/mockService";
-import { ehHoje, formatarDataHora, formatarNumero } from "@/lib/format";
-import { useModoDados } from "@/services/dataMode";
-import { obterUltimaExecucao, type UltimaExecucao } from "@/services/collectNews";
-import { obterProjetoAtual } from "@/services/supabaseData";
+import { useProject } from "@/hooks/useProject";
+import { useNoticias, usePublicacoes, useAnalytics } from "@/services/queries";
+import { ehHoje, formatarNumero } from "@/lib/format";
 
 export const Route = createFileRoute("/_admin/dashboard")({
   head: () => ({
     meta: [
       { title: "Dashboard | Projeto Notícias Laguna" },
-      {
-        name: "description",
-        content:
-          "Visão geral das notícias encontradas, aprovações pendentes e desempenho do perfil de notícias de Laguna.",
-      },
-      { property: "og:title", content: "Dashboard | Projeto Notícias Laguna" },
-      {
-        property: "og:description",
-        content: "Visão geral do painel de notícias locais de Laguna - SC.",
-      },
+        {
+          name: "description",
+          content:
+            "Visão geral das notícias encontradas, aprovações pendentes e desempenho do perfil de notícias de Laguna.",
+        },
+        { property: "og:title", content: "Dashboard | Projeto Notícias Laguna" },
+        {
+          property: "og:description",
+          content: "Visão geral do painel de notícias locais de Laguna - SC.",
+        },
     ],
   }),
   component: DashboardPage,
 });
 
 function DashboardPage() {
-  const modo = useModoDados();
-  const noticias = listarNoticias();
-  const publicacoes = listarPublicacoes();
-  const metricas = obterMetricasDiarias();
-  const instagram = obterEstatisticasInstagram();
-  const [ultimaExecucao, setUltimaExecucao] = useState<UltimaExecucao | null>(null);
+  const { data: projeto } = useProject();
+  const {
+    data: noticias = [],
+    isLoading: carregandoNoticias,
+    error: erroNoticias,
+  } = useNoticias(projeto?.id);
+  const {
+    data: publicacoes = [],
+    isLoading: carregandoPublicacoes,
+    error: erroPublicacoes,
+  } = usePublicacoes(projeto?.id);
+  const {
+    data: analytics,
+    isLoading: carregandoAnalytics,
+    error: erroAnalytics,
+  } = useAnalytics(projeto?.id);
 
-  useEffect(() => {
-    if (modo === "banco") {
-      obterProjetoAtual().then((proj) => {
-        if (proj) {
-          obterUltimaExecucao(proj.id).then(setUltimaExecucao).catch(console.error);
-        }
-      }).catch(console.error);
-    }
-  }, [modo]);
+  const carregando = carregandoNoticias || carregandoPublicacoes || carregandoAnalytics;
+  const erro = erroNoticias || erroPublicacoes || erroAnalytics;
+
+  if (carregando) {
+    return (
+      <PageContainer titulo="Dashboard" descricao="Carregando resumo do dia...">
+        <LoadingState titulo="Carregando dashboard..." />
+      </PageContainer>
+    );
+  }
+
+  if (erro) {
+    return (
+      <PageContainer titulo="Dashboard" descricao="Erro ao carregar dados">
+        <EmptyState
+          titulo="Erro ao carregar dados"
+          descricao={erro.message}
+        />
+      </PageContainer>
+    );
+  }
 
   const encontradasHoje = noticias.filter((n) => ehHoje(n.horario)).length;
   const aguardando = noticias.filter((n) => n.status === "aguardando_aprovacao").length;
@@ -76,10 +88,13 @@ function DashboardPage() {
   const ultimasNoticias = noticias.slice(0, 5);
   const publicacoesHoje = publicacoes.filter((p) => ehHoje(p.horario));
 
+  const metricasDiarias = analytics?.diario ?? [];
+  const alcanceHoje = analytics?.alcance ?? 0;
+
   return (
     <PageContainer
       titulo="Dashboard"
-      descricao="Resumo do dia em Laguna - SC (dados simulados)"
+      descricao={`Resumo do dia em ${projeto?.city ? `${projeto.city} - ${projeto.state}` : "Laguna - SC"}`}
     >
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <MetricCard
@@ -110,80 +125,37 @@ function DashboardPage() {
         />
         <MetricCard
           titulo="Alcance do Instagram"
-          valor={formatarNumero(instagram.alcanceHoje)}
+          valor={formatarNumero(alcanceHoje)}
           icone={Eye}
           descricao="contas alcançadas hoje"
         />
         <MetricCard
           titulo="Seguidores"
-          valor={formatarNumero(instagram.seguidores)}
+          valor={formatarNumero(0)}
           icone={Users}
           descricao="total do perfil"
         />
         <MetricCard
           titulo="Crescimento de seguidores"
-          valor={`${instagram.crescimentoSemana}%`}
+          valor="0%"
           icone={TrendingUp}
-          variacao={instagram.crescimentoSemana}
+          variacao={0}
           descricao="últimos 7 dias"
         />
         <MetricCard
           titulo="Engajamento médio"
-          valor={`${instagram.engajamentoMedio}%`}
+          valor="0%"
           icone={TrendingUp}
           descricao="por publicação"
         />
       </div>
 
-      {/* Última atualização das fontes */}
-      {modo === "banco" && (
-        <div className="mt-6">
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2 text-sm font-medium">
-                <Rss className="size-4" />
-                Última atualização das fontes
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {ultimaExecucao ? (
-                <div className="grid gap-3 sm:grid-cols-4">
-                  <div className="flex items-center gap-2">
-                    <Clock className="size-4 text-muted-foreground" />
-                    <div>
-                      <p className="text-xs text-muted-foreground">Horário</p>
-                      <p className="text-sm font-medium">{formatarDataHora(ultimaExecucao.started_at)}</p>
-                    </div>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Status</p>
-                    <p className="text-sm font-medium capitalize">{ultimaExecucao.status}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Novas notícias</p>
-                    <p className="text-sm font-medium">{ultimaExecucao.items_processed}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Erros</p>
-                    <p className="text-sm font-medium">{ultimaExecucao.error_message ?? "Nenhum"}</p>
-                  </div>
-                </div>
-              ) : (
-                <p className="text-sm text-muted-foreground">
-                  Nenhuma coleta realizada. Vá até Fontes e clique em "Verificar fontes agora".
-                </p>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-      )}
-
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
         <SectionCard titulo="Publicações por dia">
-          <PublicationsChart dados={metricas} />
+          <PublicationsChart dados={metricasDiarias} />
         </SectionCard>
         <SectionCard titulo="Alcance por dia">
-          <ReachChart dados={metricas} />
+          <ReachChart dados={metricasDiarias} />
         </SectionCard>
       </div>
 

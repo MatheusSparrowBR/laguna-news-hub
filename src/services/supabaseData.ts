@@ -94,7 +94,7 @@ function categoriaValida(nome: string | null | undefined): Categoria {
 
 /** Garante o perfil do administrador e devolve o projeto dele. */
 export async function obterProjetoAtual(): Promise<ProjetoAtual | null> {
-  const { error: erroRpc } = await supabase.rpc("claim_admin_project", { _name: null });
+  const { error: erroRpc } = await supabase.rpc("claim_admin_project", {});
   if (erroRpc) throw erroRpc;
 
   const { data, error } = await supabase
@@ -180,7 +180,13 @@ export async function criarFonte(
   projectId: string,
   valores: { name: string; url: string; source_type: string; rss_url?: string | null },
 ) {
-  const { error } = await supabase.from("sources").insert({ project_id: projectId, ...valores });
+  const { error } = await supabase.from("sources").insert({
+    project_id: projectId,
+    name: valores.name,
+    url: valores.url,
+    source_type: valores.source_type as "rss" | "website" | "api" | "official",
+    rss_url: valores.rss_url ?? null,
+  });
   if (error) throw error;
 }
 
@@ -290,7 +296,7 @@ export async function obterNoticiaPorId(id: string): Promise<NewsItem | null> {
 export async function alterarStatusNoticia(id: string, status: NewsStatus) {
   const { error } = await supabase
     .from("news")
-    .update({ status: statusParaBanco[status] })
+    .update({ status: statusParaBanco[status] as "new" | "analyzing" | "awaiting_approval" | "approved" | "published" | "ignored" | "duplicate" | "review_required" })
     .eq("id", id);
   if (error) throw error;
 }
