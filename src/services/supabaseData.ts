@@ -94,7 +94,7 @@ function categoriaValida(nome: string | null | undefined): Categoria {
 
 /** Garante o perfil do administrador e devolve o projeto dele. */
 export async function obterProjetoAtual(): Promise<ProjetoAtual | null> {
-  const { error: erroRpc } = await supabase.rpc("claim_admin_project", { _name: undefined });
+  const { error: erroRpc } = await supabase.rpc("claim_admin_project", {});
   if (erroRpc) throw erroRpc;
 
   const { data, error } = await supabase
