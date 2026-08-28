@@ -1,21 +1,27 @@
 import { supabase } from "@/integrations/supabase/client";
 
+export interface CollectNewsSourceLog {
+  source_id: string;
+  source_name: string;
+  rss_url?: string | null;
+  found: number;
+  new: number;
+  duplicate: number;
+  error: string | null;
+  content_type?: "xml" | "html" | "error" | null;
+  insert_errors?: number;
+}
+
 export interface CollectNewsResult {
   run_id: string;
   status: string;
+  project_id: string;
   sources_checked: number;
   total_found: number;
   total_new: number;
   total_duplicate: number;
   total_errors: number;
-  logs: {
-    source_id: string;
-    source_name: string;
-    found: number;
-    new: number;
-    duplicate: number;
-    error: string | null;
-  }[];
+  logs: CollectNewsSourceLog[];
 }
 
 export interface UltimaExecucao {
@@ -66,7 +72,11 @@ export async function executarColetaDeNoticias(projectId: string): Promise<Colle
     throw new Error("Resposta vazia da Edge Function.");
   }
 
-  return data;
+  // Enrich result with project_id used
+  return {
+    ...data,
+    project_id: data.project_id ?? projectId,
+  };
 }
 
 export async function obterUltimaExecucao(projectId: string): Promise<UltimaExecucao | null> {

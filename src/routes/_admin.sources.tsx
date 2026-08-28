@@ -43,9 +43,11 @@ import { useModoDados } from "@/services/dataMode";
 import {
   executarColetaDeNoticias,
   obterUltimaExecucao,
+  type CollectNewsResult,
   type UltimaExecucao,
 } from "@/services/collectNews";
 import { useQueryClient } from "@tanstack/react-query";
+import { CollectResultPanel } from "@/components/sources/CollectResultPanel";
 
 export const Route = createFileRoute("/_admin/sources")({
   head: () => ({
@@ -89,6 +91,10 @@ function SourcesPage() {
   const [atualizando, setAtualizando] = useState(false);
   const [dialogAberto, setDialogAberto] = useState(false);
 
+  // Estado do resultado detalhado da última coleta (em memória)
+  const [resultadoColeta, setResultadoColeta] = useState<CollectNewsResult | null>(null);
+  const [coletaExecutadaEm, setColetaExecutadaEm] = useState<string>("");
+
   const carregarUltimaExecucao = () => {
     if (modo === "banco" && projeto?.id) {
       setCarregandoExecucao(true);
@@ -106,8 +112,12 @@ function SourcesPage() {
   const handleAtualizar = async () => {
     if (!projeto?.id || atualizando) return;
     setAtualizando(true);
+    setResultadoColeta(null);
     try {
       const resultado = await executarColetaDeNoticias(projeto.id);
+
+      setResultadoColeta(resultado);
+      setColetaExecutadaEm(new Date().toISOString());
 
       toast.success("Coleta concluída", {
         description: `Fontes verificadas: ${resultado.sources_checked} | Encontradas: ${resultado.total_found} | Novas: ${resultado.total_new} | Duplicadas: ${resultado.total_duplicate} | Erros: ${resultado.total_errors}`,
@@ -172,8 +182,18 @@ function SourcesPage() {
         </div>
       }
     >
-      {/* Status da coleta */}
-      {modo === "banco" && (
+      {/* Painel de resultado detalhado da coleta */}
+      {modo === "banco" && resultadoColeta && projeto?.id && (
+        <CollectResultPanel
+          resultado={resultadoColeta}
+          executadoEm={coletaExecutadaEm}
+          projectId={projeto.id}
+          totalFontesNoProjeto={fontes.length}
+        />
+      )}
+
+      {/* Status da coleta (resumo do banco) */}
+      {modo === "banco" && !resultadoColeta && (
         <Card className="mb-6">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium">Status da coleta</CardTitle>
