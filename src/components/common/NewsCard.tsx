@@ -1,51 +1,53 @@
 import { Link } from "@tanstack/react-router";
 import { Clock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { StatusBadge } from "@/components/common/StatusBadge";
-import { CategoryBadge } from "@/components/common/CategoryBadge";
+import { CategoryBadge } from "./CategoryBadge";
+import { StatusBadge } from "./StatusBadge";
 import { formatarDataHora } from "@/lib/format";
 import type { NewsItem } from "@/lib/types";
 
-interface NewsCardProps {
+interface Props {
   noticia: NewsItem;
 }
 
-export function NewsCard({ noticia }: NewsCardProps) {
+export function NewsCard({ noticia }: Props) {
+  const isDemo = (noticia as any).isDemo;
+
   return (
     <Link
       to="/news/$id"
       params={{ id: noticia.id }}
-      className="group block rounded-lg border bg-card p-3 transition-colors hover:bg-accent/50"
+      className="block rounded-lg border bg-card p-3 transition-colors hover:bg-accent/50"
     >
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 mb-1">
-            <h4 className="truncate text-sm font-medium text-foreground group-hover:text-primary">
+            <h4 className="truncate text-sm font-medium text-foreground">
               {noticia.titulo}
             </h4>
-            {noticia.isDemo !== undefined && (
-              <Badge
-                variant="outline"
-                className={noticia.isDemo
-                  ? "border-amber-300 text-amber-700 dark:border-amber-700 dark:text-amber-400 text-[10px] px-1.5 py-0"
-                  : "border-green-300 text-green-700 dark:border-green-700 dark:text-green-400 text-[10px] px-1.5 py-0"
-                }
-              >
-                {noticia.isDemo ? "Demo" : "Real"}
+            {isDemo === true && (
+              <Badge variant="outline" className="border-amber-300 bg-amber-50 text-amber-700 text-[10px] px-1.5 py-0 shrink-0">
+                Demo
+              </Badge>
+            )}
+            {isDemo === false && (
+              <Badge variant="outline" className="border-green-300 bg-green-50 text-green-700 text-[10px] px-1.5 py-0 shrink-0">
+                Real
               </Badge>
             )}
           </div>
-          <p className="truncate text-xs text-muted-foreground">{noticia.resumo}</p>
+          <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+            <span>{noticia.fonte}</span>
+            <span className="flex items-center gap-1">
+              <Clock className="size-3" />
+              {formatarDataHora(noticia.horario)}
+            </span>
+          </div>
         </div>
-        <StatusBadge status={noticia.status} />
-      </div>
-      <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-        <CategoryBadge categoria={noticia.categoria} />
-        <span className="flex items-center gap-1">
-          <Clock className="size-3" />
-          {formatarDataHora(noticia.horario)}
-        </span>
-        <span className="ml-auto text-xs opacity-70">{noticia.fonte}</span>
+        <div className="flex shrink-0 items-center gap-1.5">
+          <CategoryBadge categoria={noticia.categoria} />
+          <StatusBadge status={noticia.status} />
+        </div>
       </div>
     </Link>
   );

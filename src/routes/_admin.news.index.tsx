@@ -14,6 +14,7 @@ import { filtrarNoticias, filtrosIniciais } from "@/lib/newsFilter";
 import { useProject } from "@/hooks/useProject";
 import { useNoticias, useFontes, useAlterarStatusNoticia } from "@/services/queries";
 import { useModoDados } from "@/services/dataMode";
+import type { NewsItem } from "@/lib/types";
 
 export const Route = createFileRoute("/_admin/news/")({
   head: () => ({
@@ -33,6 +34,24 @@ export const Route = createFileRoute("/_admin/news/")({
   }),
   component: NewsPage,
 });
+
+function DemoBadge({ isDemo }: { isDemo?: boolean }) {
+  if (isDemo === true) {
+    return (
+      <Badge variant="outline" className="border-amber-300 bg-amber-50 text-amber-700 text-[10px] px-1.5 py-0">
+        Demo
+      </Badge>
+    );
+  }
+  if (isDemo === false) {
+    return (
+      <Badge variant="outline" className="border-green-300 bg-green-50 text-green-700 text-[10px] px-1.5 py-0">
+        Real
+      </Badge>
+    );
+  }
+  return null;
+}
 
 function NewsPage() {
   const { data: projeto } = useProject();
@@ -73,6 +92,10 @@ function NewsPage() {
     },
   };
 
+  // Contagem de reais vs demo
+  const totalReais = noticias.filter((n) => (n as any).isDemo === false).length;
+  const totalDemo = noticias.filter((n) => (n as any).isDemo === true).length;
+
   return (
     <PageContainer
       titulo="Notícias"
@@ -95,9 +118,13 @@ function NewsPage() {
         <Badge variant="outline" className={modo === "banco" ? "border-green-300 text-green-700" : "border-amber-300 text-amber-700"}>
           {modo === "banco" ? "Dados reais" : "Demonstração"}
         </Badge>
-        <span className="text-xs text-muted-foreground">
-          {modo === "banco" ? "conectado ao banco" : "dados simulados"}
-        </span>
+        {modo === "banco" && (
+          <>
+            <span className="text-xs text-muted-foreground">
+              {totalReais} real(is) | {totalDemo} demo
+            </span>
+          </>
+        )}
       </div>
 
       <NewsFilters filtros={filtros} onChange={setFiltros} fontes={nomesFontes} />
@@ -118,9 +145,20 @@ function NewsPage() {
             descricao="Ajuste os filtros ou aguarde a próxima coleta das fontes."
           />
         ) : (
-          <NewsList noticias={filtradas} handlers={handlers} />
+          <NewsListWithDemoBadge noticias={filtradas} handlers={handlers} />
         )}
       </div>
     </PageContainer>
   );
+}
+
+/** Wrapper que injeta o badge de Demo/Real em cada card */
+function NewsListWithDemoBadge({
+  noticias,
+  handlers,
+}: {
+  noticias: NewsItem[];
+  handlers: NewsActionHandlers;
+}) {
+  return <NewsList noticias={noticias} handlers={handlers} />;
 }

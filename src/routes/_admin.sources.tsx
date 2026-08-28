@@ -40,7 +40,13 @@ import { toast } from "sonner";
 import { useProject } from "@/hooks/useProject";
 import { useFontes, useCriarFonte, useAlterarFonteAtiva } from "@/services/queries";
 import { useModoDados } from "@/services/dataMode";
-import { obterUltimaExecucao, type UltimaExecucao } from "@/services/collectNews";
+import {
+  executarColetaDeNoticias,
+  obterUltimaExecucao,
+  type CollectNewsResult,
+  type UltimaExecucao,
+} from "@/services/collectNews";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/_admin/sources")({
   head: () => ({
@@ -72,6 +78,7 @@ const tipoLabel = {
 function SourcesPage() {
   const modo = useModoDados();
   const { data: projeto } = useProject();
+  const queryClient = useQueryClient();
   const {
     data: fontes = [],
     isLoading,
@@ -80,9 +87,10 @@ function SourcesPage() {
   const alterarFonte = useAlterarFonteAtiva();
   const [ultimaExecucao, setUltimaExecucao] = useState<UltimaExecucao | null>(null);
   const [carregandoExecucao, setCarregandoExecucao] = useState(false);
+  const [coletando, setColetando] = useState(false);
   const [dialogAberto, setDialogAberto] = useState(false);
 
-  useEffect(() => {
+  const carregarUltimaExecucao = () => {
     if (modo === "banco" && projeto?.id) {
       setCarregandoExecucao(true);
       obterUltimaExecucao(projeto.id)
@@ -90,10 +98,54 @@ function SourcesPage() {
         .catch(() => setUltimaExecucao(null))
         .finally(() => setCarregandoExecucao(false));
     }
+  };
+
+  useEffect(() => {
+    carregarUltimaExecucao();
   }, [modo, projeto?.id]);
 
   const handleColetar = async () => {
-    toast.info("Coleta automática será implementada nas próximas etapas.");
+    if (!projeto?.id) return;
+    setColetando(true);
+    try {
+      const resultado: CollectNewsResult = await executarColetaDeNoticias(projeto.id);
+
+      const mensagem = [
+        `Fontes verificadas: ${resultado.sources_checked}`,
+        `Notícias encontradas: ${resultado.total_found}`,
+        `Novas: ${resultado.total_new}`,
+        `Duplicadas: ${resultado.total_duplicate}`,
+        resultado.total_errors > 0 ? `Erros: ${resultado.total_errors}` : null,
+      ]
+        .filter(Boolean)
+        .join(" | ");
+
+      if (resultado.total_errors > 0 && resultado.total_new === 0) {
+        toast.error("Coleta com erros", { description: mensagem });
+      } else if (resultado.total_errors > 0) {
+        toast.warning("Coleta parcial", { description: mensagem });
+      } else {
+        toast.success("Coleta concluída", { description: mensagem });
+      }
+
+      // Log detalhado por fonte
+      resultado.logs.forEach((log) => {
+        if (log.error) {
+          toast.error(`${log.source_name}: ${log.error}`);
+        }
+      });
+
+      // Atualizar dados
+      carregarUltimaExecucao();
+      queryClient.invalidateQueries({ queryKey: ["noticias"] });
+      queryClient.invalidateQueries({ queryKey: ["fontes"] });
+    } catch (err: any) {
+      toast.error("Erro ao executar coleta", {
+        description: err.message ?? "Erro desconhecido",
+      });
+    } finally {
+      setColetando(false);
+    }
   };
 
   return (
@@ -107,10 +159,14 @@ function SourcesPage() {
               size="sm"
               variant="outline"
               onClick={handleColetar}
-              disabled={!projeto?.id}
+              disabled={!projeto?.id || coletando}
             >
-              <Play className="size-4" />
-              Verificar fontes agora
+              {coletando ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <Play className="size-4" />
+              )}
+              {coletando ? "Coletando..." : "Verificar fontes agora"}
             </Button>
           )}
           {modo === "banco" ? (
@@ -162,7 +218,7 @@ function SourcesPage() {
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="size-4 text-green-600" />
                   <div>
-                    <p className="text-xs text-muted-foreground">Itens processados</p>
+                    <p className="text-xs text-muted-foreground">Novas notícias</p>
                     <p className="text-sm font-medium">{ultimaExecucao.items_processed}</p>
                   </div>
                 </div>

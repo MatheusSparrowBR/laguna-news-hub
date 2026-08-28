@@ -1,9 +1,12 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import {
   AlertTriangle,
   CheckCircle2,
+  Clock,
   Eye,
   Newspaper,
+  Rss,
   TrendingUp,
   Users,
 } from "lucide-react";
@@ -15,9 +18,12 @@ import { LoadingState } from "@/components/common/LoadingState";
 import { PageContainer, SectionCard } from "@/components/layout/PageContainer";
 import { PublicationsChart, ReachChart } from "@/components/dashboard/OverviewChart";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useProject } from "@/hooks/useProject";
 import { useNoticias, usePublicacoes, useAnalytics } from "@/services/queries";
-import { ehHoje, formatarNumero } from "@/lib/format";
+import { ehHoje, formatarDataHora, formatarNumero } from "@/lib/format";
+import { useModoDados } from "@/services/dataMode";
+import { obterUltimaExecucao, type UltimaExecucao } from "@/services/collectNews";
 
 export const Route = createFileRoute("/_admin/dashboard")({
   head: () => ({
@@ -40,6 +46,7 @@ export const Route = createFileRoute("/_admin/dashboard")({
 
 function DashboardPage() {
   const { data: projeto } = useProject();
+  const modo = useModoDados();
   const {
     data: noticias = [],
     isLoading: carregandoNoticias,
@@ -55,6 +62,16 @@ function DashboardPage() {
     isLoading: carregandoAnalytics,
     error: erroAnalytics,
   } = useAnalytics(projeto?.id);
+
+  const [ultimaExecucao, setUltimaExecucao] = useState<UltimaExecucao | null>(null);
+
+  useEffect(() => {
+    if (modo === "banco" && projeto?.id) {
+      obterUltimaExecucao(projeto.id)
+        .then(setUltimaExecucao)
+        .catch(() => setUltimaExecucao(null));
+    }
+  }, [modo, projeto?.id]);
 
   const carregando = carregandoNoticias || carregandoPublicacoes || carregandoAnalytics;
   const erro = erroNoticias || erroPublicacoes || erroAnalytics;
@@ -153,6 +170,56 @@ function DashboardPage() {
           descricao="por publicação"
         />
       </div>
+
+      {/* Última atualização das fontes */}
+      {modo === "banco" && (
+        <Card className="mt-6">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium flex items-center gap-2">
+              <Rss className="size-4" />
+              Última atualização das fontes
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {ultimaExecucao ? (
+              <div className="grid gap-3 sm:grid-cols-4">
+                <div className="flex items-center gap-2">
+                  <Clock className="size-4 text-muted-foreground" />
+                  <div>
+                    <p className="text-xs text-muted-foreground">Horário</p>
+                    <p className="text-sm font-medium">{formatarDataHora(ultimaExecucao.started_at)}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Rss className="size-4 text-muted-foreground" />
+                  <div>
+                    <p className="text-xs text-muted-foreground">Status</p>
+                    <p className="text-sm font-medium capitalize">{ultimaExecucao.status}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="size-4 text-green-600" />
+                  <div>
+                    <p className="text-xs text-muted-foreground">Novas notícias</p>
+                    <p className="text-sm font-medium">{ultimaExecucao.items_processed}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <AlertTriangle className="size-4 text-red-500" />
+                  <div>
+                    <p className="text-xs text-muted-foreground">Erros</p>
+                    <p className="text-sm font-medium">{ultimaExecucao.error_message ?? "Nenhum"}</p>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                Nenhuma coleta realizada ainda. Acesse a página de Fontes para executar a primeira coleta.
+              </p>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
         <SectionCard titulo="Publicações por dia">

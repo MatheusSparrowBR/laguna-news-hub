@@ -1,18 +1,4 @@
-export type Categoria =
-  | "Urgente"
-  | "Trânsito"
-  | "Segurança"
-  | "Prefeitura"
-  | "Cidade"
-  | "Eventos"
-  | "Turismo"
-  | "Clima"
-  | "Esportes"
-  | "Economia"
-  | "Educação"
-  | "Saúde";
-
-export const CATEGORIAS: Categoria[] = [
+export const CATEGORIAS = [
   "Urgente",
   "Trânsito",
   "Segurança",
@@ -25,11 +11,11 @@ export const CATEGORIAS: Categoria[] = [
   "Economia",
   "Educação",
   "Saúde",
-];
+] as const;
+
+export type Categoria = (typeof CATEGORIAS)[number];
 
 export type Importancia = "baixa" | "media" | "alta" | "urgente";
-
-export const IMPORTANCIAS: Importancia[] = ["urgente", "alta", "media", "baixa"];
 
 export type NewsStatus =
   | "nova"
@@ -38,59 +24,39 @@ export type NewsStatus =
   | "aprovada"
   | "publicada"
   | "ignorada"
-  | "rejeitada"
   | "duplicada"
-  | "revisao_obrigatoria";
-
-export const NEWS_STATUS: NewsStatus[] = [
-  "nova",
-  "em_analise",
-  "aguardando_aprovacao",
-  "aprovada",
-  "publicada",
-  "ignorada",
-  "rejeitada",
-  "duplicada",
-  "revisao_obrigatoria",
-];
-
-export type PublicationStatus = "rascunho" | "agendada" | "publicada" | "erro";
-
-/** Conteúdo preparado (hoje simulado) para a publicação no Instagram. */
-export interface ConteudoGerado {
-  titulo: string;
-  resumo: string;
-  legenda: string;
-  hashtags: string;
-  textoArte: string;
-}
+  | "revisao_obrigatoria"
+  | "rejeitada";
 
 export interface NewsItem {
   id: string;
   titulo: string;
   fonte: string;
   url: string;
-  horario: string; // ISO
+  horario: string;
   categoria: Categoria;
   importancia: Importancia;
   status: NewsStatus;
   resumo: string;
   conteudo: string;
-  duplicadaDe?: string;
-  sugestaoLegenda?: string;
-  sugestaoTitulo?: string;
-  // Análise simulada da IA
   cidade: string;
   estado: string;
-  importanciaNota: number; // 0 a 10
-  confiancaIA: number; // 0 a 100
+  importanciaNota: number;
+  confiancaIA: number;
   duplicada: boolean;
   grupoDuplicidade?: string;
   explicacaoIA: string;
-  gerado: ConteudoGerado;
-  // Campo para diferenciar demo de real
+  gerado: {
+    titulo: string;
+    resumo: string;
+    legenda: string;
+    hashtags: string;
+    textoArte: string;
+  };
   isDemo?: boolean;
 }
+
+export type PublicationStatus = "rascunho" | "agendada" | "publicada" | "erro";
 
 export interface Publication {
   id: string;
@@ -99,7 +65,7 @@ export interface Publication {
   categoria: Categoria;
   legenda: string;
   status: PublicationStatus;
-  horario: string; // ISO
+  horario: string;
   visualizacoes: number;
   curtidas: number;
   comentarios: number;
@@ -111,7 +77,6 @@ export interface Source {
   nome: string;
   url: string;
   tipo: "site" | "rss" | "api" | "official";
-  rssUrl?: string | null;
   ativa: boolean;
   ultimaColeta: string;
   noticiasColetadas: number;
@@ -122,5 +87,3 @@ export interface DailyMetric {
   publicacoes: number;
   alcance: number;
 }
-
-export type PeriodoFiltro = "todos" | "hoje" | "24h" | "7dias" | "personalizado";
