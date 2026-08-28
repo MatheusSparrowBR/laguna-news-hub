@@ -41,6 +41,7 @@ import { useProject } from "@/hooks/useProject";
 import { useFontes, useCriarFonte, useAlterarFonteAtiva } from "@/services/queries";
 import { useModoDados } from "@/services/dataMode";
 import {
+  executarColetaDeNoticias,
   obterUltimaExecucao,
   type UltimaExecucao,
 } from "@/services/collectNews";
@@ -103,16 +104,30 @@ function SourcesPage() {
   }, [modo, projeto?.id]);
 
   const handleAtualizar = async () => {
-    if (!projeto?.id) return;
+    if (!projeto?.id || atualizando) return;
     setAtualizando(true);
     try {
-      await queryClient.invalidateQueries({ queryKey: ["noticias", projeto.id] });
-      await queryClient.invalidateQueries({ queryKey: ["fontes", projeto.id] });
-      toast.success("Lista de notícias atualizada com sucesso!");
-    } catch (err: any) {
-      toast.error("Erro ao atualizar dados", {
-        description: err.message ?? "Erro desconhecido",
+      const resultado = await executarColetaDeNoticias(projeto.id);
+
+      toast.success("Coleta concluída", {
+        description: `Fontes verificadas: ${resultado.sources_checked} | Encontradas: ${resultado.total_found} | Novas: ${resultado.total_new} | Duplicadas: ${resultado.total_duplicate} | Erros: ${resultado.total_errors}`,
+        duration: 8000,
       });
+
+      // Invalidar queries relevantes para atualizar a interface
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["noticias"] }),
+        queryClient.invalidateQueries({ queryKey: ["fontes"] }),
+        queryClient.invalidateQueries({ queryKey: ["publicacoes"] }),
+        queryClient.invalidateQueries({ queryKey: ["analytics"] }),
+        queryClient.invalidateQueries({ queryKey: ["projeto-atual"] }),
+      ]);
+
+      // Recarregar última execução
+      carregarUltimaExecucao();
+    } catch (err: any) {
+      console.error("[sources] Erro na coleta:", err.message);
+      toast.error(err.message ?? "Erro ao executar coleta de notícias");
     } finally {
       setAtualizando(false);
     }
@@ -136,7 +151,7 @@ function SourcesPage() {
               ) : (
                 <RefreshCw className="size-4" />
               )}
-              {atualizando ? "Atualizando..." : "Atualizar notícias"}
+              {atualizando ? "Coletando notícias..." : "Atualizar notícias"}
             </Button>
           )}
           {modo === "banco" ? (
@@ -202,7 +217,7 @@ function SourcesPage() {
               </div>
             ) : (
               <p className="text-sm text-muted-foreground">
-                Nenhuma coleta realizada ainda. A coleta de notícias é feita automaticamente via integração externa.
+                Nenhuma coleta realizada ainda. Clique em "Atualizar notícias" para executar a primeira coleta.
               </p>
             )}
           </CardContent>

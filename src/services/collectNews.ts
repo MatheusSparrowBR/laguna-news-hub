@@ -28,68 +28,45 @@ export interface UltimaExecucao {
 }
 
 /**
- * Registra uma execução manual de coleta.
- * Como não estamos usando Edge Functions, esta função apenas
- * registra o run na tabela automation_runs e retorna um resultado
- * informativo baseado nas fontes cadastradas.
- *
- * A coleta real de RSS/sites deve ser implementada futuramente
- * via cron job ou outro mecanismo server-side.
+ * Invoca a Edge Function collect-news usando o cliente Supabase autenticado.
+ * O JWT do usuário logado é enviado automaticamente — nenhuma secret key é usada.
  */
 export async function executarColetaDeNoticias(projectId: string): Promise<CollectNewsResult> {
-  // Buscar fontes ativas do projeto
-  const { data: fontes, error: erroFontes } = await supabase
-    .from("sources")
-    .select("id, name, source_type, active")
-    .eq("project_id", projectId)
-    .eq("active", true);
+  const { data, error } = await supabase.functions.invoke<CollectNewsResult>(
+    "collect-news",
+    {
+      body: { project_id: projectId },
+    },
+  );
 
-  if (erroFontes) {
-    throw new Error(erroFontes.message ?? "Erro ao buscar fontes");
+  if (error) {
+    // supabase.functions.invoke retorna error com context (status, message)
+    const status = (error as any).context?.status ?? (error as any).status;
+    const message = error.message ?? "Erro desconhecido";
+
+    if (status === 401) {
+      throw new Error("É necessário estar autenticado.");
+    }
+    if (status === 403) {
+      throw new Error("Você não tem permissão para executar a coleta deste projeto.");
+    }
+    if (status === 404) {
+      throw new Error("Projeto não encontrado.");
+    }
+    if (status === 500) {
+      console.error("[collectNews] Erro interno da Edge Function:", message);
+      throw new Error("Erro interno durante a coleta. Verifique os logs da Edge Function.");
+    }
+
+    console.error("[collectNews] Erro ao invocar collect-news:", message);
+    throw new Error(message);
   }
 
-  const sourcesChecked = (fontes ?? []).length;
-
-  // Registrar a execução na tabela automation_runs
-  const { data: run, error: erroRun } = await supabase
-    .from("automation_runs")
-    .insert({
-      project_id: projectId,
-      run_type: "source_scan",
-      status: "completed",
-      started_at: new Date().toISOString(),
-      completed_at: new Date().toISOString(),
-      items_processed: 0,
-      error_message: sourcesChecked === 0 ? "Nenhuma fonte ativa encontrada" : null,
-    })
-    .select("id")
-    .single();
-
-  if (erroRun) {
-    throw new Error(erroRun.message ?? "Erro ao registrar execução");
+  if (!data) {
+    throw new Error("Resposta vazia da Edge Function.");
   }
 
-  const logs = (fontes ?? []).map((f) => ({
-    source_id: f.id,
-    source_name: f.name,
-    found: 0,
-    new: 0,
-    duplicate: 0,
-    error: f.source_type === "website"
-      ? "Coleta automática de websites ainda não implementada"
-      : "Coleta server-side não disponível no momento (Edge Functions desabilitadas)",
-  }));
-
-  return {
-    run_id: run?.id ?? "",
-    status: "completed",
-    sources_checked: sourcesChecked,
-    total_found: 0,
-    total_new: 0,
-    total_duplicate: 0,
-    total_errors: sourcesChecked > 0 ? sourcesChecked : 0,
-    logs,
-  };
+  return data;
 }
 
 export async function obterUltimaExecucao(projectId: string): Promise<UltimaExecucao | null> {

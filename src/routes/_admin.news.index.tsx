@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Newspaper, RefreshCw } from "lucide-react";
+import { Newspaper, RefreshCw, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { EmptyState } from "@/components/common/EmptyState";
@@ -14,6 +14,8 @@ import { filtrarNoticias, filtrosIniciais } from "@/lib/newsFilter";
 import { useProject } from "@/hooks/useProject";
 import { useNoticias, useFontes, useAlterarStatusNoticia } from "@/services/queries";
 import { useModoDados } from "@/services/dataMode";
+import { executarColetaDeNoticias } from "@/services/collectNews";
+import { useQueryClient } from "@tanstack/react-query";
 import type { NewsItem } from "@/lib/types";
 
 export const Route = createFileRoute("/_admin/news/")({
@@ -56,15 +58,16 @@ function DemoBadge({ isDemo }: { isDemo?: boolean }) {
 function NewsPage() {
   const { data: projeto } = useProject();
   const modo = useModoDados();
+  const queryClient = useQueryClient();
   const {
     data: noticias = [],
     isLoading,
     error,
-    refetch,
   } = useNoticias(projeto?.id);
   const { data: fontes = [] } = useFontes(projeto?.id);
   const alterarStatus = useAlterarStatusNoticia();
   const [filtros, setFiltros] = useState(filtrosIniciais);
+  const [coletando, setColetando] = useState(false);
 
   const nomesFontes = useMemo(() => fontes.map((f) => f.nome), [fontes]);
   const filtradas = useMemo(() => filtrarNoticias(noticias, filtros), [noticias, filtros]);
@@ -92,6 +95,33 @@ function NewsPage() {
     },
   };
 
+  const handleAtualizar = async () => {
+    if (!projeto?.id || coletando) return;
+    setColetando(true);
+    try {
+      const resultado = await executarColetaDeNoticias(projeto.id);
+
+      toast.success("Coleta concluída", {
+        description: `Fontes verificadas: ${resultado.sources_checked} | Encontradas: ${resultado.total_found} | Novas: ${resultado.total_new} | Duplicadas: ${resultado.total_duplicate} | Erros: ${resultado.total_errors}`,
+        duration: 8000,
+      });
+
+      // Invalidar queries relevantes
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["noticias"] }),
+        queryClient.invalidateQueries({ queryKey: ["fontes"] }),
+        queryClient.invalidateQueries({ queryKey: ["publicacoes"] }),
+        queryClient.invalidateQueries({ queryKey: ["analytics"] }),
+        queryClient.invalidateQueries({ queryKey: ["projeto-atual"] }),
+      ]);
+    } catch (err: any) {
+      console.error("[news] Erro na coleta:", err.message);
+      toast.error(err.message ?? "Erro ao executar coleta de notícias");
+    } finally {
+      setColetando(false);
+    }
+  };
+
   // Contagem de reais vs demo
   const totalReais = noticias.filter((n) => (n as any).isDemo === false).length;
   const totalDemo = noticias.filter((n) => (n as any).isDemo === true).length;
@@ -103,14 +133,15 @@ function NewsPage() {
       acoes={
         <Button
           size="sm"
-          onClick={() => {
-            refetch();
-            toast.success("Notícias atualizadas");
-          }}
-          disabled={isLoading}
+          onClick={handleAtualizar}
+          disabled={isLoading || coletando || !projeto?.id}
         >
-          <RefreshCw className="size-4" />
-          Atualizar notícias
+          {coletando ? (
+            <Loader2 className="size-4 animate-spin" />
+          ) : (
+            <RefreshCw className="size-4" />
+          )}
+          {coletando ? "Coletando notícias..." : "Atualizar notícias"}
         </Button>
       }
     >
