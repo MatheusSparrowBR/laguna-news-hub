@@ -6,11 +6,13 @@ import {
   Rss,
   Send,
   Settings,
+  ListChecks,
 } from "lucide-react";
 
 export const navItems = [
   { to: "/dashboard", label: "Dashboard", icone: LayoutDashboard },
   { to: "/news", label: "Notícias", icone: Newspaper },
+  { to: "/feed", label: "Feed", icone: ListChecks },
   { to: "/publications", label: "Publicações", icone: Send },
   { to: "/sources", label: "Fontes", icone: Rss },
   { to: "/instagram", label: "Instagram", icone: Instagram },
