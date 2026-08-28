@@ -2658,7 +2658,7 @@
       "file_type": "code",
       "norm_label": "analisarnoticiacomia()",
       "source_file": "src/services/analyzeNews.ts",
-      "source_location": "L29"
+      "source_location": "L30"
     },
     {
       "id": "src_components_common_categorybadge_categorybadge",
@@ -27940,7 +27940,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/services/analyzeNews.ts",
-      "source_location": "L29",
+      "source_location": "L30",
       "weight": 1.0
     },
     {
@@ -29390,5 +29390,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "44c37caa869185bda3c270d944fbaba75dd06e91"
+  "built_at_commit": "40593f9bfdf128fbb7be7402a6a8c4c34c001669"
 }
