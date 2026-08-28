@@ -168,7 +168,7 @@ Deno.serve(async (req) => {
         for (const item of items) {
           // Check for duplicate by source_url
           const { data: existing } = await supabase
-            .from("news_items")
+            .from("news")
             .select("id")
             .eq("project_id", project_id)
             .eq("source_url", item.link)
@@ -180,18 +180,21 @@ Deno.serve(async (req) => {
             continue;
           }
 
-          // Insert new news item
+          // Insert new news item into the "news" table with correct columns
           const { error: insertError } = await supabase
-            .from("news_items")
+            .from("news")
             .insert({
               project_id,
               source_id: source.id,
               title: item.title.substring(0, 500),
-              original_text: item.description ?? "",
+              original_content: item.description ?? "",
               source_url: item.link,
-              found_at: item.pubDate ? new Date(item.pubDate).toISOString() : new Date().toISOString(),
+              discovered_at: item.pubDate ? new Date(item.pubDate).toISOString() : new Date().toISOString(),
               status: "new",
-              importance: "normal",
+              importance_score: 5,
+              ai_confidence: 0,
+              is_duplicate: false,
+              is_demo: false,
             });
 
           if (insertError) {
@@ -206,10 +209,10 @@ Deno.serve(async (req) => {
         totalNew += sourceNew;
         totalDuplicate += sourceDuplicate;
 
-        // Update source last_fetched_at
+        // Update source last_checked_at
         await supabase
           .from("sources")
-          .update({ last_fetched_at: new Date().toISOString() })
+          .update({ last_checked_at: new Date().toISOString() })
           .eq("id", source.id);
 
         logs.push({
