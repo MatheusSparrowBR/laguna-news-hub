@@ -7,13 +7,35 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
  * Authentication: user JWT validated internally (verify_jwt = false in config).
  *
  * Requires OPENAI_API_KEY secret configured in Supabase Edge Function secrets.
+ *
+ * CORS: handled manually — all responses include CORS headers.
  */
 
+// CORS headers applied to EVERY response (preflight and normal).
+// Access-Control-Allow-Headers must list every header the Supabase JS client
+// (and underlying fetch) may send, otherwise the browser aborts after OPTIONS.
 const corsHeaders: Record<string, string> = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, apikey, x-client-info, content-type, x-region, x-supabase-api-version, x-relay-to, accept, accept-language",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Headers": [
+    "authorization",
+    "apikey",
+    "content-type",
+    "x-client-info",
+    "x-region",
+    "x-supabase-api-version",
+    "x-relay-to",
+    "accept",
+    "accept-encoding",
+    "accept-language",
+    "x-stainless-os",
+    "x-stainless-runtime",
+    "x-stainless-arch",
+    "x-stainless-lang",
+    "x-stainless-package-version",
+    "x-stainless-retry-count",
+  ].join(", "),
+  "Access-Control-Max-Age": "86400",
 };
 
 function jsonResponse(body: Record<string, unknown>, status = 200): Response {
@@ -146,7 +168,7 @@ Retorne SOMENTE o JSON de análise, sem markdown, sem explicação fora do JSON.
 }
 
 Deno.serve(async (req) => {
-  // Handle CORS preflight — must return before any other logic
+  // CORS preflight — respond immediately with all required headers
   if (req.method === "OPTIONS") {
     return new Response(null, {
       status: 204,
@@ -154,12 +176,19 @@ Deno.serve(async (req) => {
     });
   }
 
+  // Only POST allowed beyond preflight
   if (req.method !== "POST") {
     return jsonResponse({ error: "Method not allowed" }, 405);
   }
 
   // Diagnostic log — confirms POST reached the function (no secrets logged)
-  console.log("analyze-news POST received", { method: req.method, timestamp: new Date().toISOString() });
+  console.log("analyze-news POST received", {
+    timestamp: new Date().toISOString(),
+    url: req.url,
+    hasAuth: !!req.headers.get("authorization"),
+    hasApikey: !!req.headers.get("apikey"),
+    contentType: req.headers.get("content-type"),
+  });
 
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
@@ -189,7 +218,7 @@ Deno.serve(async (req) => {
       return jsonResponse({ error: "Authentication required. Please log in." }, 401);
     }
 
-    // Verify the user JWT using the anon key client
+    // Verify the user JWT
     const authClient = createClient(supabaseUrl, anonKey || serviceRoleKey, {
       auth: { persistSession: false, autoRefreshToken: false },
     });
@@ -264,7 +293,6 @@ Deno.serve(async (req) => {
       .update({ status: "analyzing" })
       .eq("id", news_id);
 
-    // Diagnostic: confirm we reached the pre-OpenAI stage
     console.log("analyze-news: pre-OpenAI stage reached for news_id:", news_id);
 
     // Call OpenAI
