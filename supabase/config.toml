@@ -5,3 +5,7 @@ project_id = "joqfrsovxrvpjdunvtvk"
 # authentication internally via the SDK. The Supabase gateway must allow
 # requests with apikey (secret key) to reach the function without JWT validation.
 verify_jwt = false
+
+[functions.analyze-news]
+# Same auth pattern as collect-news: handles JWT and secret key internally.
+verify_jwt = false

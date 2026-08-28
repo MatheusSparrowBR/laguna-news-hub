@@ -11,6 +11,8 @@ import {
   Send,
   Save,
   Pencil,
+  Brain,
+  Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { PageContainer } from "@/components/layout/PageContainer";
@@ -29,9 +31,12 @@ import { ArtePreview } from "@/components/news/ArtePreview";
 import { NewsTimeline } from "@/components/news/NewsTimeline";
 import { StatusBadge } from "@/components/common/StatusBadge";
 import { CategoryBadge } from "@/components/common/CategoryBadge";
+import { AnalysisResultPanel } from "@/components/news/AnalysisResultPanel";
 import { useProject } from "@/hooks/useProject";
 import { useNoticia, useAlterarStatusNoticia, useSalvarAnaliseNoticia } from "@/services/queries";
+import { analisarNoticiaComIA, type AnalysisData } from "@/services/analyzeNews";
 import { formatarDataHora } from "@/lib/format";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/_admin/news/$id")({
   head: () => ({
@@ -49,6 +54,7 @@ export const Route = createFileRoute("/_admin/news/$id")({
 function NewsDetailPage() {
   const { id } = Route.useParams();
   const { data: projeto } = useProject();
+  const queryClient = useQueryClient();
   const {
     data: noticia,
     isLoading,
@@ -61,6 +67,9 @@ function NewsDetailPage() {
   const [tituloEditado, setTituloEditado] = useState("");
   const [legendaEditada, setLegendaEditada] = useState("");
   const [hashtagsEditadas, setHashtagsEditadas] = useState("");
+
+  const [analisando, setAnalisando] = useState(false);
+  const [resultadoAnalise, setResultadoAnalise] = useState<{ analysis: AnalysisData; status: string } | null>(null);
 
   if (isLoading) {
     return (
@@ -107,6 +116,30 @@ function NewsDetailPage() {
     });
     setEditando(false);
     toast.success("Conteúdo salvo");
+  };
+
+  const handleAnalisarIA = async () => {
+    if (!projeto?.id || analisando) return;
+    setAnalisando(true);
+    setResultadoAnalise(null);
+    try {
+      const resultado = await analisarNoticiaComIA(projeto.id, noticia.id);
+      setResultadoAnalise({
+        analysis: resultado.analysis,
+        status: resultado.status,
+      });
+      toast.success("Análise concluída");
+      // Invalidate queries to refresh data
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["noticia", noticia.id] }),
+        queryClient.invalidateQueries({ queryKey: ["noticias"] }),
+      ]);
+    } catch (err: any) {
+      console.error("[analyzeNews] Erro:", err.message);
+      toast.error(err.message ?? "Erro ao analisar notícia");
+    } finally {
+      setAnalisando(false);
+    }
   };
 
   const handleAprovar = async () => {
@@ -218,6 +251,14 @@ function NewsDetailPage() {
             </CardContent>
           </Card>
 
+          {/* Resultado da análise de IA (quando disponível) */}
+          {resultadoAnalise && (
+            <AnalysisResultPanel
+              analysis={resultadoAnalise.analysis}
+              newStatus={resultadoAnalise.status}
+            />
+          )}
+
           {/* Conteúdo gerado */}
           <Tabs defaultValue="legenda">
             <TabsList>
@@ -314,6 +355,23 @@ function NewsDetailPage() {
               <CardTitle className="text-base">Ações</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
+              {/* Botão Analisar com IA */}
+              <Button
+                className="w-full"
+                variant="secondary"
+                onClick={handleAnalisarIA}
+                disabled={analisando || !projeto?.id}
+              >
+                {analisando ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  <Brain className="size-4" />
+                )}
+                {analisando ? "Analisando..." : "Analisar com IA"}
+              </Button>
+
+              <Separator className="my-2" />
+
               {(noticia.status === "aguardando_aprovacao" || noticia.status === "revisao_obrigatoria" || noticia.status === "em_analise") && (
                 <Button className="w-full" onClick={handleAprovar} disabled={alterarStatus.isPending}>
                   <CheckCircle2 className="size-4" />
