@@ -481,7 +481,7 @@
       "file_type": "code",
       "norm_label": "linhanews",
       "source_file": "src/services/supabaseData.ts",
-      "source_location": "L229"
+      "source_location": "L232"
     },
     {
       "id": "src_services_supabasedata_linhapost",
@@ -493,7 +493,7 @@
       "file_type": "code",
       "norm_label": "linhapost",
       "source_file": "src/services/supabaseData.ts",
-      "source_location": "L350"
+      "source_location": "L360"
     },
     {
       "id": "src_services_supabasedata_resumoanalytics",
@@ -505,7 +505,7 @@
       "file_type": "code",
       "norm_label": "resumoanalytics",
       "source_file": "src/services/supabaseData.ts",
-      "source_location": "L394"
+      "source_location": "L404"
     },
     {
       "id": "src_components_ui_form_formfieldcontextvalue",
@@ -1352,7 +1352,7 @@
       "file_type": "code",
       "norm_label": "obterprojetoatual()",
       "source_file": "src/services/supabaseData.ts",
-      "source_location": "L96"
+      "source_location": "L97"
     },
     {
       "id": "src_components_news_newsfilters_newsfilters",
@@ -1660,7 +1660,7 @@
       "file_type": "code",
       "norm_label": "alterarfonteativa()",
       "source_file": "src/services/supabaseData.ts",
-      "source_location": "L207"
+      "source_location": "L210"
     },
     {
       "id": "src_services_supabasedata_criarfonte",
@@ -1671,7 +1671,7 @@
       "file_type": "code",
       "norm_label": "criarfonte()",
       "source_file": "src/services/supabaseData.ts",
-      "source_location": "L193"
+      "source_location": "L196"
     },
     {
       "id": "src_services_supabasedata_obteranalytics",
@@ -1682,7 +1682,7 @@
       "file_type": "code",
       "norm_label": "obteranalytics()",
       "source_file": "src/services/supabaseData.ts",
-      "source_location": "L404"
+      "source_location": "L414"
     },
     {
       "id": "src_services_supabasedata_obterconfiguracoes",
@@ -1693,7 +1693,7 @@
       "file_type": "code",
       "norm_label": "obterconfiguracoes()",
       "source_file": "src/services/supabaseData.ts",
-      "source_location": "L133"
+      "source_location": "L136"
     },
     {
       "id": "src_services_supabasedata_obterfontes",
@@ -1704,7 +1704,7 @@
       "file_type": "code",
       "norm_label": "obterfontes()",
       "source_file": "src/services/supabaseData.ts",
-      "source_location": "L161"
+      "source_location": "L164"
     },
     {
       "id": "src_services_supabasedata_removerfonte",
@@ -1715,7 +1715,7 @@
       "file_type": "code",
       "norm_label": "removerfonte()",
       "source_file": "src/services/supabaseData.ts",
-      "source_location": "L212"
+      "source_location": "L215"
     },
     {
       "id": "src_services_supabasedata_salvarconfiguracoes",
@@ -1726,7 +1726,7 @@
       "file_type": "code",
       "norm_label": "salvarconfiguracoes()",
       "source_file": "src/services/supabaseData.ts",
-      "source_location": "L145"
+      "source_location": "L148"
     },
     {
       "id": "src_services_supabasedata_salvarprojeto",
@@ -1737,7 +1737,7 @@
       "file_type": "code",
       "norm_label": "salvarprojeto()",
       "source_file": "src/services/supabaseData.ts",
-      "source_location": "L153"
+      "source_location": "L156"
     },
     {
       "id": "src_components_common_modal_modal",
@@ -2001,7 +2001,7 @@
       "file_type": "code",
       "norm_label": "categoriavalida()",
       "source_file": "src/services/supabaseData.ts",
-      "source_location": "L90"
+      "source_location": "L91"
     },
     {
       "id": "src_services_supabasedata_importanciapornota",
@@ -2012,7 +2012,7 @@
       "file_type": "code",
       "norm_label": "importanciapornota()",
       "source_file": "src/services/supabaseData.ts",
-      "source_location": "L83"
+      "source_location": "L84"
     },
     {
       "id": "src_services_supabasedata_mapearnoticia",
@@ -2023,7 +2023,7 @@
       "file_type": "code",
       "norm_label": "mapearnoticia()",
       "source_file": "src/services/supabaseData.ts",
-      "source_location": "L260"
+      "source_location": "L263"
     },
     {
       "id": "src_services_supabasedata_obtercategorias",
@@ -2034,7 +2034,7 @@
       "file_type": "code",
       "norm_label": "obtercategorias()",
       "source_file": "src/services/supabaseData.ts",
-      "source_location": "L124"
+      "source_location": "L127"
     },
     {
       "id": "src_services_supabasedata_obternoticias",
@@ -2045,7 +2045,7 @@
       "file_type": "code",
       "norm_label": "obternoticias()",
       "source_file": "src/services/supabaseData.ts",
-      "source_location": "L303"
+      "source_location": "L306"
     },
     {
       "id": "src_services_supabasedata_obterpublicacoes",
@@ -2056,7 +2056,7 @@
       "file_type": "code",
       "norm_label": "obterpublicacoes()",
       "source_file": "src/services/supabaseData.ts",
-      "source_location": "L364"
+      "source_location": "L374"
     },
     {
       "id": "src_components_ui_form_formfield",
@@ -2419,7 +2419,7 @@
       "file_type": "code",
       "norm_label": "alterarstatusnoticia()",
       "source_file": "src/services/supabaseData.ts",
-      "source_location": "L326"
+      "source_location": "L336"
     },
     {
       "id": "src_services_supabasedata_obternoticiaporid",
@@ -2430,7 +2430,7 @@
       "file_type": "code",
       "norm_label": "obternoticiaporid()",
       "source_file": "src/services/supabaseData.ts",
-      "source_location": "L320"
+      "source_location": "L330"
     },
     {
       "id": "src_services_supabasedata_salvaranalisenoticia",
@@ -2441,7 +2441,7 @@
       "file_type": "code",
       "norm_label": "salvaranalisenoticia()",
       "source_file": "src/services/supabaseData.ts",
-      "source_location": "L334"
+      "source_location": "L344"
     },
     {
       "id": "supabase_functions_collect_news_index_decodeentities",
@@ -3756,7 +3756,7 @@
       "file_type": "code",
       "norm_label": "statusparabanco",
       "source_file": "src/services/supabaseData.ts",
-      "source_location": "L62"
+      "source_location": "L63"
     },
     {
       "id": "src_components_common_modal",
@@ -4486,7 +4486,7 @@
       "file_type": "code",
       "norm_label": "statuspostdobanco",
       "source_file": "src/services/supabaseData.ts",
-      "source_location": "L74"
+      "source_location": "L75"
     },
     {
       "id": "package_dependencies",
@@ -12057,7 +12057,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/services/supabaseData.ts",
-      "source_location": "L265",
+      "source_location": "L268",
       "weight": 1.0
     },
     {
@@ -12069,7 +12069,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/services/supabaseData.ts",
-      "source_location": "L281",
+      "source_location": "L284",
       "weight": 1.0
     },
     {
@@ -12081,7 +12081,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/services/supabaseData.ts",
-      "source_location": "L323",
+      "source_location": "L333",
       "weight": 1.0
     },
     {
@@ -12093,7 +12093,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/services/supabaseData.ts",
-      "source_location": "L382",
+      "source_location": "L392",
       "weight": 1.0
     },
     {
@@ -12357,7 +12357,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/services/supabaseData.ts",
-      "source_location": "L401",
+      "source_location": "L411",
       "weight": 1.0
     },
     {
@@ -27283,7 +27283,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/services/supabaseData.ts",
-      "source_location": "L124",
+      "source_location": "L127",
       "weight": 1.0
     },
     {
@@ -27294,7 +27294,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/services/supabaseData.ts",
-      "source_location": "L133",
+      "source_location": "L136",
       "weight": 1.0
     },
     {
@@ -27305,7 +27305,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/services/supabaseData.ts",
-      "source_location": "L145",
+      "source_location": "L148",
       "weight": 1.0
     },
     {
@@ -27316,7 +27316,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/services/supabaseData.ts",
-      "source_location": "L153",
+      "source_location": "L156",
       "weight": 1.0
     },
     {
@@ -27327,7 +27327,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/services/supabaseData.ts",
-      "source_location": "L161",
+      "source_location": "L164",
       "weight": 1.0
     },
     {
@@ -27338,7 +27338,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/services/supabaseData.ts",
-      "source_location": "L193",
+      "source_location": "L196",
       "weight": 1.0
     },
     {
@@ -27360,7 +27360,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/services/supabaseData.ts",
-      "source_location": "L207",
+      "source_location": "L210",
       "weight": 1.0
     },
     {
@@ -27371,7 +27371,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/services/supabaseData.ts",
-      "source_location": "L212",
+      "source_location": "L215",
       "weight": 1.0
     },
     {
@@ -27382,7 +27382,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/services/supabaseData.ts",
-      "source_location": "L229",
+      "source_location": "L232",
       "weight": 1.0
     },
     {
@@ -27393,7 +27393,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/services/supabaseData.ts",
-      "source_location": "L260",
+      "source_location": "L263",
       "weight": 1.0
     },
     {
@@ -27404,7 +27404,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/services/supabaseData.ts",
-      "source_location": "L303",
+      "source_location": "L306",
       "weight": 1.0
     },
     {
@@ -27426,7 +27426,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/services/supabaseData.ts",
-      "source_location": "L320",
+      "source_location": "L330",
       "weight": 1.0
     },
     {
@@ -27437,7 +27437,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/services/supabaseData.ts",
-      "source_location": "L326",
+      "source_location": "L336",
       "weight": 1.0
     },
     {
@@ -27448,7 +27448,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/services/supabaseData.ts",
-      "source_location": "L334",
+      "source_location": "L344",
       "weight": 1.0
     },
     {
@@ -27459,7 +27459,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/services/supabaseData.ts",
-      "source_location": "L350",
+      "source_location": "L360",
       "weight": 1.0
     },
     {
@@ -27470,7 +27470,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/services/supabaseData.ts",
-      "source_location": "L364",
+      "source_location": "L374",
       "weight": 1.0
     },
     {
@@ -27492,7 +27492,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/services/supabaseData.ts",
-      "source_location": "L394",
+      "source_location": "L404",
       "weight": 1.0
     },
     {
@@ -27503,7 +27503,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/services/supabaseData.ts",
-      "source_location": "L404",
+      "source_location": "L414",
       "weight": 1.0
     },
     {
@@ -27536,7 +27536,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/services/supabaseData.ts",
-      "source_location": "L62",
+      "source_location": "L63",
       "weight": 1.0
     },
     {
@@ -27547,7 +27547,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/services/supabaseData.ts",
-      "source_location": "L74",
+      "source_location": "L75",
       "weight": 1.0
     },
     {
@@ -27558,7 +27558,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/services/supabaseData.ts",
-      "source_location": "L83",
+      "source_location": "L84",
       "weight": 1.0
     },
     {
@@ -27569,7 +27569,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/services/supabaseData.ts",
-      "source_location": "L90",
+      "source_location": "L91",
       "weight": 1.0
     },
     {
@@ -27580,7 +27580,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/services/supabaseData.ts",
-      "source_location": "L96",
+      "source_location": "L97",
       "weight": 1.0
     },
     {
@@ -27986,7 +27986,7 @@
       "confidence_score": 0.85,
       "context": "argument",
       "source_file": "src/services/supabaseData.ts",
-      "source_location": "L317",
+      "source_location": "L327",
       "weight": 1.0
     },
     {
@@ -28183,5 +28183,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "d8c948bd53faf91223412db28f1115253e9168ee"
+  "built_at_commit": "6580e371032514007c0f020837706d9d1bccfabc"
 }
