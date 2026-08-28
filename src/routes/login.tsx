@@ -58,7 +58,7 @@ function LoginPage() {
         if (needsConfirmation) {
           toast.success("Conta criada! Verifique sua caixa de entrada (e spam) para confirmar o e-mail.");
         } else {
-          toast.success("Conta criada e login realizado!");
+          toast.success("Conta criada com sucesso! Redirecionando...");
           navigate({ to: "/dashboard", replace: true });
         }
       } else {
@@ -70,6 +70,8 @@ function LoginPage() {
       const message = err instanceof Error ? err.message : "Erro ao acessar";
       if (message.toLowerCase().includes("email not confirmed")) {
         toast.error("E-mail ainda não confirmado. Verifique sua caixa de entrada e spam.");
+      } else if (message.toLowerCase().includes("invalid login credentials")) {
+        toast.error("E-mail ou senha incorretos.");
       } else {
         toast.error(message);
       }
@@ -138,10 +140,6 @@ function LoginPage() {
             </div>
           </CardContent>
         </Card>
-
-        <p className="mt-6 text-center text-xs text-muted-foreground">
-          Sem domínio? Desative "Confirm email" nas configurações de Auth do Supabase para criar contas sem confirmação.
-        </p>
       </div>
     </div>
   );
