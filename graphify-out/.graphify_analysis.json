@@ -4,7 +4,6 @@
       "src_components_common_categorybadge",
       "src_components_common_categorybadge_categorybadge",
       "src_components_common_categorybadge_corcategoria",
-      "src_components_common_confirmationdialog_confirmationdialog",
       "src_components_common_emptystate",
       "src_components_common_emptystate_emptystate",
       "src_components_common_emptystate_emptystateprops",
@@ -587,6 +586,7 @@
     ],
     "14": [
       "src_components_common_confirmationdialog",
+      "src_components_common_confirmationdialog_confirmationdialog",
       "src_components_common_confirmationdialog_confirmationdialogprops",
       "src_components_ui_alert_dialog",
       "src_components_ui_alert_dialog_alertdialogaction",
@@ -984,7 +984,7 @@
     ]
   },
   "cohesion": {
-    "0": 0.0505664877757901,
+    "0": 0.051477713178294575,
     "1": 0.05370101596516691,
     "2": 0.0596078431372549,
     "3": 0.04081632653061224,
@@ -998,7 +998,7 @@
     "11": 0.12631578947368421,
     "12": 0.10526315789473684,
     "13": 0.11764705882352941,
-    "14": 0.23809523809523808,
+    "14": 0.21666666666666667,
     "15": 0.19047619047619047,
     "16": 0.18681318681318682,
     "17": 0.15384615384615385,

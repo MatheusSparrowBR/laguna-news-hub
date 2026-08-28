@@ -927,17 +927,6 @@
       "source_location": "L19"
     },
     {
-      "id": "src_components_common_confirmationdialog_confirmationdialog",
-      "label": "ConfirmationDialog()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "file_type": "code",
-      "norm_label": "confirmationdialog()",
-      "source_file": "src/components/common/ConfirmationDialog.tsx",
-      "source_location": "L22"
-    },
-    {
       "id": "src_components_common_emptystate_emptystate",
       "label": "EmptyState()",
       "_callable": true,
@@ -1353,7 +1342,7 @@
       "file_type": "code",
       "norm_label": "sourcecard()",
       "source_file": "src/routes/_admin.sources.tsx",
-      "source_location": "L245"
+      "source_location": "L260"
     },
     {
       "id": "src_routes_admin_sources_sourcespage",
@@ -1364,7 +1353,7 @@
       "file_type": "code",
       "norm_label": "sourcespage()",
       "source_file": "src/routes/_admin.sources.tsx",
-      "source_location": "L76"
+      "source_location": "L77"
     },
     {
       "id": "src_routes_login_loginpage",
@@ -1386,7 +1375,7 @@
       "file_type": "code",
       "norm_label": "executarcoletadenoticias()",
       "source_file": "src/services/collectNews.ts",
-      "source_location": "L39"
+      "source_location": "L34"
     },
     {
       "id": "src_services_collectnews_obterultimaexecucao",
@@ -1397,7 +1386,7 @@
       "file_type": "code",
       "norm_label": "obterultimaexecucao()",
       "source_file": "src/services/collectNews.ts",
-      "source_location": "L95"
+      "source_location": "L72"
     },
     {
       "id": "src_services_mockservice_obterestatisticasinstagram",
@@ -1717,6 +1706,17 @@
       "norm_label": "menubarsub()",
       "source_file": "src/components/ui/menubar.tsx",
       "source_location": "L23"
+    },
+    {
+      "id": "src_components_common_confirmationdialog_confirmationdialog",
+      "label": "ConfirmationDialog()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 14,
+      "file_type": "code",
+      "norm_label": "confirmationdialog()",
+      "source_file": "src/components/common/ConfirmationDialog.tsx",
+      "source_location": "L22"
     },
     {
       "id": "src_components_ui_alert_dialog_alertdialogfooter",
@@ -2222,7 +2222,7 @@
       "file_type": "code",
       "norm_label": "newspage()",
       "source_file": "src/routes/_admin.news.index.tsx",
-      "source_location": "L56"
+      "source_location": "L58"
     },
     {
       "id": "src_services_datamode_carregar",
@@ -2508,7 +2508,7 @@
       "file_type": "code",
       "norm_label": "addsourcedialog()",
       "source_file": "src/routes/_admin.sources.tsx",
-      "source_location": "L303"
+      "source_location": "L318"
     },
     {
       "id": "src_services_queries_usealterarfonteativa",
@@ -2849,7 +2849,7 @@
       "file_type": "code",
       "norm_label": "demobadge()",
       "source_file": "src/routes/_admin.news.index.tsx",
-      "source_location": "L38"
+      "source_location": "L40"
     },
     {
       "id": "src_routes_admin_news_index_newslistwithdemobadge",
@@ -2860,7 +2860,7 @@
       "file_type": "code",
       "norm_label": "newslistwithdemobadge()",
       "source_file": "src/routes/_admin.news.index.tsx",
-      "source_location": "L156"
+      "source_location": "L187"
     },
     {
       "id": "src_components_ui_resizable_resizablehandle",
@@ -3552,7 +3552,7 @@
       "file_type": "code",
       "norm_label": "tipoicone",
       "source_file": "src/routes/_admin.sources.tsx",
-      "source_location": "L62"
+      "source_location": "L63"
     },
     {
       "id": "src_routes_admin_sources_tipolabel",
@@ -3562,7 +3562,7 @@
       "file_type": "code",
       "norm_label": "tipolabel",
       "source_file": "src/routes/_admin.sources.tsx",
-      "source_location": "L69"
+      "source_location": "L70"
     },
     {
       "id": "src_routes_login",
@@ -3662,7 +3662,7 @@
       "file_type": "code",
       "norm_label": "route",
       "source_file": "src/routes/_admin.news.index.tsx",
-      "source_location": "L19"
+      "source_location": "L21"
     },
     {
       "id": "src_routes_admin_publications_route",
@@ -3702,7 +3702,7 @@
       "file_type": "code",
       "norm_label": "route",
       "source_file": "src/routes/_admin.sources.tsx",
-      "source_location": "L49"
+      "source_location": "L50"
     },
     {
       "id": "src_routes_index",
@@ -11518,6 +11518,18 @@
     },
     {
       "source": "src_routes_admin_news_index_newspage",
+      "target": "src_services_collectnews_executarcoletadenoticias",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/routes/_admin.news.index.tsx",
+      "source_location": "L102",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_admin_news_index_newspage",
       "target": "src_hooks_useproject_useproject",
       "relation": "calls",
       "_origin": "ast",
@@ -11525,7 +11537,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/_admin.news.index.tsx",
-      "source_location": "L57",
+      "source_location": "L59",
       "weight": 1.0
     },
     {
@@ -11537,7 +11549,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/_admin.news.index.tsx",
-      "source_location": "L58",
+      "source_location": "L60",
       "weight": 1.0
     },
     {
@@ -11549,7 +11561,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/_admin.news.index.tsx",
-      "source_location": "L64",
+      "source_location": "L66",
       "weight": 1.0
     },
     {
@@ -11561,7 +11573,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/_admin.news.index.tsx",
-      "source_location": "L65",
+      "source_location": "L67",
       "weight": 1.0
     },
     {
@@ -11573,7 +11585,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/_admin.news.index.tsx",
-      "source_location": "L66",
+      "source_location": "L68",
       "weight": 1.0
     },
     {
@@ -11585,7 +11597,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/_admin.news.index.tsx",
-      "source_location": "L70",
+      "source_location": "L73",
       "weight": 1.0
     },
     {
@@ -11705,7 +11717,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/_admin.sources.tsx",
-      "source_location": "L312",
+      "source_location": "L327",
       "weight": 1.0
     },
     {
@@ -11717,7 +11729,19 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/_admin.sources.tsx",
-      "source_location": "L296",
+      "source_location": "L311",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_admin_sources_sourcespage",
+      "target": "src_services_collectnews_executarcoletadenoticias",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/routes/_admin.sources.tsx",
+      "source_location": "L110",
       "weight": 1.0
     },
     {
@@ -11729,7 +11753,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/_admin.sources.tsx",
-      "source_location": "L178",
+      "source_location": "L193",
       "weight": 1.0
     },
     {
@@ -11741,7 +11765,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/_admin.sources.tsx",
-      "source_location": "L77",
+      "source_location": "L78",
       "weight": 1.0
     },
     {
@@ -11753,7 +11777,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/_admin.sources.tsx",
-      "source_location": "L78",
+      "source_location": "L79",
       "weight": 1.0
     },
     {
@@ -11765,7 +11789,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/_admin.sources.tsx",
-      "source_location": "L84",
+      "source_location": "L85",
       "weight": 1.0
     },
     {
@@ -11777,7 +11801,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/_admin.sources.tsx",
-      "source_location": "L85",
+      "source_location": "L86",
       "weight": 1.0
     },
     {
@@ -11789,7 +11813,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/_admin.sources.tsx",
-      "source_location": "L94",
+      "source_location": "L95",
       "weight": 1.0
     },
     {
@@ -16426,7 +16450,7 @@
     },
     {
       "source": "src_routes_admin_news_index",
-      "target": "src_lib_types_newsitem",
+      "target": "src_services_collectnews_executarcoletadenoticias",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -16434,6 +16458,18 @@
       "context": "import",
       "source_file": "src/routes/_admin.news.index.tsx",
       "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_admin_news_index",
+      "target": "src_lib_types_newsitem",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/routes/_admin.news.index.tsx",
+      "source_location": "L19",
       "weight": 1.0
     },
     {
@@ -17286,6 +17322,18 @@
       "context": "import",
       "source_file": "src/routes/_admin.sources.tsx",
       "source_location": "L42",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_admin_sources",
+      "target": "src_services_collectnews_executarcoletadenoticias",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/routes/_admin.sources.tsx",
+      "source_location": "L43",
       "weight": 1.0
     },
     {
@@ -20398,7 +20446,7 @@
     },
     {
       "source": "src_routes_admin_news_index",
-      "target": "src_lib_types",
+      "target": "src_services_collectnews",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -20406,6 +20454,18 @@
       "context": "import",
       "source_file": "src/routes/_admin.news.index.tsx",
       "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_admin_news_index",
+      "target": "src_lib_types",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/routes/_admin.news.index.tsx",
+      "source_location": "L19",
       "weight": 1.0
     },
     {
@@ -26460,7 +26520,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/_admin.news.index.tsx",
-      "source_location": "L156",
+      "source_location": "L187",
       "weight": 1.0
     },
     {
@@ -26471,7 +26531,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/_admin.news.index.tsx",
-      "source_location": "L19",
+      "source_location": "L21",
       "weight": 1.0
     },
     {
@@ -26482,7 +26542,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/_admin.news.index.tsx",
-      "source_location": "L38",
+      "source_location": "L40",
       "weight": 1.0
     },
     {
@@ -26537,7 +26597,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/_admin.sources.tsx",
-      "source_location": "L245",
+      "source_location": "L260",
       "weight": 1.0
     },
     {
@@ -26548,7 +26608,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/_admin.sources.tsx",
-      "source_location": "L303",
+      "source_location": "L318",
       "weight": 1.0
     },
     {
@@ -26559,7 +26619,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/_admin.sources.tsx",
-      "source_location": "L49",
+      "source_location": "L50",
       "weight": 1.0
     },
     {
@@ -26570,7 +26630,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/_admin.sources.tsx",
-      "source_location": "L62",
+      "source_location": "L63",
       "weight": 1.0
     },
     {
@@ -26581,7 +26641,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/_admin.sources.tsx",
-      "source_location": "L69",
+      "source_location": "L70",
       "weight": 1.0
     },
     {
@@ -26955,7 +27015,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/services/collectNews.ts",
-      "source_location": "L39",
+      "source_location": "L34",
       "weight": 1.0
     },
     {
@@ -26966,7 +27026,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/services/collectNews.ts",
-      "source_location": "L95",
+      "source_location": "L72",
       "weight": 1.0
     },
     {
@@ -28205,7 +28265,7 @@
       "confidence_score": 0.85,
       "context": "collection",
       "source_file": "src/routes/_admin.news.index.tsx",
-      "source_location": "L35",
+      "source_location": "L37",
       "weight": 1.0
     },
     {
@@ -28241,7 +28301,7 @@
       "confidence_score": 0.85,
       "context": "collection",
       "source_file": "src/routes/_admin.sources.tsx",
-      "source_location": "L59",
+      "source_location": "L60",
       "weight": 1.0
     },
     {
@@ -28306,5 +28366,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "ab4b7de18048b8052c2c26fe77c6a78e5b374c8a"
+  "built_at_commit": "cc825ef867b62b1f24782eb78bb5f01c3148eace"
 }
