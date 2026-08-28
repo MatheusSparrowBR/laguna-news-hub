@@ -7,7 +7,6 @@ import {
   CheckCircle2,
   XCircle,
   AlertTriangle,
-  ArrowDownAZ,
   Clock,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -47,19 +46,6 @@ export const Route = createFileRoute("/_admin/feed")({
 type FiltroStatus = "todos" | "pendente" | "aprovado" | "rejeitado";
 type Ordenacao = "urgencia" | "data";
 
-function statusLabel(s: FiltroStatus) {
-  switch (s) {
-    case "todos":
-      return "Todos";
-    case "pendente":
-      return "Pendente";
-    case "aprovado":
-      return "Aprovado";
-    case "rejeitado":
-      return "Rejeitado";
-  }
-}
-
 function mapStatusToFilter(noticia: NewsItem): FiltroStatus {
   if (noticia.status === "aprovada" || noticia.status === "publicada") return "aprovado";
   if (noticia.status === "rejeitada" || noticia.status === "ignorada") return "rejeitado";
@@ -79,12 +65,41 @@ function UrgencyBadge({ nota }: { nota: number }) {
   );
 }
 
+async function copyToClipboard(text: string): Promise<boolean> {
+  if (navigator.clipboard?.writeText) {
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch {
+      // fallback below
+    }
+  }
+  // Fallback for older browsers / insecure contexts
+  try {
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+    textarea.style.position = "fixed";
+    textarea.style.opacity = "0";
+    document.body.appendChild(textarea);
+    textarea.select();
+    const ok = document.execCommand("copy");
+    document.body.removeChild(textarea);
+    return ok;
+  } catch {
+    return false;
+  }
+}
+
 function CopyBox({ label, value }: { label: string; value: string }) {
   if (!value) return null;
 
-  const handleCopy = () => {
-    navigator.clipboard?.writeText(value);
-    toast.success(`${label} copiado!`);
+  const handleCopy = async () => {
+    const ok = await copyToClipboard(value);
+    if (ok) {
+      toast.success(`${label} copiado!`);
+    } else {
+      toast.error("Não foi possível copiar. Tente manualmente.");
+    }
   };
 
   return (
@@ -106,16 +121,19 @@ function FeedNewsCard({
   onAprovar,
   onRejeitar,
   onCopiarLegenda,
+  isUpdating,
 }: {
   noticia: NewsItem;
   onAprovar: () => void;
   onRejeitar: () => void;
   onCopiarLegenda: () => void;
+  isUpdating: boolean;
 }) {
   const statusAtual = mapStatusToFilter(noticia);
+  const isUrgent = noticia.importanciaNota >= 8;
 
   return (
-    <Card className="overflow-hidden">
+    <Card className={`overflow-hidden ${isUrgent ? "border-red-500 border-2 shadow-red-100" : ""}`}>
       <CardHeader className="pb-3">
         <div className="flex flex-wrap items-start justify-between gap-2">
           <div className="min-w-0 flex-1 space-y-1">
@@ -171,7 +189,7 @@ function FeedNewsCard({
           <Button
             size="sm"
             onClick={onAprovar}
-            disabled={statusAtual === "aprovado"}
+            disabled={statusAtual === "aprovado" || isUpdating}
             className="bg-green-600 hover:bg-green-700 text-white"
           >
             <CheckCircle2 className="mr-1 size-4" />
@@ -181,7 +199,7 @@ function FeedNewsCard({
             size="sm"
             variant="destructive"
             onClick={onRejeitar}
-            disabled={statusAtual === "rejeitado"}
+            disabled={statusAtual === "rejeitado" || isUpdating}
           >
             <XCircle className="mr-1 size-4" />
             Rejeitar
@@ -236,23 +254,39 @@ function FeedPage() {
   }, [noticias, filtroStatus, filtroCategoria, ordenacao]);
 
   const handleAprovar = async (n: NewsItem) => {
-    await alterarStatus.mutateAsync({ id: n.id, status: "aprovada" });
-    const texto = [n.gerado.legenda, n.gerado.hashtags].filter(Boolean).join("\n\n");
-    if (texto) {
-      await navigator.clipboard?.writeText(texto);
+    try {
+      await alterarStatus.mutateAsync({ id: n.id, status: "aprovada" });
+      const texto = [n.gerado.legenda, n.gerado.hashtags].filter(Boolean).join("\n\n");
+      if (texto) {
+        await copyToClipboard(texto);
+      }
+      toast.success("Post aprovado e legenda copiada!");
+    } catch (err) {
+      toast.error("Erro ao aprovar post. Tente novamente.");
     }
-    toast.success("Post aprovado e legenda copiada!");
   };
 
   const handleRejeitar = async (n: NewsItem) => {
-    await alterarStatus.mutateAsync({ id: n.id, status: "rejeitada" });
-    toast.success("Post rejeitado");
+    try {
+      await alterarStatus.mutateAsync({ id: n.id, status: "rejeitada" });
+      toast.success("Post rejeitado");
+    } catch (err) {
+      toast.error("Erro ao rejeitar post. Tente novamente.");
+    }
   };
 
-  const handleCopiarLegenda = (n: NewsItem) => {
+  const handleCopiarLegenda = async (n: NewsItem) => {
     const texto = [n.gerado.legenda, n.gerado.hashtags].filter(Boolean).join("\n\n");
-    navigator.clipboard?.writeText(texto);
-    toast.success("Legenda copiada para a área de transferência");
+    if (!texto) {
+      toast.error("Nenhuma legenda disponível para copiar.");
+      return;
+    }
+    const ok = await copyToClipboard(texto);
+    if (ok) {
+      toast.success("Legenda copiada para a área de transferência");
+    } else {
+      toast.error("Não foi possível copiar. Tente manualmente.");
+    }
   };
 
   return (
@@ -338,12 +372,16 @@ function FeedPage() {
         {isLoading ? (
           <LoadingState titulo="Carregando feed..." />
         ) : error ? (
-          <EmptyState titulo="Erro ao carregar" descricao={error.message} />
+          <EmptyState titulo="Erro ao carregar" descricao={(error as Error).message} />
         ) : filtradas.length === 0 ? (
           <EmptyState
             icone={Newspaper}
             titulo="Nenhuma notícia encontrada"
-            descricao="Ajuste os filtros ou aguarde novas coletas."
+            descricao={
+              filtroStatus === "pendente"
+                ? "Nenhuma notícia pendente no momento. Aguarde novas coletas."
+                : "Ajuste os filtros ou aguarde novas coletas."
+            }
           />
         ) : (
           filtradas.map((n) => (
@@ -353,6 +391,7 @@ function FeedPage() {
               onAprovar={() => handleAprovar(n)}
               onRejeitar={() => handleRejeitar(n)}
               onCopiarLegenda={() => handleCopiarLegenda(n)}
+              isUpdating={alterarStatus.isPending}
             />
           ))
         )}

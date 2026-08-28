@@ -13,6 +13,7 @@ import {
   removerFonte,
   salvarConfiguracoes,
   salvarProjeto,
+  statusParaBanco,
   type ProjetoAtual,
   type ConfiguracoesProjeto,
 } from "./supabaseData";
@@ -88,7 +89,30 @@ export function useAlterarStatusNoticia() {
     mutationFn: async ({ id, status }: { id: string; status: NewsStatus }) => {
       await alterarStatusNoticia(id, status);
     },
-    onSuccess: (_data, vars) => {
+    onMutate: async ({ id, status }) => {
+      // Cancel ongoing refetches
+      await queryClient.cancelQueries({ queryKey: ["noticias"] });
+
+      // Snapshot current cache
+      const previousNoticias = queryClient.getQueriesData<NewsItem[]>({ queryKey: ["noticias"] });
+
+      // Optimistically update all matching caches
+      queryClient.setQueriesData<NewsItem[]>({ queryKey: ["noticias"] }, (old) => {
+        if (!old) return old;
+        return old.map((n) => (n.id === id ? { ...n, status } : n));
+      });
+
+      return { previousNoticias };
+    },
+    onError: (_err, _vars, context) => {
+      // Rollback on error
+      if (context?.previousNoticias) {
+        for (const [key, data] of context.previousNoticias) {
+          queryClient.setQueryData(key, data);
+        }
+      }
+    },
+    onSettled: (_data, _error, vars) => {
       queryClient.invalidateQueries({ queryKey: ["noticias"] });
       queryClient.invalidateQueries({ queryKey: ["noticia", vars.id] });
     },
