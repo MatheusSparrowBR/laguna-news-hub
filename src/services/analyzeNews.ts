@@ -68,7 +68,7 @@ export async function analisarNoticiaComIA(
     }
 
     if (error instanceof FunctionsFetchError) {
-      console.error("[analyzeNews] FunctionsFetchError:", error.message);
+      console.error("[analyzeNews] FunctionsFetchError:", error.message, "| context:", error.context);
       throw new Error(
         "Erro de conexão com a Edge Function. Verifique se a função está deployada e acessível (possível problema de CORS ou rede).",
       );

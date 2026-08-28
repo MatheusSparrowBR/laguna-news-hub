@@ -11,7 +11,8 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders: Record<string, string> = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers":
+    "authorization, apikey, x-client-info, content-type, x-region, x-supabase-api-version, x-relay-to, accept, accept-language",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
@@ -145,17 +146,20 @@ Retorne SOMENTE o JSON de análise, sem markdown, sem explicação fora do JSON.
 }
 
 Deno.serve(async (req) => {
-  // Handle CORS preflight
+  // Handle CORS preflight — must return before any other logic
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return new Response(null, {
+      status: 204,
+      headers: corsHeaders,
+    });
   }
 
   if (req.method !== "POST") {
     return jsonResponse({ error: "Method not allowed" }, 405);
   }
 
-  // Diagnostic log — confirms POST reached the function
-  console.log("analyze-news POST received");
+  // Diagnostic log — confirms POST reached the function (no secrets logged)
+  console.log("analyze-news POST received", { method: req.method, timestamp: new Date().toISOString() });
 
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
