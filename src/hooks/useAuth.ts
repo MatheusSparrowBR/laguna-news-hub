@@ -6,7 +6,7 @@ export interface AuthState {
   session: Session | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string) => Promise<void>;
+  signUp: (email: string, password: string) => Promise<{ needsConfirmation: boolean }>;
   signOut: () => Promise<void>;
 }
 
@@ -36,19 +36,21 @@ export function useAuth(): AuthState {
     if (error) throw error;
   };
 
-  const signUp = async (email: string, password: string) => {
-    const redirectUrl = typeof window !== "undefined"
-      ? `${window.location.origin}/login`
-      : undefined;
-
-    const { error } = await supabase.auth.signUp({
+  const signUp = async (email: string, password: string): Promise<{ needsConfirmation: boolean }> => {
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      options: {
-        emailRedirectTo: redirectUrl,
-      },
     });
     if (error) throw error;
+
+    // Se o Supabase retornou uma session, significa que a confirmação de email
+    // está desabilitada e o usuário já está logado.
+    if (data.session) {
+      return { needsConfirmation: false };
+    }
+
+    // Caso contrário, o email de confirmação foi enviado.
+    return { needsConfirmation: true };
   };
 
   const signOut = async () => {
