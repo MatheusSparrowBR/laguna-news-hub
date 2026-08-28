@@ -61,8 +61,7 @@ export function useFontes(projectId?: string) {
     queryKey: ["fontes", projectId, modo],
     queryFn: async () => {
       if (modo === "demo" || !projectId) return listarFontes();
-      const fontes = await obterFontes(projectId);
-      return fontes.map((f) => ({ ...f, tipo: f.tipo === "rss" ? "rss" : ("site" as const) }));
+      return obterFontes(projectId);
     },
     enabled: modo === "demo" || !!projectId,
   });
