@@ -661,7 +661,7 @@
       "file_type": "code",
       "norm_label": "analysisresult",
       "source_file": "supabase/functions/analyze-news/index.ts",
-      "source_location": "L26"
+      "source_location": "L48"
     },
     {
       "id": "src_components_common_metriccard_metriccardprops",
@@ -2493,7 +2493,7 @@
       "file_type": "code",
       "norm_label": "callopenai()",
       "source_file": "supabase/functions/analyze-news/index.ts",
-      "source_location": "L89"
+      "source_location": "L111"
     },
     {
       "id": "supabase_functions_analyze_news_index_jsonresponse",
@@ -2504,7 +2504,7 @@
       "file_type": "code",
       "norm_label": "jsonresponse()",
       "source_file": "supabase/functions/analyze-news/index.ts",
-      "source_location": "L19"
+      "source_location": "L41"
     },
     {
       "id": "src_integrations_supabase_cron_auth_authenticatecronrequest",
@@ -6819,7 +6819,7 @@
       "file_type": "code",
       "norm_label": "corsheaders",
       "source_file": "supabase/functions/analyze-news/index.ts",
-      "source_location": "L12"
+      "source_location": "L17"
     },
     {
       "id": "node_crypto",
@@ -28726,13 +28726,24 @@
     },
     {
       "source": "supabase_functions_analyze_news_index",
+      "target": "supabase_functions_analyze_news_index_callopenai",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "supabase/functions/analyze-news/index.ts",
+      "source_location": "L111",
+      "weight": 1.0
+    },
+    {
+      "source": "supabase_functions_analyze_news_index",
       "target": "supabase_functions_analyze_news_index_corsheaders",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "supabase/functions/analyze-news/index.ts",
-      "source_location": "L12",
+      "source_location": "L17",
       "weight": 1.0
     },
     {
@@ -28743,7 +28754,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "supabase/functions/analyze-news/index.ts",
-      "source_location": "L19",
+      "source_location": "L41",
       "weight": 1.0
     },
     {
@@ -28754,18 +28765,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "supabase/functions/analyze-news/index.ts",
-      "source_location": "L26",
-      "weight": 1.0
-    },
-    {
-      "source": "supabase_functions_analyze_news_index",
-      "target": "supabase_functions_analyze_news_index_callopenai",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "supabase/functions/analyze-news/index.ts",
-      "source_location": "L89",
+      "source_location": "L48",
       "weight": 1.0
     },
     {
@@ -29390,5 +29390,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "b7dd8c2b125f3a52f9e2396748d0c4666d8a6f54"
+  "built_at_commit": "c459760074e6ac550c65739068678632e8862ac7"
 }
