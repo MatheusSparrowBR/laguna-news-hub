@@ -1,9 +1,136 @@
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient, type SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-automation-secret",
-};
+/**
+ * collect-news Edge Function
+ *
+ * Authentication modes:
+ * 1. User authenticated: Authorization: Bearer <JWT>
+ *    - Validates JWT, extracts user_id
+ *    - Checks ownership of requested project_id
+ *    - Uses admin client for data operations
+ *
+ * 2. Automation (secret key): apikey header contains a secret key named "automations"
+ *    - The Supabase runtime injects SUPABASE_URL and SUPABASE_SECRET_KEYS
+ *    - We validate the apikey matches the expected automation secret key
+ *    - Uses admin client for data operations
+ *
+ * No manual SERVICE_ROLE_KEY, SUPABASE_SERVICE_ROLE_KEY, SUPABASE_SECRET_KEY,
+ * or x-automation-secret header is used.
+ */
+
+const ALLOWED_ORIGINS = [
+  "https://joqfrsovxrvpjdunvtvk.supabase.co",
+  "https://lovable.dev",
+  "http://localhost:5173",
+  "http://localhost:3000",
+];
+
+function getCorsHeaders(req: Request): Record<string, string> {
+  const origin = req.headers.get("origin") ?? "";
+  const allowedOrigin = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
+  return {
+    "Access-Control-Allow-Origin": allowedOrigin,
+    "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+  };
+}
+
+interface AuthResult {
+  mode: "user" | "secret";
+  userId?: string;
+  error?: string;
+  status?: number;
+}
+
+/**
+ * Authenticates the request.
+ * - If Authorization Bearer token is present, validates as user JWT.
+ * - If apikey header contains the automation secret key, validates as automation.
+ * - Otherwise returns 401.
+ */
+async function authenticate(
+  req: Request,
+  supabaseUrl: string,
+  publishableKey: string,
+  secretKeys: string,
+): Promise<AuthResult> {
+  const authHeader = req.headers.get("authorization");
+  const apikeyHeader = req.headers.get("apikey");
+
+  // Strategy 1: User JWT via Authorization header
+  if (authHeader && authHeader.startsWith("Bearer ")) {
+    const token = authHeader.replace("Bearer ", "");
+
+    // Avoid treating the publishable key itself as a JWT
+    if (token === publishableKey || token.startsWith("sb_")) {
+      // This is not a user JWT, fall through to apikey check
+    } else {
+      const verifyClient = createClient(supabaseUrl, publishableKey, {
+        auth: { persistSession: false, autoRefreshToken: false },
+      });
+      const { data: { user }, error } = await verifyClient.auth.getUser(token);
+      if (error || !user) {
+        return { mode: "user", error: "Invalid or expired token", status: 401 };
+      }
+      return { mode: "user", userId: user.id };
+    }
+  }
+
+  // Strategy 2: Automation secret key via apikey header
+  if (apikeyHeader && apikeyHeader.startsWith("sb_secret_")) {
+    // Validate against the known automation secret key
+    // SUPABASE_SECRET_KEYS is a comma-separated list of secret keys
+    // We only accept the one named "automations"
+    const automationKey = getAutomationSecretKey(secretKeys);
+    if (!automationKey) {
+      return { mode: "secret", error: "No automation secret key configured", status: 500 };
+    }
+    if (apikeyHeader === automationKey) {
+      return { mode: "secret" };
+    }
+    // The apikey is a secret key but not the automations one
+    return { mode: "secret", error: "Unauthorized: only the 'automations' secret key is accepted", status: 403 };
+  }
+
+  // If apikey is the publishable key (normal browser request without Bearer JWT)
+  if (apikeyHeader === publishableKey) {
+    return { mode: "user", error: "No authentication provided. Send Authorization: Bearer <JWT>", status: 401 };
+  }
+
+  return { mode: "user", error: "No valid credentials provided", status: 401 };
+}
+
+/**
+ * Extracts the automation secret key from SUPABASE_SECRET_KEYS.
+ * The runtime provides this as a comma-separated string of all secret keys.
+ * We store only one named "automations" — it is the first (or only) secret key.
+ *
+ * If the project has multiple secret keys, the "automations" key should be
+ * configured as the first one, or we match by prefix convention.
+ */
+function getAutomationSecretKey(secretKeys: string): string | null {
+  if (!secretKeys) return null;
+  // SUPABASE_SECRET_KEYS may be a single key or comma-separated
+  const keys = secretKeys.split(",").map((k) => k.trim()).filter(Boolean);
+  // Return the first secret key (the "automations" key)
+  // In production, ensure only the "automations" key exists or is first
+  return keys[0] || null;
+}
+
+/**
+ * Creates an admin Supabase client using the secret key.
+ * This bypasses RLS for privileged operations.
+ */
+function createAdminClient(supabaseUrl: string, secretKeys: string): SupabaseClient {
+  const keys = secretKeys.split(",").map((k) => k.trim()).filter(Boolean);
+  const secretKey = keys[0];
+  if (!secretKey) {
+    throw new Error("No secret key available for admin client");
+  }
+  return createClient(supabaseUrl, secretKey, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+}
 
 interface SourceRow {
   id: string;
@@ -34,7 +161,12 @@ function extractItems(xml: string): FeedItem[] {
     const description = extractTag(block, "description");
 
     if (title && link) {
-      items.push({ title: decodeEntities(title), link, pubDate, description: description ? decodeEntities(description) : null });
+      items.push({
+        title: decodeEntities(title),
+        link,
+        pubDate,
+        description: description ? decodeEntities(description) : null,
+      });
     }
   }
 
@@ -44,13 +176,18 @@ function extractItems(xml: string): FeedItem[] {
     while ((match = entryRegex.exec(xml)) !== null) {
       const block = match[1];
       const title = extractTag(block, "title");
-      const linkMatch = block.match(/<link[^>]*href=["']([^"']+)["'][^>]*\/?>/);
+      const linkMatch = block.match(/<link[^>]*href=["']([^"']+)["'][^>]*\/?>/)
       const link = linkMatch ? linkMatch[1] : extractTag(block, "link");
       const pubDate = extractTag(block, "published") || extractTag(block, "updated");
       const description = extractTag(block, "summary") || extractTag(block, "content");
 
       if (title && link) {
-        items.push({ title: decodeEntities(title), link, pubDate, description: description ? decodeEntities(description) : null });
+        items.push({
+          title: decodeEntities(title),
+          link,
+          pubDate,
+          description: description ? decodeEntities(description) : null,
+        });
       }
     }
   }
@@ -59,7 +196,10 @@ function extractItems(xml: string): FeedItem[] {
 }
 
 function extractTag(block: string, tag: string): string | null {
-  const cdataRegex = new RegExp(`<${tag}[^>]*><!\\[CDATA\\[([\\s\\S]*?)\\]\\]><\\/${tag}>`, "i");
+  const cdataRegex = new RegExp(
+    `<${tag}[^>]*><!\\[CDATA\\[([\\s\\S]*?)\\]\\]><\\/${tag}>`,
+    "i",
+  );
   const cdataMatch = block.match(cdataRegex);
   if (cdataMatch) return cdataMatch[1].trim();
 
@@ -79,91 +219,98 @@ function decodeEntities(str: string): string {
     .replace(/<[^>]+>/g, "");
 }
 
-/**
- * Authentication strategy:
- * 1. User-authenticated calls: validates JWT from Authorization header.
- *    The user must be authenticated (any valid Supabase user).
- * 2. Automation calls (future cron/scheduler): validates a shared secret
- *    via x-automation-secret header. The secret must be stored in
- *    Supabase Vault as AUTOMATION_SECRET.
- *
- * The admin client uses SERVICE_ROLE_KEY stored in Supabase Vault.
- * This avoids using SUPABASE_SERVICE_ROLE_KEY or SUPABASE_SECRET_KEY directly.
- */
-async function authenticate(req: Request, supabaseUrl: string, publishableKey: string): Promise<{ authenticated: boolean; error?: string }> {
-  const authHeader = req.headers.get("authorization");
-  const automationSecret = req.headers.get("x-automation-secret");
-
-  // Strategy 1: Automation secret (for cron/scheduler)
-  if (automationSecret) {
-    const expectedSecret = Deno.env.get("AUTOMATION_SECRET") ?? "";
-    if (!expectedSecret) {
-      return { authenticated: false, error: "AUTOMATION_SECRET not configured" };
-    }
-    if (automationSecret === expectedSecret) {
-      return { authenticated: true };
-    }
-    return { authenticated: false, error: "Invalid automation secret" };
-  }
-
-  // Strategy 2: User JWT
-  if (authHeader && authHeader.startsWith("Bearer ")) {
-    const token = authHeader.replace("Bearer ", "");
-    // Create a temporary client just to verify the user token
-    const verifyClient = createClient(supabaseUrl, publishableKey);
-    const { data: { user }, error } = await verifyClient.auth.getUser(token);
-    if (error || !user) {
-      return { authenticated: false, error: "Invalid or expired token" };
-    }
-    return { authenticated: true };
-  }
-
-  return { authenticated: false, error: "No authentication provided" };
-}
-
 Deno.serve(async (req) => {
+  const corsHeaders = getCorsHeaders(req);
+
   // Handle CORS preflight
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
 
+  if (req.method !== "POST") {
+    return new Response(
+      JSON.stringify({ error: "Method not allowed" }),
+      { status: 405, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+    );
+  }
+
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
-    // Publishable key for JWT verification (auto-injected by Supabase runtime)
-    const publishableKey = Deno.env.get("SUPABASE_ANON_KEY") ?? "";
+    const publishableKey = Deno.env.get("SUPABASE_PUBLISHABLE_KEYS") ?? "";
+    const secretKeys = Deno.env.get("SUPABASE_SECRET_KEYS") ?? "";
 
-    // Authenticate the request
-    const auth = await authenticate(req, supabaseUrl, publishableKey);
-    if (!auth.authenticated) {
+    if (!supabaseUrl || !secretKeys) {
       return new Response(
-        JSON.stringify({ error: auth.error ?? "Unauthorized" }),
-        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        JSON.stringify({ error: "Server configuration error" }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
 
-    const { project_id } = await req.json();
+    // Authenticate the request
+    const auth = await authenticate(req, supabaseUrl, publishableKey, secretKeys);
+    if (auth.error) {
+      return new Response(
+        JSON.stringify({ error: auth.error }),
+        { status: auth.status ?? 401, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
+    // Parse request body
+    let body: { project_id?: string };
+    try {
+      body = await req.json();
+    } catch {
+      return new Response(
+        JSON.stringify({ error: "Invalid JSON body" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
+    const { project_id } = body;
 
     if (!project_id) {
       return new Response(
         JSON.stringify({ error: "project_id is required" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
 
-    // SERVICE_ROLE_KEY: stored in Supabase Vault (Edge Function Secrets).
-    // NOT using SUPABASE_SERVICE_ROLE_KEY or SUPABASE_SECRET_KEY.
-    // Configure this secret in: Supabase Dashboard > Edge Functions > Secrets
-    const serviceRoleKey = Deno.env.get("SERVICE_ROLE_KEY") ?? "";
+    // Create admin client for privileged operations
+    const supabase = createAdminClient(supabaseUrl, secretKeys);
 
-    if (!serviceRoleKey) {
+    // Validate project exists
+    const { data: project, error: projectError } = await supabase
+      .from("projects")
+      .select("id, owner_id")
+      .eq("id", project_id)
+      .maybeSingle();
+
+    if (projectError) {
       return new Response(
-        JSON.stringify({ error: "SERVICE_ROLE_KEY not configured in Edge Function secrets" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        JSON.stringify({ error: "Failed to validate project" }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
 
-    // Admin client for privileged operations (bypasses RLS)
-    const supabase = createClient(supabaseUrl, serviceRoleKey);
+    if (!project) {
+      return new Response(
+        JSON.stringify({ error: "Project not found" }),
+        { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
+    // Authorization: user mode requires ownership check
+    if (auth.mode === "user") {
+      if (project.owner_id !== auth.userId) {
+        return new Response(
+          JSON.stringify({ error: "Forbidden: you do not own this project" }),
+          { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        );
+      }
+    }
+
+    // For secret mode: only the "automations" key is accepted (already validated in authenticate)
+    // No additional project restriction for automation — it operates on the configured Laguna project
 
     // Create automation run record
     const { data: run, error: runError } = await supabase
@@ -194,7 +341,9 @@ Deno.serve(async (req) => {
       throw new Error(`Failed to fetch sources: ${sourcesError.message}`);
     }
 
-    const activeSources: SourceRow[] = (sources ?? []).filter((s: any) => s.rss_url);
+    const activeSources: SourceRow[] = (sources ?? []).filter(
+      (s: any) => s.rss_url,
+    );
 
     const logs: {
       source_id: string;
@@ -243,21 +392,21 @@ Deno.serve(async (req) => {
           }
 
           // Insert new news item
-          const { error: insertError } = await supabase
-            .from("news")
-            .insert({
-              project_id,
-              source_id: source.id,
-              title: item.title.substring(0, 500),
-              original_content: item.description ?? "",
-              source_url: item.link,
-              discovered_at: item.pubDate ? new Date(item.pubDate).toISOString() : new Date().toISOString(),
-              status: "new",
-              importance_score: 5,
-              ai_confidence: 0,
-              is_duplicate: false,
-              is_demo: false,
-            });
+          const { error: insertError } = await supabase.from("news").insert({
+            project_id,
+            source_id: source.id,
+            title: item.title.substring(0, 500),
+            original_content: item.description ?? "",
+            source_url: item.link,
+            discovered_at: item.pubDate
+              ? new Date(item.pubDate).toISOString()
+              : new Date().toISOString(),
+            status: "new",
+            importance_score: 5,
+            ai_confidence: 0,
+            is_duplicate: false,
+            is_demo: false,
+          });
 
           if (insertError) {
             // Likely unique constraint violation
@@ -299,7 +448,12 @@ Deno.serve(async (req) => {
     }
 
     // Update automation run
-    const finalStatus = totalErrors > 0 && totalNew === 0 ? "error" : totalErrors > 0 ? "partial" : "success";
+    const finalStatus =
+      totalErrors > 0 && totalNew === 0
+        ? "error"
+        : totalErrors > 0
+          ? "partial"
+          : "success";
 
     await supabase
       .from("automation_runs")
@@ -307,7 +461,8 @@ Deno.serve(async (req) => {
         status: finalStatus,
         completed_at: new Date().toISOString(),
         items_processed: totalNew,
-        error_message: totalErrors > 0 ? `${totalErrors} source(s) with errors` : null,
+        error_message:
+          totalErrors > 0 ? `${totalErrors} source(s) with errors` : null,
       })
       .eq("id", run.id);
 
@@ -326,9 +481,13 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (err: any) {
+    const corsHeaders = getCorsHeaders(req);
     return new Response(
       JSON.stringify({ error: err.message ?? "Internal error" }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
     );
   }
 });

@@ -1,1 +1,7 @@
 project_id = "joqfrsovxrvpjdunvtvk"
+
+[functions.collect-news]
+# verify_jwt = false because the function handles both user JWT and secret key
+# authentication internally via the SDK. The Supabase gateway must allow
+# requests with apikey (secret key) to reach the function without JWT validation.
+verify_jwt = false
