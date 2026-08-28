@@ -495,7 +495,7 @@ export const mockSources: Source[] = [
     id: "s6",
     nome: "Blog do Litoral",
     url: "https://exemplo.com/blogdolitoral",
-    tipo: "rede_social",
+    tipo: "official",
     ativa: false,
     ultimaColeta: hora(8, 5, 5),
     noticiasColetadas: 12,
