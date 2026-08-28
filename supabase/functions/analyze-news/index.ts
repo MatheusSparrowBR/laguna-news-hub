@@ -1,88 +1,24 @@
-import { createClient, type SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 /**
  * analyze-news Edge Function
  *
  * Receives { project_id, news_id } and performs AI analysis on a single news item.
- * Authentication: same pattern as collect-news (user JWT or automation secret key).
+ * Authentication: user JWT only (verified by Supabase gateway + validated internally).
  *
  * Requires OPENAI_API_KEY secret configured in Supabase Edge Function secrets.
  */
 
-const ALLOWED_ORIGINS = [
-  "https://joqfrsovxrvpjdunvtvk.supabase.co",
-  "https://lovable.dev",
-  "http://localhost:5173",
-  "http://localhost:3000",
-];
+const corsHeaders: Record<string, string> = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+};
 
-function getCorsHeaders(req: Request): Record<string, string> {
-  const origin = req.headers.get("origin") ?? "";
-  const allowedOrigin = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
-  return {
-    "Access-Control-Allow-Origin": allowedOrigin,
-    "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
-  };
-}
-
-interface AuthResult {
-  mode: "user" | "secret";
-  userId?: string;
-  error?: string;
-  status?: number;
-}
-
-async function authenticate(
-  req: Request,
-  supabaseUrl: string,
-  publishableKey: string,
-  secretKeys: string,
-): Promise<AuthResult> {
-  const authHeader = req.headers.get("authorization");
-  const apikeyHeader = req.headers.get("apikey");
-
-  if (authHeader && authHeader.startsWith("Bearer ")) {
-    const token = authHeader.replace("Bearer ", "");
-    if (token !== publishableKey && !token.startsWith("sb_")) {
-      const verifyClient = createClient(supabaseUrl, publishableKey, {
-        auth: { persistSession: false, autoRefreshToken: false },
-      });
-      const { data: { user }, error } = await verifyClient.auth.getUser(token);
-      if (error || !user) {
-        return { mode: "user", error: "Invalid or expired token", status: 401 };
-      }
-      return { mode: "user", userId: user.id };
-    }
-  }
-
-  if (apikeyHeader && apikeyHeader.startsWith("sb_secret_")) {
-    const keys = secretKeys.split(",").map((k) => k.trim()).filter(Boolean);
-    const automationKey = keys[0] || null;
-    if (!automationKey) {
-      return { mode: "secret", error: "No automation secret key configured", status: 500 };
-    }
-    if (apikeyHeader === automationKey) {
-      return { mode: "secret" };
-    }
-    return { mode: "secret", error: "Unauthorized", status: 403 };
-  }
-
-  if (apikeyHeader === publishableKey) {
-    return { mode: "user", error: "No authentication provided. Send Authorization: Bearer <JWT>", status: 401 };
-  }
-
-  return { mode: "user", error: "No valid credentials provided", status: 401 };
-}
-
-function createAdminClient(supabaseUrl: string, secretKeys: string): SupabaseClient {
-  const keys = secretKeys.split(",").map((k) => k.trim()).filter(Boolean);
-  const secretKey = keys[0];
-  if (!secretKey) {
-    throw new Error("No secret key available for admin client");
-  }
-  return createClient(supabaseUrl, secretKey, {
-    auth: { persistSession: false, autoRefreshToken: false },
+function jsonResponse(body: Record<string, unknown>, status = 200): Response {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
   });
 }
 
@@ -198,7 +134,6 @@ Retorne SOMENTE o JSON de análise, sem markdown, sem explicação fora do JSON.
 
   const parsed = JSON.parse(content) as AnalysisResult;
 
-  // Validate required fields
   if (typeof parsed.is_relevant_to_laguna !== "boolean") {
     throw new Error("Invalid AI response: missing is_relevant_to_laguna");
   }
@@ -210,62 +145,70 @@ Retorne SOMENTE o JSON de análise, sem markdown, sem explicação fora do JSON.
 }
 
 Deno.serve(async (req) => {
-  const corsHeaders = getCorsHeaders(req);
-
+  // Handle CORS preflight
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
 
   if (req.method !== "POST") {
-    return new Response(
-      JSON.stringify({ error: "Method not allowed" }),
-      { status: 405, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-    );
+    return jsonResponse({ error: "Method not allowed" }, 405);
   }
+
+  console.log("analyze-news request received");
 
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
-    const publishableKey = Deno.env.get("SUPABASE_PUBLISHABLE_KEYS") ?? "";
-    const secretKeys = Deno.env.get("SUPABASE_SECRET_KEYS") ?? "";
+    const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+    const anonKey = Deno.env.get("SUPABASE_ANON_KEY") ?? "";
 
-    if (!supabaseUrl || !secretKeys) {
-      return new Response(
-        JSON.stringify({ error: "Server configuration error" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-      );
+    if (!supabaseUrl || !serviceRoleKey) {
+      console.error("Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY");
+      return jsonResponse({ error: "Server configuration error" }, 500);
     }
 
-    // Authenticate
-    const auth = await authenticate(req, supabaseUrl, publishableKey, secretKeys);
-    if (auth.error) {
-      return new Response(
-        JSON.stringify({ error: auth.error }),
-        { status: auth.status ?? 401, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-      );
+    // Authenticate user via JWT
+    const authHeader = req.headers.get("authorization");
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return jsonResponse({ error: "Authentication required. Send Authorization: Bearer <JWT>" }, 401);
     }
+
+    const token = authHeader.replace("Bearer ", "");
+
+    // Skip if token is just the anon key (no user session)
+    if (token === anonKey) {
+      return jsonResponse({ error: "Authentication required. Please log in." }, 401);
+    }
+
+    // Verify the user JWT
+    const authClient = createClient(supabaseUrl, anonKey || serviceRoleKey, {
+      auth: { persistSession: false, autoRefreshToken: false },
+    });
+
+    const { data: { user }, error: userError } = await authClient.auth.getUser(token);
+    if (userError || !user) {
+      return jsonResponse({ error: "Invalid or expired token" }, 401);
+    }
+
+    const userId = user.id;
 
     // Parse body
     let body: { project_id?: string; news_id?: string };
     try {
       body = await req.json();
     } catch {
-      return new Response(
-        JSON.stringify({ error: "Invalid JSON body" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-      );
+      return jsonResponse({ error: "Invalid JSON body" }, 400);
     }
 
     const { project_id, news_id } = body;
 
     if (!project_id || !news_id) {
-      return new Response(
-        JSON.stringify({ error: "project_id and news_id are required" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-      );
+      return jsonResponse({ error: "project_id and news_id are required" }, 400);
     }
 
-    // Admin client
-    const supabase = createAdminClient(supabaseUrl, secretKeys);
+    // Admin client for DB operations
+    const supabase = createClient(supabaseUrl, serviceRoleKey, {
+      auth: { persistSession: false, autoRefreshToken: false },
+    });
 
     // Validate project and ownership
     const { data: project, error: projectError } = await supabase
@@ -275,24 +218,16 @@ Deno.serve(async (req) => {
       .maybeSingle();
 
     if (projectError) {
-      return new Response(
-        JSON.stringify({ error: "Failed to validate project" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-      );
+      console.error("Project query error:", projectError.message);
+      return jsonResponse({ error: "Failed to validate project" }, 500);
     }
 
     if (!project) {
-      return new Response(
-        JSON.stringify({ error: "Project not found" }),
-        { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-      );
+      return jsonResponse({ error: "Project not found" }, 404);
     }
 
-    if (auth.mode === "user" && project.owner_id !== auth.userId) {
-      return new Response(
-        JSON.stringify({ error: "Forbidden: you do not own this project" }),
-        { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-      );
+    if (project.owner_id !== userId) {
+      return jsonResponse({ error: "Forbidden: you do not own this project" }, 403);
     }
 
     // Fetch the news item
@@ -304,17 +239,12 @@ Deno.serve(async (req) => {
       .maybeSingle();
 
     if (newsError) {
-      return new Response(
-        JSON.stringify({ error: "Failed to fetch news item" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-      );
+      console.error("News query error:", newsError.message);
+      return jsonResponse({ error: "Failed to fetch news item" }, 500);
     }
 
     if (!newsItem) {
-      return new Response(
-        JSON.stringify({ error: "News item not found in this project" }),
-        { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-      );
+      return jsonResponse({ error: "News item not found in this project" }, 404);
     }
 
     // Update news status to analyzing
@@ -340,10 +270,8 @@ Deno.serve(async (req) => {
         .update({ status: "new" })
         .eq("id", news_id);
 
-      return new Response(
-        JSON.stringify({ error: `AI analysis failed: ${aiError.message}` }),
-        { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-      );
+      console.error("OpenAI error:", aiError.message);
+      return jsonResponse({ error: `AI analysis failed: ${aiError.message}` }, 502);
     }
 
     // Determine news status based on analysis
@@ -353,7 +281,7 @@ Deno.serve(async (req) => {
     } else if (analysis.moderation_status === "review_required") {
       newStatus = "review_required";
     } else if (analysis.moderation_status === "rejected") {
-      newStatus = "review_required"; // Don't auto-reject, send to human review
+      newStatus = "review_required";
     } else if (analysis.relevance_confidence < 80) {
       newStatus = "review_required";
     } else {
@@ -380,10 +308,7 @@ Deno.serve(async (req) => {
 
     if (upsertError) {
       console.error("Failed to save news_analysis:", upsertError.message);
-      return new Response(
-        JSON.stringify({ error: "Failed to save analysis results" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-      );
+      return jsonResponse({ error: "Failed to save analysis results" }, 500);
     }
 
     // Update news record
@@ -420,17 +345,9 @@ Deno.serve(async (req) => {
       },
     };
 
-    return new Response(JSON.stringify(result), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return jsonResponse(result, 200);
   } catch (err: any) {
-    const corsHeaders = getCorsHeaders(req);
-    return new Response(
-      JSON.stringify({ error: err.message ?? "Internal error" }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      },
-    );
+    console.error("Unhandled error in analyze-news:", err.message);
+    return jsonResponse({ error: err.message ?? "Internal error" }, 500);
   }
 });

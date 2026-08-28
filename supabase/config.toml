@@ -7,5 +7,6 @@ project_id = "joqfrsovxrvpjdunvtvk"
 verify_jwt = false
 
 [functions.analyze-news]
-# Same auth pattern as collect-news: handles JWT and secret key internally.
-verify_jwt = false
+# verify_jwt = true: only authenticated users can call this function.
+# The Supabase gateway validates the JWT before forwarding the request.
+verify_jwt = true
