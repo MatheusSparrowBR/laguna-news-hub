@@ -37,7 +37,17 @@ export function useAuth(): AuthState {
   };
 
   const signUp = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signUp({ email, password });
+    const redirectUrl = typeof window !== "undefined"
+      ? `${window.location.origin}/login`
+      : undefined;
+
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: redirectUrl,
+      },
+    });
     if (error) throw error;
   };
 

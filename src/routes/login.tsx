@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Newspaper } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -30,10 +30,23 @@ function LoginPage() {
   const [carregando, setCarregando] = useState(false);
   const [modoCriar, setModoCriar] = useState(false);
 
+  // Detecta retorno de confirmação de email (Supabase redireciona com tokens no hash)
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const hash = window.location.hash;
+    if (hash && hash.includes("access_token")) {
+      toast.success("E-mail confirmado com sucesso! Faça login para continuar.");
+      // Limpa o hash para não reprocessar
+      window.history.replaceState(null, "", window.location.pathname + window.location.search);
+    }
+  }, []);
+
   // Se já estiver autenticado, vai para o dashboard
-  if (!loading && session) {
-    navigate({ to: "/dashboard", replace: true });
-  }
+  useEffect(() => {
+    if (!loading && session) {
+      navigate({ to: "/dashboard", replace: true });
+    }
+  }, [loading, session, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,14 +56,19 @@ function LoginPage() {
     try {
       if (modoCriar) {
         await signUp(email, senha);
-        toast.success("Conta criada. Verifique seu e-mail para confirmar.");
+        toast.success("Conta criada! Verifique sua caixa de entrada (e spam) para confirmar o e-mail.");
       } else {
         await signIn(email, senha);
         toast.success("Login realizado");
         navigate({ to: "/dashboard", replace: true });
       }
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erro ao acessar");
+      const message = err instanceof Error ? err.message : "Erro ao acessar";
+      if (message.toLowerCase().includes("email not confirmed")) {
+        toast.error("E-mail ainda não confirmado. Verifique sua caixa de entrada e spam.");
+      } else {
+        toast.error(message);
+      }
     } finally {
       setCarregando(false);
     }
