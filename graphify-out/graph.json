@@ -829,7 +829,7 @@
       "file_type": "code",
       "norm_label": "ultimaexecucao",
       "source_file": "src/services/collectNews.ts",
-      "source_location": "L33"
+      "source_location": "L21"
     },
     {
       "id": "src_data_mock_analisesimulada",
@@ -1218,7 +1218,7 @@
       "file_type": "code",
       "norm_label": "obterultimaexecucao()",
       "source_file": "src/services/collectNews.ts",
-      "source_location": "L42"
+      "source_location": "L47"
     },
     {
       "id": "src_services_datamode_carregar",
@@ -2593,7 +2593,7 @@
       "file_type": "code",
       "norm_label": "executarcoletadenoticias()",
       "source_file": "src/services/collectNews.ts",
-      "source_location": "L21"
+      "source_location": "L30"
     },
     {
       "id": "src_data_mock_hora",
@@ -26163,7 +26163,7 @@
     },
     {
       "source": "src_services_collectnews",
-      "target": "src_services_collectnews_executarcoletadenoticias",
+      "target": "src_services_collectnews_ultimaexecucao",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -26185,13 +26185,13 @@
     },
     {
       "source": "src_services_collectnews",
-      "target": "src_services_collectnews_ultimaexecucao",
+      "target": "src_services_collectnews_executarcoletadenoticias",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/services/collectNews.ts",
-      "source_location": "L33",
+      "source_location": "L30",
       "weight": 1.0
     },
     {
@@ -26202,7 +26202,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/services/collectNews.ts",
-      "source_location": "L42",
+      "source_location": "L47",
       "weight": 1.0
     },
     {
@@ -27487,5 +27487,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "1e14deaafccb94ea38e1c811693c90d9ddd9a43c"
+  "built_at_commit": "b2a3eb1e4821475d87c5e81109a0d06d40fe261f"
 }
