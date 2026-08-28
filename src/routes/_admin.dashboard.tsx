@@ -23,16 +23,16 @@ export const Route = createFileRoute("/_admin/dashboard")({
   head: () => ({
     meta: [
       { title: "Dashboard | Projeto Notícias Laguna" },
-        {
-          name: "description",
-          content:
-            "Visão geral das notícias encontradas, aprovações pendentes e desempenho do perfil de notícias de Laguna.",
-        },
-        { property: "og:title", content: "Dashboard | Projeto Notícias Laguna" },
-        {
-          property: "og:description",
-          content: "Visão geral do painel de notícias locais de Laguna - SC.",
-        },
+      {
+        name: "description",
+        content:
+          "Visão geral das notícias encontradas, aprovações pendentes e desempenho do perfil de notícias de Laguna.",
+      },
+      { property: "og:title", content: "Dashboard | Projeto Notícias Laguna" },
+      {
+        property: "og:description",
+        content: "Visão geral do painel de notícias locais de Laguna - SC.",
+      },
     ],
   }),
   component: DashboardPage,
@@ -91,10 +91,14 @@ function DashboardPage() {
   const metricasDiarias = analytics?.diario ?? [];
   const alcanceHoje = analytics?.alcance ?? 0;
 
+  const cidadeLabel = projeto?.city
+    ? `${projeto.city} - ${projeto.state}`
+    : "Laguna - SC";
+
   return (
     <PageContainer
       titulo="Dashboard"
-      descricao={`Resumo do dia em ${projeto?.city ? `${projeto.city} - ${projeto.state}` : "Laguna - SC"}`}
+      descricao={`Resumo do dia em ${cidadeLabel}`}
     >
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <MetricCard
@@ -168,11 +172,18 @@ function DashboardPage() {
             </Button>
           }
         >
-          <div className="space-y-3">
-            {ultimasNoticias.map((n) => (
-              <NewsCard key={n.id} noticia={n} />
-            ))}
-          </div>
+          {ultimasNoticias.length === 0 ? (
+            <EmptyState
+              titulo="Nenhuma notícia ainda"
+              descricao="As notícias coletadas aparecerão aqui."
+            />
+          ) : (
+            <div className="space-y-3">
+              {ultimasNoticias.map((n) => (
+                <NewsCard key={n.id} noticia={n} />
+              ))}
+            </div>
+          )}
         </SectionCard>
 
         <SectionCard

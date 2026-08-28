@@ -3,9 +3,12 @@ import { mockNews } from "@/data/mock";
 import type { ConteudoGerado, NewsItem, NewsStatus } from "@/lib/types";
 
 /**
- * Estado simulado das notícias (em memória, apenas nesta etapa do projeto).
- * Quando o Supabase entrar, estas funções passarão a ler/gravar no banco
- * e as telas continuam iguais.
+ * @deprecated Este store local será removido quando toda a leitura/gravação
+ * migrar para o Supabase via src/services/queries.ts.
+ *
+ * Motivo de existir: permite rodar o app em modo demonstração sem banco.
+ * Não importe useNoticias/useNoticia daqui nos componentes de rota —
+ * prefira os hooks de src/services/queries.ts que já fazem fallback.
  */
 
 let noticias: NewsItem[] = [...mockNews].sort(
@@ -21,10 +24,13 @@ function notificar() {
 
 function inscrever(fn: () => void) {
   ouvintes.add(fn);
-  return () => ouvintes.delete(fn);
+  return () => {
+    ouvintes.delete(fn);
+  };
 }
 
-export function useNoticias(): NewsItem[] {
+/** @deprecated Use useNoticias de src/services/queries.ts */
+export function useNoticiasLocal(): NewsItem[] {
   return useSyncExternalStore(
     inscrever,
     () => noticias,
@@ -32,23 +38,28 @@ export function useNoticias(): NewsItem[] {
   );
 }
 
-export function useNoticia(id: string): NewsItem | undefined {
-  const lista = useNoticias();
+/** @deprecated Use useNoticia de src/services/queries.ts */
+export function useNoticiaLocal(id: string): NewsItem | undefined {
+  const lista = useNoticiasLocal();
   return lista.find((n) => n.id === id);
 }
 
-export function alterarStatus(id: string, status: NewsStatus) {
+// Mantém exports antigos para compatibilidade durante a migração
+export { useNoticiasLocal as useNoticias };
+export { useNoticiaLocal as useNoticia };
+
+export function alterarStatus(id: string, status: NewsStatus): void {
   noticias = noticias.map((n) => (n.id === id ? { ...n, status } : n));
   notificar();
 }
 
-export function salvarConteudo(id: string, gerado: ConteudoGerado) {
+export function salvarConteudo(id: string, gerado: ConteudoGerado): void {
   noticias = noticias.map((n) => (n.id === id ? { ...n, gerado } : n));
   notificar();
 }
 
 /** Simula uma nova coleta nas fontes cadastradas. */
-export function recarregarNoticias() {
+export function recarregarNoticias(): void {
   noticias = [...noticias];
   notificar();
 }
