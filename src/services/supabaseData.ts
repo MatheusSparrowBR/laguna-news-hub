@@ -185,7 +185,7 @@ export async function criarFonte(
     name: valores.name,
     url: valores.url,
     source_type: valores.source_type as "rss" | "website" | "api" | "official",
-    rss_url: valores.rss_url ?? undefined,
+    rss_url: valores.rss_url ?? null,
   });
   if (error) throw error;
 }
