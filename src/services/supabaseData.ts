@@ -12,7 +12,7 @@ import type {
 } from "@/lib/types";
 
 /**
- * Camada de acesso ao banco (Lovable Cloud).
+ * Camada de acesso ao banco de dados (Supabase).
  * As linhas do banco são convertidas para os mesmos tipos que as telas
  * já usavam, para não precisar refazer nenhuma tela.
  */

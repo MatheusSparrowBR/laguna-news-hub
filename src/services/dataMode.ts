@@ -2,8 +2,8 @@ import { useSyncExternalStore } from "react";
 
 /**
  * Modo de dados do painel.
- * - "banco": usa o Lovable Cloud (fonte principal).
- * - "demo": usa os dados simulados que já existiam, para demonstração.
+ * - "banco": usa o Supabase como fonte de dados.
+ * - "demo": usa os dados simulados (desativado — mantido apenas por compatibilidade de tipo).
  */
 export type ModoDados = "banco" | "demo";
 
@@ -14,17 +14,18 @@ let carregado = false;
 
 function carregar(): ModoDados {
   if (!carregado && typeof window !== "undefined") {
-    const salvo = window.localStorage.getItem(CHAVE);
-    modo = salvo === "demo" ? "demo" : "banco";
+    // Sempre usa banco (Supabase). Ignora valor salvo.
+    modo = "banco";
     carregado = true;
   }
   return modo;
 }
 
 export function definirModoDados(novo: ModoDados) {
-  modo = novo;
+  // Força sempre banco — ignora tentativa de mudar para demo
+  modo = "banco";
   carregado = true;
-  if (typeof window !== "undefined") window.localStorage.setItem(CHAVE, novo);
+  if (typeof window !== "undefined") window.localStorage.setItem(CHAVE, "banco");
   ouvintes.forEach((o) => o());
 }
 

@@ -1,12 +1,4 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useModoDados } from "./dataMode";
-import {
-  listarNoticias,
-  listarPublicacoes,
-  listarFontes,
-  obterEstatisticasInstagram,
-  obterMetricasDiarias,
-} from "./mockService";
 import {
   obterNoticias,
   obterNoticiaPorId,
@@ -27,28 +19,23 @@ import {
 import type { NewsItem, NewsStatus, Publication, Source } from "@/lib/types";
 
 /**
- * Hooks de dados que alternam entre banco real (Lovable Cloud) e dados
- * simulados (demo), de acordo com a chave laguna:modo-dados.
+ * Hooks de dados — acesso direto ao Supabase.
  */
 
 export function useNoticias(projectId?: string) {
-  const modo = useModoDados();
   return useQuery<NewsItem[]>({
-    queryKey: ["noticias", projectId, modo],
+    queryKey: ["noticias", projectId],
     queryFn: async () => {
-      if (modo === "demo" || !projectId) return listarNoticias();
-      return obterNoticias(projectId);
+      return obterNoticias(projectId!);
     },
-    enabled: modo === "demo" || !!projectId,
+    enabled: !!projectId,
   });
 }
 
-export function useNoticia(id: string, projectId?: string) {
-  const modo = useModoDados();
+export function useNoticia(id: string, _projectId?: string) {
   return useQuery<NewsItem | null>({
-    queryKey: ["noticia", id, projectId, modo],
+    queryKey: ["noticia", id],
     queryFn: async () => {
-      if (modo === "demo") return listarNoticias().find((n) => n.id === id) ?? null;
       return obterNoticiaPorId(id);
     },
     enabled: !!id,
@@ -56,71 +43,42 @@ export function useNoticia(id: string, projectId?: string) {
 }
 
 export function useFontes(projectId?: string) {
-  const modo = useModoDados();
   return useQuery<Source[]>({
-    queryKey: ["fontes", projectId, modo],
+    queryKey: ["fontes", projectId],
     queryFn: async () => {
-      if (modo === "demo" || !projectId) return listarFontes();
-      return obterFontes(projectId);
+      return obterFontes(projectId!);
     },
-    enabled: modo === "demo" || !!projectId,
+    enabled: !!projectId,
   });
 }
 
 export function usePublicacoes(projectId?: string) {
-  const modo = useModoDados();
   return useQuery<Publication[]>({
-    queryKey: ["publicacoes", projectId, modo],
+    queryKey: ["publicacoes", projectId],
     queryFn: async () => {
-      if (modo === "demo" || !projectId) return listarPublicacoes();
-      return obterPublicacoes(projectId);
+      return obterPublicacoes(projectId!);
     },
-    enabled: modo === "demo" || !!projectId,
+    enabled: !!projectId,
   });
 }
 
 export function useAnalytics(projectId?: string) {
-  const modo = useModoDados();
   return useQuery({
-    queryKey: ["analytics", projectId, modo],
+    queryKey: ["analytics", projectId],
     queryFn: async () => {
-      if (modo === "demo" || !projectId) {
-        const publicacoes = listarPublicacoes();
-        const metricas = obterMetricasDiarias();
-        const instagram = obterEstatisticasInstagram();
-        return {
-          alcance: instagram.alcanceHoje,
-          impressoes: instagram.impressoesHoje,
-          curtidas: publicacoes.reduce((s, p) => s + p.curtidas, 0),
-          comentarios: publicacoes.reduce((s, p) => s + p.comentarios, 0),
-          compartilhamentos: 0,
-          salvamentos: 0,
-          diario: metricas,
-        };
-      }
-      return obterAnalytics(projectId);
+      return obterAnalytics(projectId!);
     },
-    enabled: modo === "demo" || !!projectId,
+    enabled: !!projectId,
   });
 }
 
 export function useConfiguracoes(projectId?: string) {
-  const modo = useModoDados();
   return useQuery<ConfiguracoesProjeto | null>({
-    queryKey: ["configuracoes", projectId, modo],
+    queryKey: ["configuracoes", projectId],
     queryFn: async () => {
-      if (modo === "demo" || !projectId) {
-        return {
-          auto_publish_enabled: false,
-          approval_required: true,
-          max_posts_per_day: 6,
-          minimum_confidence: 70,
-          minimum_interval_minutes: 60,
-        };
-      }
-      return obterConfiguracoes(projectId);
+      return obterConfiguracoes(projectId!);
     },
-    enabled: modo === "demo" || !!projectId,
+    enabled: !!projectId,
   });
 }
 
