@@ -665,8 +665,8 @@
       "src_services_newsstore_ouvintes",
       "src_services_newsstore_recarregarnoticias",
       "src_services_newsstore_salvarconteudo",
-      "src_services_newsstore_usenoticia",
-      "src_services_newsstore_usenoticias"
+      "src_services_newsstore_usenoticialocal",
+      "src_services_newsstore_usenoticiaslocal"
     ],
     "22": [
       "src_components_ui_sheet",
