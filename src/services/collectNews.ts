@@ -18,18 +18,6 @@ export interface CollectNewsResult {
   }[];
 }
 
-export async function executarColetaDeNoticias(projectId: string): Promise<CollectNewsResult> {
-  const { data, error } = await supabase.functions.invoke("collect-news", {
-    body: { project_id: projectId },
-  });
-
-  if (error) {
-    throw new Error(error.message ?? "Erro ao executar coleta de notícias");
-  }
-
-  return data as CollectNewsResult;
-}
-
 export interface UltimaExecucao {
   id: string;
   status: string;
@@ -37,6 +25,23 @@ export interface UltimaExecucao {
   completed_at: string | null;
   items_processed: number;
   error_message: string | null;
+}
+
+export async function executarColetaDeNoticias(projectId: string): Promise<CollectNewsResult> {
+  const { data, error } = await supabase.functions.invoke("collect-news", {
+    body: { project_id: projectId },
+  });
+
+  if (error) {
+    throw new Error(error.message ?? "Erro ao chamar a função de coleta");
+  }
+
+  // The edge function may return an error inside the JSON body
+  if (data && typeof data === "object" && "error" in data) {
+    throw new Error((data as { error: string }).error);
+  }
+
+  return data as CollectNewsResult;
 }
 
 export async function obterUltimaExecucao(projectId: string): Promise<UltimaExecucao | null> {
