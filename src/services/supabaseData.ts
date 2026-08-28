@@ -50,6 +50,7 @@ export interface FonteBanco extends Source {
 
 const statusDoBanco: Record<string, NewsStatus> = {
   new: "nova",
+  pending: "nova",
   analyzing: "em_analise",
   awaiting_approval: "aguardando_aprovacao",
   approved: "aprovada",
@@ -117,6 +118,8 @@ export async function obterProjetoAtual(): Promise<ProjetoAtual | null> {
   }
   if (!data) {
     console.warn("[obterProjetoAtual] Nenhum projeto encontrado na tabela projects.");
+  } else {
+    console.log("[obterProjetoAtual] Projeto encontrado:", data.id, data.name);
   }
   return data ?? null;
 }
@@ -301,6 +304,8 @@ function mapearNoticia(linha: LinhaNews): NewsItem {
 }
 
 export async function obterNoticias(projectId: string): Promise<NewsItem[]> {
+  console.log("[obterNoticias] Buscando notícias para projectId:", projectId);
+
   const { data, error } = await supabase
     .from("news")
     .select(SELECT_NEWS)
@@ -313,6 +318,11 @@ export async function obterNoticias(projectId: string): Promise<NewsItem[]> {
   }
 
   console.log(`[obterNoticias] Retornadas ${(data ?? []).length} notícias para project ${projectId}`);
+  if ((data ?? []).length > 0) {
+    console.log("[obterNoticias] Primeira notícia (raw):", JSON.stringify(data![0], null, 2));
+  } else {
+    console.warn("[obterNoticias] Nenhuma notícia retornada. Verifique se o project_id das rows na tabela news bate com:", projectId);
+  }
 
   return ((data ?? []) as unknown as LinhaNews[]).map(mapearNoticia);
 }
