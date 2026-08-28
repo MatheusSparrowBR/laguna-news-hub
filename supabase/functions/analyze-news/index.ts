@@ -9,6 +9,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
  * Requires OPENAI_API_KEY secret configured in Supabase Edge Function secrets.
  *
  * CORS: handled manually with explicit origin allowlist.
+ * The gateway must NOT override these headers.
  */
 
 // Allowed origins — only these frontends can call this function.
@@ -21,44 +22,35 @@ const ALLOWED_ORIGINS: string[] = [
 /**
  * Returns CORS headers for the given request origin.
  * If origin is in the allowlist, sets Access-Control-Allow-Origin to that origin.
- * Otherwise, omits the Allow-Origin header (browser will block the response).
+ * Otherwise returns null (caller should block the request).
  */
-function getCorsHeaders(origin: string | null): Record<string, string> {
-  const headers: Record<string, string> = {
+function getCorsHeaders(origin: string | null): Record<string, string> | null {
+  if (!origin || !ALLOWED_ORIGINS.includes(origin)) {
+    return null;
+  }
+
+  return {
+    "Access-Control-Allow-Origin": origin,
     "Access-Control-Allow-Methods": "POST, OPTIONS",
-    "Access-Control-Allow-Headers": [
-      "authorization",
-      "apikey",
-      "content-type",
-      "x-client-info",
-      "x-region",
-      "x-supabase-api-version",
-      "x-relay-to",
-      "accept",
-      "accept-encoding",
-      "accept-language",
-      "x-stainless-os",
-      "x-stainless-runtime",
-      "x-stainless-arch",
-      "x-stainless-lang",
-      "x-stainless-package-version",
-      "x-stainless-retry-count",
-    ].join(", "),
+    "Access-Control-Allow-Headers": "authorization, apikey, content-type, x-client-info",
+    "Access-Control-Allow-Credentials": "true",
     "Access-Control-Max-Age": "86400",
     "Vary": "Origin",
   };
-
-  if (origin && ALLOWED_ORIGINS.includes(origin)) {
-    headers["Access-Control-Allow-Origin"] = origin;
-  }
-
-  return headers;
 }
 
 function jsonResponse(body: Record<string, unknown>, status: number, corsHeaders: Record<string, string>): Response {
   return new Response(JSON.stringify(body), {
     status,
     headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+}
+
+/** Blocked response when origin is not allowed */
+function blockedResponse(): Response {
+  return new Response(JSON.stringify({ error: "Origin not allowed" }), {
+    status: 403,
+    headers: { "Content-Type": "application/json", "Vary": "Origin" },
   });
 }
 
@@ -187,22 +179,28 @@ Retorne SOMENTE o JSON de análise, sem markdown, sem explicação fora do JSON.
 Deno.serve(async (req) => {
   const origin = req.headers.get("origin");
   const cors = getCorsHeaders(origin);
-  const originAllowed = !!(origin && ALLOWED_ORIGINS.includes(origin));
 
-  // Diagnostic log — origin check (no secrets)
+  // Log for diagnostics (no secrets)
   console.log("analyze-news request:", {
     method: req.method,
     origin: origin ?? "(none)",
-    originAllowed,
+    originAllowed: cors !== null,
     timestamp: new Date().toISOString(),
   });
 
-  // CORS preflight — respond immediately
+  // CORS preflight
   if (req.method === "OPTIONS") {
-    return new Response(null, {
-      status: 204,
-      headers: cors,
-    });
+    if (!cors) {
+      console.log("analyze-news OPTIONS blocked: origin not in allowlist");
+      return blockedResponse();
+    }
+    return new Response(null, { status: 204, headers: cors });
+  }
+
+  // Block non-allowed origins for all other methods
+  if (!cors) {
+    console.log("analyze-news blocked: origin not in allowlist");
+    return blockedResponse();
   }
 
   // Only POST allowed beyond preflight
@@ -217,6 +215,7 @@ Deno.serve(async (req) => {
     hasAuth: !!req.headers.get("authorization"),
     hasApikey: !!req.headers.get("apikey"),
     contentType: req.headers.get("content-type"),
+    corsOrigin: cors["Access-Control-Allow-Origin"],
   });
 
   try {
