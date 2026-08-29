@@ -36,10 +36,10 @@ function AnalyticsPage() {
     for (let i = 6; i >= 0; i--) {
       const d = new Date(hoje);
       d.setDate(d.getDate() - i);
-      const iso = d.toISOString().split("T")[0];
+      const iso = d.toISOString().slice(0, 10);
       const pubs = publicacoes.filter((p) => p.horario.startsWith(iso));
       dias.push({
-        dia: nomes[d.getDay()],
+        dia: nomes[d.getDay()] ?? "",
         publicacoes: pubs.length,
         alcance: pubs.reduce((s, p) => s + p.visualizacoes, 0),
       });
