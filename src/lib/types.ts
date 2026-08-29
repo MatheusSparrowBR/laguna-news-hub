@@ -33,6 +33,15 @@ export const NEWS_STATUS = [
 
 export type NewsStatus = (typeof NEWS_STATUS)[number];
 
+/** Conteúdo preparado (hoje simulado) para a publicação no Instagram. */
+export interface ConteudoGerado {
+  titulo: string;
+  resumo: string;
+  legenda: string;
+  hashtags: string;
+  textoArte: string;
+}
+
 export interface NewsItem {
   id: string;
   titulo: string;
@@ -49,15 +58,12 @@ export interface NewsItem {
   importanciaNota: number;
   confiancaIA: number;
   duplicada: boolean;
+  duplicadaDe?: string;
+  sugestaoTitulo?: string;
+  sugestaoLegenda?: string;
   grupoDuplicidade?: string;
   explicacaoIA: string;
-  gerado: {
-    titulo: string;
-    resumo: string;
-    legenda: string;
-    hashtags: string;
-    textoArte: string;
-  };
+  gerado: ConteudoGerado;
   isDemo?: boolean;
 }
 
