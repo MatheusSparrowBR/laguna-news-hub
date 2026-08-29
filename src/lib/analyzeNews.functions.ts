@@ -6,7 +6,7 @@ import {
   determineNewStatus,
   persistAnalysis,
   type AnalyzeNewsOutput,
-} from "./newsAnalysis";
+} from "@/lib/newsAnalysis.server";
 
 const AnalyzeNewsSchema = z.object({
   project_id: z.string().uuid("project_id inválido"),
