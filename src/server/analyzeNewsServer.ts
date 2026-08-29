@@ -19,12 +19,16 @@ const AnalyzeNewsSchema = z.object({
  * Same-origin POST handler that replaces the browser→Edge Function flow.
  * Authentication is handled by requireSupabaseAuth middleware.
  *
+ * All database operations use the user-scoped Supabase client, which
+ * respects RLS. The policies on news and news_analysis enforce project
+ * ownership via owns_project(), so no admin/service-role client is needed.
+ *
  * Flow:
  * 1. Validate input
  * 2. Verify user owns the project (via RLS-scoped client)
  * 3. Fetch the news item
  * 4. Call OpenAI (server-side only)
- * 5. Persist results (via admin client to bypass RLS on writes)
+ * 5. Persist results (via user-scoped client with RLS)
  * 6. Return serializable result to the browser
  */
 export const analyzeNewsServer = createServerFn({ method: "POST" })
@@ -71,16 +75,15 @@ export const analyzeNewsServer = createServerFn({ method: "POST" })
       throw new Error("Notícia não encontrada neste projeto.");
     }
 
-    // ── ADMIN CLIENT (for writes that may bypass RLS) ────────────────────
-    const { supabaseAdmin } = await import(
-      "@/integrations/supabase/client.server"
-    );
-
-    // ── UPDATE STATUS TO ANALYZING ──────────────────────────────────────
-    await supabaseAdmin
+    // ── UPDATE STATUS TO ANALYZING (user-scoped, RLS enforced) ──────────
+    const { error: analyzingError } = await supabase
       .from("news")
       .update({ status: "analyzing" })
       .eq("id", news_id);
+
+    if (analyzingError) {
+      throw new Error(`Erro ao atualizar status para analyzing: ${analyzingError.message}`);
+    }
 
     // ── CALL OPENAI ─────────────────────────────────────────────────────
     const sourceName =
@@ -95,8 +98,8 @@ export const analyzeNewsServer = createServerFn({ method: "POST" })
         sourceName,
       );
     } catch (aiError: any) {
-      // Revert status on AI failure
-      await supabaseAdmin
+      // Revert status on AI failure (user-scoped, RLS enforced)
+      await supabase
         .from("news")
         .update({ status: "new" })
         .eq("id", news_id);
@@ -107,8 +110,8 @@ export const analyzeNewsServer = createServerFn({ method: "POST" })
     // ── DETERMINE STATUS ────────────────────────────────────────────────
     const newStatus = determineNewStatus(analysis);
 
-    // ── PERSIST ─────────────────────────────────────────────────────────
-    await persistAnalysis(supabaseAdmin, news_id, analysis, newStatus);
+    // ── PERSIST (user-scoped, RLS enforced) ─────────────────────────────
+    await persistAnalysis(supabase, news_id, analysis, newStatus);
 
     // ── RETURN (no secrets, only the analysis result) ───────────────────
     return {

@@ -188,17 +188,18 @@ export function determineNewStatus(analysis: AnalysisResult): string {
 
 /**
  * Persists analysis results to the database.
- * Uses an admin/service-role client because RLS INSERT/UPDATE policies
- * on news_analysis and news may not allow direct user writes.
+ * Uses the user-authenticated Supabase client. RLS policies on news and
+ * news_analysis enforce project ownership (owns_project), so no admin
+ * client is needed.
  */
 export async function persistAnalysis(
-  adminClient: SupabaseClient<Database>,
+  client: SupabaseClient<Database>,
   newsId: string,
   analysis: AnalysisResult,
   newStatus: string,
 ): Promise<void> {
   // Upsert news_analysis
-  const { error: upsertError } = await adminClient
+  const { error: upsertError } = await client
     .from("news_analysis")
     .upsert(
       {
@@ -220,7 +221,7 @@ export async function persistAnalysis(
   }
 
   // Update news record
-  const { error: updateError } = await adminClient
+  const { error: updateError } = await client
     .from("news")
     .update({
       status: newStatus as any,

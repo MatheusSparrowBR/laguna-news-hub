@@ -1,0 +1,32 @@
+-- Migration: Auditoria de RLS para o fluxo de análise manual de notícias
+-- Data: 2026-08-29
+--
+-- RESULTADO DA AUDITORIA:
+--
+-- As policies necessárias já existem desde a migration inicial (20260827004826):
+--
+-- 1. news: policy "news_project" FOR ALL TO authenticated
+--    USING(owns_project(project_id)) WITH CHECK(owns_project(project_id))
+--    → Cobre SELECT, INSERT, UPDATE, DELETE.
+--    → UPDATE permitido apenas para notícias do próprio projeto.
+--    → Impede alteração de project_id para projeto alheio (WITH CHECK).
+--
+-- 2. news_analysis: policy "news_analysis_project" FOR ALL TO authenticated
+--    USING(EXISTS(SELECT 1 FROM news n WHERE n.id = news_id AND owns_project(n.project_id)))
+--    WITH CHECK(EXISTS(SELECT 1 FROM news n WHERE n.id = news_id AND owns_project(n.project_id)))
+--    → Cobre SELECT, INSERT, UPDATE, DELETE.
+--    → INSERT/UPDATE permitido apenas quando a notícia referenciada pertence ao projeto do usuário.
+--    → Impede alteração de news_id para escapar da autorização (WITH CHECK).
+--
+-- 3. A migration de segurança (20260828183600) já removeu as policies
+--    permissivas (USING true) que haviam sido criadas por engano.
+--
+-- 4. owns_project é SECURITY INVOKER (migration 20260827004846),
+--    o que significa que respeita o RLS da tabela projects.
+--
+-- CONCLUSÃO: Nenhuma alteração de RLS é necessária.
+-- O fluxo analyzeNewsServer foi alterado no código para usar
+-- o cliente autenticado do usuário em vez de supabaseAdmin.
+--
+-- Esta migration é um registro da auditoria. Sem DDL.
+SELECT 1;
