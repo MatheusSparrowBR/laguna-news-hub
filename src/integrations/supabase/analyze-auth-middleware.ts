@@ -11,7 +11,7 @@
  *
  * Server side:
  *   - Reads the Authorization header from the incoming request
- *   - Validates the JWT with Supabase
+ *   - Validates the JWT with supabase.auth.getUser(token)
  *   - Creates a user-scoped Supabase client
  *   - Passes { supabase, userId, claims } in context
  */
@@ -88,29 +88,29 @@ export const analyzeAuthMiddleware = createMiddleware({ type: 'function' })
     const request = getRequest();
 
     if (!request?.headers) {
-      console.log('[ANALYZE AUTH SERVER]', 'AUTH_HEADER_PRESENT=false (no request headers)');
+      console.log('[ANALYZE AUTH SERVER]', 'TOKEN_RECEIVED=false');
       throw new Error('Unauthorized: No request headers available');
     }
 
     const authHeader = request.headers.get('authorization');
 
     if (!authHeader) {
-      console.log('[ANALYZE AUTH SERVER]', 'AUTH_HEADER_PRESENT=false');
+      console.log('[ANALYZE AUTH SERVER]', 'TOKEN_RECEIVED=false');
       throw new Error('Unauthorized: No authorization header provided');
     }
 
-    console.log('[ANALYZE AUTH SERVER]', 'AUTH_HEADER_PRESENT=true');
-
     if (!authHeader.startsWith('Bearer ')) {
-      console.log('[ANALYZE AUTH SERVER]', 'TOKEN_VALIDATED=false (not Bearer)');
+      console.log('[ANALYZE AUTH SERVER]', 'TOKEN_RECEIVED=false');
       throw new Error('Unauthorized: Only Bearer tokens are supported');
     }
 
     const token = authHeader.replace('Bearer ', '');
     if (!token || token.split('.').length !== 3) {
-      console.log('[ANALYZE AUTH SERVER]', 'TOKEN_VALIDATED=false (invalid JWT format)');
+      console.log('[ANALYZE AUTH SERVER]', 'TOKEN_RECEIVED=false');
       throw new Error('Unauthorized: Invalid token format');
     }
+
+    console.log('[ANALYZE AUTH SERVER]', 'TOKEN_RECEIVED=true');
 
     // ── Create user-scoped Supabase client ───────────────────────────
     const { createClient } = await import('@supabase/supabase-js');
@@ -132,26 +132,26 @@ export const analyzeAuthMiddleware = createMiddleware({ type: 'function' })
       },
     );
 
-    // ── Validate token ──────────────────────────────────────────────
-    const { data, error } = await supabase.auth.getClaims(token);
+    // ── Validate token via Supabase Auth API (server-side) ──────────
+    const { data, error } = await supabase.auth.getUser(token);
 
-    if (error || !data?.claims) {
-      console.log('[ANALYZE AUTH SERVER]', 'TOKEN_VALIDATED=false');
+    if (error || !data?.user) {
+      console.log('[ANALYZE AUTH SERVER]', 'USER_VALIDATED=false');
       throw new Error('Unauthorized: Invalid token');
     }
 
-    if (!data.claims.sub) {
-      console.log('[ANALYZE AUTH SERVER]', 'TOKEN_VALIDATED=false (no sub)');
-      throw new Error('Unauthorized: No user ID found in token');
+    if (!data.user.id) {
+      console.log('[ANALYZE AUTH SERVER]', 'USER_VALIDATED=false');
+      throw new Error('Unauthorized: No user ID found');
     }
 
-    console.log('[ANALYZE AUTH SERVER]', 'TOKEN_VALIDATED=true', 'USER_AUTHENTICATED=true');
+    console.log('[ANALYZE AUTH SERVER]', 'USER_VALIDATED=true');
 
     return next({
       context: {
         supabase,
-        userId: data.claims.sub as string,
-        claims: data.claims,
+        userId: data.user.id,
+        claims: { sub: data.user.id, email: data.user.email },
       },
     });
   });
