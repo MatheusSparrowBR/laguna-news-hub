@@ -1,6 +1,6 @@
-import { registerGlobalMiddleware } from "@tanstack/react-start";
+import { createStart } from "@tanstack/react-start";
 import { attachSupabaseAuth } from "@/integrations/supabase/auth-attacher";
 
-registerGlobalMiddleware({
+export const startInstance = createStart(() => ({
   functionMiddleware: [attachSupabaseAuth],
-});
+}));
