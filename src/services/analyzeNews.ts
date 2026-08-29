@@ -1,4 +1,5 @@
 import { analyzeNewsServer } from "@/lib/analyzeNews.functions";
+import { supabase } from "@/integrations/supabase/client";
 
 export interface AnalysisData {
   is_relevant_to_laguna: boolean;
@@ -24,16 +25,32 @@ export interface AnalyzeNewsResult {
 
 /**
  * Analisa uma notícia com IA usando a Server Function same-origin.
- * Substitui a chamada anterior à Edge Function analyze-news.
- * O JWT do usuário é enviado automaticamente pelo middleware attachSupabaseAuth.
+ * Obtém a sessão atual do browser e envia explicitamente o Authorization header,
+ * garantindo que o token chegue ao servidor mesmo que o middleware global falhe.
  */
 export async function analisarNoticiaComIA(
   projectId: string,
   newsId: string,
 ): Promise<AnalyzeNewsResult> {
+  // ── Obter sessão do browser ────────────────────────────────────────────
+  const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+
+  if (sessionError) {
+    throw new Error("É necessário estar autenticado.");
+  }
+
+  const session = sessionData?.session;
+  if (!session?.access_token) {
+    throw new Error("É necessário estar autenticado.");
+  }
+
+  // ── Chamar Server Function com header explícito ────────────────────────
   try {
     const result = await analyzeNewsServer({
       data: { project_id: projectId, news_id: newsId },
+      headers: {
+        Authorization: `Bearer ${session.access_token}`,
+      },
     });
     return result;
   } catch (err: any) {
