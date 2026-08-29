@@ -1,17 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import {
-  callOpenAI,
-  determineNewStatus,
-  persistAnalysis,
-  type AnalyzeNewsOutput,
-} from "@/lib/newsAnalysis.server";
-
-const AnalyzeNewsSchema = z.object({
-  project_id: z.string().uuid("project_id inválido"),
-  news_id: z.string().uuid("news_id inválido"),
-});
+import type { AnalyzeNewsOutput } from "@/lib/newsAnalysis.server";
 
 /**
  * Server Function: analyzeNewsServer
@@ -33,10 +23,20 @@ const AnalyzeNewsSchema = z.object({
  */
 export const analyzeNewsServer = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator(AnalyzeNewsSchema)
+  .inputValidator((input) =>
+    z
+      .object({
+        project_id: z.string().uuid("project_id inválido"),
+        news_id: z.string().uuid("news_id inválido"),
+      })
+      .parse(input),
+  )
   .handler(async ({ data, context }): Promise<AnalyzeNewsOutput> => {
     const { project_id, news_id } = data;
     const { supabase, userId } = context;
+    const { callOpenAI, determineNewStatus, persistAnalysis } = await import(
+      "@/lib/newsAnalysis.server"
+    );
 
     // ── VALIDATE OWNERSHIP (uses user-scoped client with RLS) ────────────
     const { data: project, error: projectError } = await supabase

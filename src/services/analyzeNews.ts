@@ -1,4 +1,4 @@
-import { analyzeNewsServer } from "@/server/analyzeNewsServer";
+import { analyzeNewsServer } from "@/lib/analyzeNews.functions";
 
 export interface AnalysisData {
   is_relevant_to_laguna: boolean;
