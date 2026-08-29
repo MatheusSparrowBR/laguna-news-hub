@@ -14,6 +14,7 @@ import { Route as AdminRouteImport } from './routes/_admin'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AdminAnalyticsRouteImport } from './routes/_admin.analytics'
 import { Route as AdminDashboardRouteImport } from './routes/_admin.dashboard'
+import { Route as AdminFeedRouteImport } from './routes/_admin.feed'
 import { Route as AdminInstagramRouteImport } from './routes/_admin.instagram'
 import { Route as AdminPublicationsRouteImport } from './routes/_admin.publications'
 import { Route as AdminSettingsRouteImport } from './routes/_admin.settings'
@@ -43,6 +44,11 @@ const AdminAnalyticsRoute = AdminAnalyticsRouteImport.update({
 const AdminDashboardRoute = AdminDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminFeedRoute = AdminFeedRouteImport.update({
+  id: '/feed',
+  path: '/feed',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminInstagramRoute = AdminInstagramRouteImport.update({
@@ -81,6 +87,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/analytics': typeof AdminAnalyticsRoute
   '/dashboard': typeof AdminDashboardRoute
+  '/feed': typeof AdminFeedRoute
   '/instagram': typeof AdminInstagramRoute
   '/publications': typeof AdminPublicationsRoute
   '/settings': typeof AdminSettingsRoute
@@ -93,6 +100,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/analytics': typeof AdminAnalyticsRoute
   '/dashboard': typeof AdminDashboardRoute
+  '/feed': typeof AdminFeedRoute
   '/instagram': typeof AdminInstagramRoute
   '/publications': typeof AdminPublicationsRoute
   '/settings': typeof AdminSettingsRoute
@@ -107,6 +115,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/_admin/analytics': typeof AdminAnalyticsRoute
   '/_admin/dashboard': typeof AdminDashboardRoute
+  '/_admin/feed': typeof AdminFeedRoute
   '/_admin/instagram': typeof AdminInstagramRoute
   '/_admin/publications': typeof AdminPublicationsRoute
   '/_admin/settings': typeof AdminSettingsRoute
@@ -121,6 +130,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/analytics'
     | '/dashboard'
+    | '/feed'
     | '/instagram'
     | '/publications'
     | '/settings'
@@ -133,6 +143,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/analytics'
     | '/dashboard'
+    | '/feed'
     | '/instagram'
     | '/publications'
     | '/settings'
@@ -146,6 +157,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/_admin/analytics'
     | '/_admin/dashboard'
+    | '/_admin/feed'
     | '/_admin/instagram'
     | '/_admin/publications'
     | '/_admin/settings'
@@ -197,6 +209,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminDashboardRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/_admin/feed': {
+      id: '/_admin/feed'
+      path: '/feed'
+      fullPath: '/feed'
+      preLoaderRoute: typeof AdminFeedRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/_admin/instagram': {
       id: '/_admin/instagram'
       path: '/instagram'
@@ -245,6 +264,7 @@ declare module '@tanstack/react-router' {
 interface AdminRouteChildren {
   AdminAnalyticsRoute: typeof AdminAnalyticsRoute
   AdminDashboardRoute: typeof AdminDashboardRoute
+  AdminFeedRoute: typeof AdminFeedRoute
   AdminInstagramRoute: typeof AdminInstagramRoute
   AdminPublicationsRoute: typeof AdminPublicationsRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
@@ -256,6 +276,7 @@ interface AdminRouteChildren {
 const AdminRouteChildren: AdminRouteChildren = {
   AdminAnalyticsRoute: AdminAnalyticsRoute,
   AdminDashboardRoute: AdminDashboardRoute,
+  AdminFeedRoute: AdminFeedRoute,
   AdminInstagramRoute: AdminInstagramRoute,
   AdminPublicationsRoute: AdminPublicationsRoute,
   AdminSettingsRoute: AdminSettingsRoute,
