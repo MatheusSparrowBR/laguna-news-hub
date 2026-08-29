@@ -88,6 +88,7 @@ export interface Source {
   nome: string;
   url: string;
   tipo: "site" | "rss" | "api" | "official";
+  rssUrl?: string | null;
   ativa: boolean;
   ultimaColeta: string;
   noticiasColetadas: number;
