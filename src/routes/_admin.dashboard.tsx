@@ -24,6 +24,7 @@ import { useNoticias, usePublicacoes, useAnalytics } from "@/services/queries";
 import { ehHoje, formatarDataHora, formatarNumero } from "@/lib/format";
 import { useModoDados } from "@/services/dataMode";
 import { obterUltimaExecucao, type UltimaExecucao } from "@/services/collectNews";
+import { DebugAuthButton } from "@/components/debug/DebugAuthButton";
 
 export const Route = createFileRoute("/_admin/dashboard")({
   head: () => ({
@@ -117,7 +118,10 @@ function DashboardPage() {
       titulo="Dashboard"
       descricao={`Resumo do dia em ${cidadeLabel}`}
     >
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      {/* Diagnóstico temporário de autenticação */}
+      <DebugAuthButton />
+
+      <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <MetricCard
           titulo="Notícias encontradas hoje"
           valor={encontradasHoje}
