@@ -340,7 +340,7 @@ function AddSourceDialog({
   open,
   onOpenChange,
 }: {
-  projectId?: string;
+  projectId?: string | undefined;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
