@@ -1111,7 +1111,7 @@
       "file_type": "code",
       "norm_label": "createsupabasefetch()",
       "source_file": "src/integrations/supabase/auth-middleware.ts",
-      "source_location": "L13"
+      "source_location": "L14"
     },
     {
       "id": "src_integrations_supabase_auth_middleware_isnewsupabaseapikey",
@@ -1122,7 +1122,7 @@
       "file_type": "code",
       "norm_label": "isnewsupabaseapikey()",
       "source_file": "src/integrations/supabase/auth-middleware.ts",
-      "source_location": "L9"
+      "source_location": "L10"
     },
     {
       "id": "src_integrations_supabase_client_createsupabaseclient",
@@ -3365,7 +3365,7 @@
       "file_type": "code",
       "norm_label": "requiresupabaseauth",
       "source_file": "src/integrations/supabase/auth-middleware.ts",
-      "source_location": "L33"
+      "source_location": "L34"
     },
     {
       "id": "src_integrations_supabase_client",
@@ -11632,7 +11632,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/integrations/supabase/auth-middleware.ts",
-      "source_location": "L24",
+      "source_location": "L25",
       "weight": 1.0
     },
     {
@@ -11644,7 +11644,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/integrations/supabase/auth-middleware.ts",
-      "source_location": "L79",
+      "source_location": "L80",
       "weight": 1.0
     },
     {
@@ -16098,7 +16098,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/integrations/supabase/auth-middleware.ts",
-      "source_location": "L5",
+      "source_location": "L6",
       "weight": 1.0
     },
     {
@@ -20778,7 +20778,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/integrations/supabase/auth-middleware.ts",
-      "source_location": "L5",
+      "source_location": "L6",
       "weight": 1.0
     },
     {
@@ -27278,13 +27278,24 @@
     },
     {
       "source": "src_integrations_supabase_auth_middleware",
+      "target": "src_integrations_supabase_auth_middleware_isnewsupabaseapikey",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/integrations/supabase/auth-middleware.ts",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "src_integrations_supabase_auth_middleware",
       "target": "src_integrations_supabase_auth_middleware_createsupabasefetch",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/integrations/supabase/auth-middleware.ts",
-      "source_location": "L13",
+      "source_location": "L14",
       "weight": 1.0
     },
     {
@@ -27295,18 +27306,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/integrations/supabase/auth-middleware.ts",
-      "source_location": "L33",
-      "weight": 1.0
-    },
-    {
-      "source": "src_integrations_supabase_auth_middleware",
-      "target": "src_integrations_supabase_auth_middleware_isnewsupabaseapikey",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/integrations/supabase/auth-middleware.ts",
-      "source_location": "L9",
+      "source_location": "L34",
       "weight": 1.0
     },
     {
@@ -30156,5 +30156,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "f58553aaabe4475290961bda83390e3a5fe6834c"
+  "built_at_commit": "1deeff76ba7b2b2ba022724136ca3c32455c3a6f"
 }
