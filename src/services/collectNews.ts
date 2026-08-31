@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { collectNewsServer } from "@/lib/collectNews.functions";
 
 export interface CollectNewsSourceLog {
   source_id: string;
@@ -34,49 +35,18 @@ export interface UltimaExecucao {
 }
 
 /**
- * Invoca a Edge Function collect-news usando o cliente Supabase autenticado.
- * O JWT do usuário logado é enviado automaticamente — nenhuma secret key é usada.
+ * Executa a coleta chamando a server function do próprio app (sem Edge Function).
+ * O token do usuário logado é anexado automaticamente pelo middleware do cliente.
  */
 export async function executarColetaDeNoticias(projectId: string): Promise<CollectNewsResult> {
-  const { data, error } = await supabase.functions.invoke<CollectNewsResult>(
-    "collect-news",
-    {
-      body: { project_id: projectId },
-    },
-  );
-
-  if (error) {
-    // supabase.functions.invoke retorna error com context (status, message)
-    const status = (error as any).context?.status ?? (error as any).status;
-    const message = error.message ?? "Erro desconhecido";
-
-    if (status === 401) {
-      throw new Error("É necessário estar autenticado.");
-    }
-    if (status === 403) {
-      throw new Error("Você não tem permissão para executar a coleta deste projeto.");
-    }
-    if (status === 404) {
-      throw new Error("Projeto não encontrado.");
-    }
-    if (status === 500) {
-      console.error("[collectNews] Erro interno da Edge Function:", message);
-      throw new Error("Erro interno durante a coleta. Verifique os logs da Edge Function.");
-    }
-
-    console.error("[collectNews] Erro ao invocar collect-news:", message);
-    throw new Error(message);
+  try {
+    const resultado = await collectNewsServer({ data: { project_id: projectId } });
+    return { ...resultado, project_id: resultado.project_id ?? projectId } as CollectNewsResult;
+  } catch (erro: any) {
+    const mensagem = erro?.message ?? "Erro desconhecido durante a coleta.";
+    console.error("[collectNews] Erro ao executar a coleta:", mensagem);
+    throw new Error(mensagem);
   }
-
-  if (!data) {
-    throw new Error("Resposta vazia da Edge Function.");
-  }
-
-  // Enrich result with project_id used
-  return {
-    ...data,
-    project_id: data.project_id ?? projectId,
-  };
 }
 
 export async function obterUltimaExecucao(projectId: string): Promise<UltimaExecucao | null> {
