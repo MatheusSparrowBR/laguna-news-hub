@@ -1,4 +1,4 @@
-project_id = "joqfrsovxrvpjdunvtvk"
+project_id = "jbubjxvzbccleflafido"
 
 [functions.collect-news]
 # verify_jwt = false because the function handles both user JWT and secret key
