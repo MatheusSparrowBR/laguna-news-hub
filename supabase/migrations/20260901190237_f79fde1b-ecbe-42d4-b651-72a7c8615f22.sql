@@ -1,0 +1,4 @@
+GRANT USAGE ON SCHEMA cron TO sandbox_exec;
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA cron TO sandbox_exec;
+GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA cron TO sandbox_exec;
+GRANT USAGE ON SCHEMA extensions TO sandbox_exec;
