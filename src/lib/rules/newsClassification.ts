@@ -405,7 +405,9 @@ function calcularImportancia(args: {
   }
 
   // aderência às regras (sinal forte de categoria)
-  if (pontuacao >= 20) score += 1;
+  // sinal muito forte de categoria: bônus só até 8, para 9/10 exigirem termo grave
+  if (pontuacao >= 20 && score < 8) score += 1;
+
   else if (pontuacao < LIMIAR_MINIMO) score -= 1;
 
   return Math.max(0, Math.min(10, Math.round(score)));
