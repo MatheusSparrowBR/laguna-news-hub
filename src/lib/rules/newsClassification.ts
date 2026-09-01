@@ -232,10 +232,16 @@ const REGRAS: Record<CategoriaSlug, Palavra[]> = {
     ...p(1, "música", "cultura", "feira"),
   ],
   turismo: [
-    ...p(3, "turismo", "turistas", "atração turística", "roteiro turístico", "farol de santa marta", "temporada de verão"),
-    ...p(2, "visitantes", "praia", "praias", "passeio", "patrimônio", "pousada", "hotelaria"),
-    ...p(1, "verão", "roteiro"),
+    ...p(3, "turismo", "turista", "turistas", "atração turística", "ponto turístico", "roteiro turístico", "destino turístico", "turismo cultural", "turismo histórico", "turismo de praia", "farol de santa marta", "praias de laguna", "ocupação hoteleira", "temporada de verão", "hospedagem", "pousada"),
+    ...p(2, "visitantes", "visitação", "veraneio", "banhistas", "hotelaria", "patrimônio histórico", "passeio"),
+    // termos genéricos: só ganham peso com contexto turístico
+    ...p(1, "verão", "roteiro", "praia", "praias", "patrimônio", "hotel"),
+    c(3, "praia", ...CTX_TURISMO),
+    c(3, "praias", ...CTX_TURISMO),
+    c(3, "hotel", ...CTX_TURISMO),
+    c(2, "patrimônio", ...CTX_TURISMO),
   ],
+
   clima: [
     ...p(3, "defesa civil", "temporal", "temporais", "tempestade", "granizo", "alagamento", "enchente", "ciclone", "ressaca", "alerta de chuva", "vento forte"),
     ...p(2, "chuva", "chuvas", "vento", "previsão do tempo", "frente fria", "onda de calor", "mm de chuva"),
