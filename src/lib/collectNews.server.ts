@@ -9,6 +9,8 @@
  */
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
+import { classificarNoticia, type CategoriaSlug } from "@/lib/rules/newsClassification";
+
 
 export type ClienteColeta = SupabaseClient<Database>;
 
@@ -341,6 +343,14 @@ export async function executarColeta(opcoes: OpcoesColeta): Promise<CollectNewsR
   }
 
   const ativas = (fontes ?? []).filter((f) => !!f.rss_url);
+
+  // Mapa slug → id das categorias existentes (o motor de regras nunca inventa id).
+  const { data: categorias } = await supabase.from("categories").select("id, slug").eq("active", true);
+  const categoriaIds: Partial<Record<CategoriaSlug, string>> = {};
+  for (const c of categorias ?? []) {
+    categoriaIds[c.slug as CategoriaSlug] = c.id;
+  }
+
   const logs: CollectNewsSourceLog[] = [];
   let totalFound = 0;
   let totalNew = 0;
