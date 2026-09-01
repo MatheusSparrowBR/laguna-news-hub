@@ -78,3 +78,54 @@ describe("ajustes de regras (token matching e combinações)", () => {
     expect(diagnosticarClassificacao("Movimento na feira do bairro", "").scores.eventos).toBeLessThan(4);
   });
 });
+
+describe("refinamento final (saúde, trânsito, economia, turismo)", () => {
+  const positivos: Array<[string, string]> = [
+    ["Paciente foi atendido no hospital de Laguna", "Saúde"],
+    ["Rodovia tem pista interditada após acidente", "Trânsito"],
+    ["Novas vagas de emprego são abertas em Laguna", "Economia"],
+    ["Empresas anunciam investimentos em Laguna", "Economia"],
+    ["Turistas visitam praias de Laguna", "Turismo"],
+    ["Hotel registra alta ocupação durante feriado", "Turismo"],
+  ];
+
+  for (const [titulo, categoria] of positivos) {
+    it(`classifica "${titulo.slice(0, 45)}" como ${categoria}`, () => {
+      expect(diagnosticarClassificacao(titulo, "").categoria_prevista).toBe(categoria);
+    });
+  }
+
+  it('"paciente" isolado não classifica como Saúde', () => {
+    const r = diagnosticarClassificacao("Paciente participa de audiência judicial", "");
+    expect(r.categoria_prevista).not.toBe("Saúde");
+    expect(r.scores.saude).toBeLessThan(4);
+  });
+
+  it('"pista" isolada não classifica como Trânsito (aeroporto)', () => {
+    const r = diagnosticarClassificacao(
+      "Aeroporto de Jaguaruna passa por obras",
+      "A pista do aeroporto será recuperada nos próximos meses.",
+    );
+    expect(r.categoria_prevista).not.toBe("Trânsito");
+    expect(r.scores.transito).toBeLessThan(4);
+  });
+
+  it('"praia" isolada não classifica como Turismo', () => {
+    const r = diagnosticarClassificacao("Obra em rua próxima à praia é retomada", "");
+    expect(r.categoria_prevista).not.toBe("Turismo");
+  });
+
+  it("Prefeitura anuncia programação cultural fica em Eventos ou Prefeitura", () => {
+    const r = diagnosticarClassificacao("Prefeitura anuncia programação cultural", "");
+    expect(["Eventos", "Prefeitura"]).toContain(r.categoria_prevista);
+  });
+
+  it("importance_score segue determinístico e dentro de 0-10", () => {
+    const a = diagnosticarClassificacao("Turistas visitam praias de Laguna", "");
+    const b = diagnosticarClassificacao("Turistas visitam praias de Laguna", "");
+    expect(a).toEqual(b);
+    expect(a.importance_score).toBeGreaterThanOrEqual(0);
+    expect(a.importance_score).toBeLessThanOrEqual(10);
+  });
+});
+
