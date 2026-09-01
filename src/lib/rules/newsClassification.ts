@@ -267,10 +267,13 @@ const REGRAS: Record<CategoriaSlug, Palavra[]> = {
   ],
   saude: [
     ...p(3, "hospital", "ubs", "vacinação", "posto de saúde", "saúde pública", "sus", "epidemia", "surto"),
-    ...p(2, "saúde", "vacina", "atendimento médico", "médico", "enfermeiro", "doença", "dengue"),
-    ...p(1, "atendimento", "paciente"),
+    ...p(2, "saúde", "vacina", "atendimento médico", "médico", "enfermeiro", "enfermagem", "doença", "dengue", "consulta", "tratamento"),
+    // "paciente" isolado é insuficiente: só ganha peso com contexto de saúde
+    ...p(1, "atendimento", "paciente", "pacientes"),
+    c(3, "paciente", ...CTX_SAUDE),
+    c(3, "pacientes", ...CTX_SAUDE),
   ],
-};
+
 
 
 /** Palavras que elevam diretamente a importância (nunca sozinhas até 10). */
