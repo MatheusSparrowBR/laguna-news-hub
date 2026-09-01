@@ -140,6 +140,48 @@ const CTX_ESCOLA = [
   "sala de aula",
 ];
 
+/** Contexto de saúde: "paciente" isolado não basta. */
+const CTX_SAUDE = [
+  "hospital",
+  "ubs",
+  "médico",
+  "médica",
+  "médicos",
+  "atendimento",
+  "consulta",
+  "tratamento",
+  "vacina",
+  "vacinação",
+  "doença",
+  "saúde",
+  "enfermagem",
+  "enfermeiro",
+  "sus",
+  "internado",
+  "internação",
+  "posto de saúde",
+];
+
+/** Contexto turístico: "praia", "hotel" e "patrimônio" isolados não bastam. */
+const CTX_TURISMO = [
+  "turismo",
+  "turista",
+  "turistas",
+  "visitantes",
+  "visitação",
+  "hospedagem",
+  "pousada",
+  "ocupação",
+  "temporada",
+  "feriado",
+  "veraneio",
+  "banhistas",
+  "diárias",
+  "atração",
+  "atrativo",
+];
+
+
 const REGRAS: Record<CategoriaSlug, Palavra[]> = {
   urgente: [
     ...p(3, "alerta vermelho", "estado de emergência", "estado de calamidade", "evacuação", "situação de emergência"),
