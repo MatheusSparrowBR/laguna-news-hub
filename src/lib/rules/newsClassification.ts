@@ -80,30 +80,99 @@ interface Palavra {
   termo: string;
   /** Peso: 3 = específico, 2 = médio, 1 = genérico. */
   peso: 1 | 2 | 3;
+  /** Só pontua se ao menos um destes termos também aparecer no texto. */
+  requer?: string[];
 }
 
 function p(peso: 1 | 2 | 3, ...termos: string[]): Palavra[] {
   return termos.map((termo) => ({ termo, peso }));
 }
 
+/** Termo composto: só pontua quando acompanhado de um dos termos de contexto. */
+function c(peso: 1 | 2 | 3, termo: string, ...requer: string[]): Palavra {
+  return { termo, peso, requer };
+}
+
+const CTX_CRIME = [
+  "facada",
+  "facadas",
+  "tiro",
+  "tiros",
+  "baleado",
+  "homicídio",
+  "assassinato",
+  "assassinado",
+  "assassinada",
+  "crime",
+  "corpo",
+  "polícia",
+  "esfaqueado",
+  "esfaqueada",
+];
+
+const CTX_TRANSITO = [
+  "acidente",
+  "colisão",
+  "batida",
+  "capotamento",
+  "atropelamento",
+  "interditada",
+  "interdição",
+  "bloqueio",
+  "lentidão",
+  "trânsito lento",
+  "congestionamento",
+  "engarrafamento",
+  "tráfego",
+];
+
+const CTX_ESCOLA = [
+  "alunos",
+  "aluno",
+  "estudantes",
+  "professores",
+  "professor",
+  "matrícula",
+  "matrículas",
+  "ensino",
+  "educação",
+  "merenda",
+  "sala de aula",
+];
+
 const REGRAS: Record<CategoriaSlug, Palavra[]> = {
   urgente: [
-    ...p(3, "alerta vermelho", "estado de emergência", "evacuação", "evacuacao", "situação de emergência"),
-    ...p(2, "urgente", "emergência", "interdição", "interditada", "interditado", "risco iminente"),
+    ...p(3, "alerta vermelho", "estado de emergência", "estado de calamidade", "evacuação", "situação de emergência"),
+    ...p(2, "urgente", "emergência", "risco iminente"),
     ...p(1, "alerta", "risco", "perigo"),
   ],
   transito: [
-    ...p(3, "br-101", "br 101", "sc-436", "sc 436", "sc-100", "engarrafamento", "congestionamento", "pista interditada"),
-    ...p(2, "trânsito", "rodovia", "acidente", "colisão", "capotamento", "atropelamento", "desvio", "detour", "interdição"),
-    ...p(1, "veículo", "carro", "moto", "caminhão", "motorista"),
+    ...p(3, "congestionamento", "engarrafamento", "pista interditada", "rodovia interditada", "trânsito lento", "acidente de trânsito"),
+    ...p(2, "trânsito", "rodovia", "acidente", "colisão", "batida", "capotamento", "atropelamento", "lentidão", "tráfego", "desvio", "interdição", "bloqueio"),
+    ...p(1, "veículo", "carro", "moto", "caminhão", "motorista", "pista"),
+    // BR-101 / SC-436 sozinhas: peso moderado; com contexto de trânsito: peso alto
+    ...p(1, "br-101", "br 101", "sc-436", "sc 436", "sc-100"),
+    c(3, "br-101", ...CTX_TRANSITO),
+    c(3, "br 101", ...CTX_TRANSITO),
+    c(3, "sc-436", ...CTX_TRANSITO),
   ],
   seguranca: [
-    ...p(3, "polícia civil", "polícia militar", "feminicídio", "homicídio", "assalto", "tráfico", "delegacia", "latrocínio"),
-    ...p(2, "polícia", "prisão", "preso", "detido", "roubo", "furto", "crime", "investigação", "apreensão", "bombeiros"),
-    ...p(1, "operação", "suspeito", "vítima", "pm"),
+    // crimes específicos: peso máximo
+    ...p(3, "homicídio", "feminicídio", "assassinato", "assassinado", "assassinada", "tentativa de homicídio", "latrocínio", "estupro", "abuso sexual", "esfaqueado", "esfaqueada", "facada", "facadas", "morto a facadas", "morta a facadas"),
+    // drogas: peso máximo
+    ...p(3, "tráfico", "tráfico de drogas", "traficante", "maconha", "cocaína", "crack", "entorpecente", "entorpecentes", "apreensão de drogas", "porções de maconha", "porções de cocaína"),
+    ...p(3, "polícia civil", "polícia militar", "operação policial", "delegacia", "assalto", "investigação criminal", "fraude", "fraudes"),
+    ...p(2, "polícia", "prisão", "preso", "presa", "presos", "detido", "detida", "roubo", "furto", "crime", "drogas", "droga", "investigação", "apreensão", "arma de fogo"),
+    ...p(1, "operação", "suspeito", "vítima", "bombeiros"),
+    // contexto de morte: só reforça Segurança quando há indício de crime
+    c(3, "morto", ...CTX_CRIME),
+    c(3, "morta", ...CTX_CRIME),
+    c(2, "morte", ...CTX_CRIME),
+    c(2, "vítima", "crime", "corpo", "homicídio", "facada", "facadas", "assassinato"),
   ],
   prefeitura: [
-    ...p(3, "prefeitura", "prefeito", "edital municipal", "obra pública", "câmara de vereadores", "vereadores"),
+    ...p(3, "prefeitura de laguna", "prefeitura anuncia", "prefeitura inicia", "prefeitura entrega", "secretaria municipal", "edital municipal", "obra pública", "câmara de vereadores", "vereadores"),
+    ...p(3, "prefeitura", "prefeito"),
     ...p(2, "secretaria", "secretário", "administração municipal", "serviço público", "licitação", "decreto"),
     ...p(1, "municipal", "município", "gestão"),
   ],
@@ -112,9 +181,9 @@ const REGRAS: Record<CategoriaSlug, Palavra[]> = {
     ...p(1, "cidade", "laguna", "centro", "rua", "população"),
   ],
   eventos: [
-    ...p(3, "festival", "carnaval", "programação cultural", "feira", "show"),
-    ...p(2, "evento", "festa", "programação", "atração", "apresentação", "encontro cultural"),
-    ...p(1, "música", "cultura"),
+    ...p(3, "festival", "carnaval", "programação cultural", "show", "feira livre", "feira de artesanato", "feira cultural", "feira gastronômica", "feira de negócios"),
+    ...p(2, "evento", "festa", "programação", "atração", "apresentação", "encontro cultural", "desfile"),
+    ...p(1, "música", "cultura", "feira"),
   ],
   turismo: [
     ...p(3, "turismo", "turistas", "atração turística", "roteiro turístico", "farol de santa marta", "temporada de verão"),
@@ -122,8 +191,8 @@ const REGRAS: Record<CategoriaSlug, Palavra[]> = {
     ...p(1, "verão", "roteiro"),
   ],
   clima: [
-    ...p(3, "defesa civil", "temporal", "tempestade", "granizo", "alagamento", "enchente", "ciclone", "ressaca", "alerta de chuva"),
-    ...p(2, "chuva", "vento", "previsão do tempo", "frente fria", "onda de calor"),
+    ...p(3, "defesa civil", "temporal", "temporais", "tempestade", "granizo", "alagamento", "enchente", "ciclone", "ressaca", "alerta de chuva", "vento forte"),
+    ...p(2, "chuva", "chuvas", "vento", "previsão do tempo", "frente fria", "onda de calor", "mm de chuva"),
     ...p(1, "previsão", "calor", "frio", "tempo"),
   ],
   esportes: [
@@ -137,9 +206,11 @@ const REGRAS: Record<CategoriaSlug, Palavra[]> = {
     ...p(1, "mercado", "custo"),
   ],
   educacao: [
-    ...p(3, "escolas municipais", "matrícula", "matrículas", "creche", "universidade", "professores"),
-    ...p(2, "escola", "educação", "aluno", "alunos", "professor", "ensino", "rede municipal de ensino"),
-    ...p(1, "curso", "aula"),
+    ...p(3, "escolas municipais", "rede municipal de ensino", "unidade escolar", "matrícula", "matrículas", "creche", "universidade", "professores"),
+    ...p(2, "educação", "aluno", "alunos", "estudantes", "professor", "ensino"),
+    ...p(1, "curso", "aula", "escola"),
+    // "escola" só ganha peso com contexto escolar
+    c(3, "escola", ...CTX_ESCOLA),
   ],
   saude: [
     ...p(3, "hospital", "ubs", "vacinação", "posto de saúde", "saúde pública", "sus", "epidemia", "surto"),
@@ -147,6 +218,7 @@ const REGRAS: Record<CategoriaSlug, Palavra[]> = {
     ...p(1, "atendimento", "paciente"),
   ],
 };
+
 
 /** Palavras que elevam diretamente a importância (nunca sozinhas até 10). */
 const ALTA_PRIORIDADE: Array<{ termo: string; pontos: number }> = [
