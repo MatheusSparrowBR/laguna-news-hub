@@ -21,6 +21,7 @@ import { Route as AdminSettingsRouteImport } from './routes/_admin.settings'
 import { Route as AdminSourcesRouteImport } from './routes/_admin.sources'
 import { Route as AdminNewsIndexRouteImport } from './routes/_admin.news.index'
 import { Route as AdminNewsIdRouteImport } from './routes/_admin.news.$id'
+import { Route as ApiPublicHooksCollectNewsRouteImport } from './routes/api/public/hooks/collect-news'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -81,6 +82,12 @@ const AdminNewsIdRoute = AdminNewsIdRouteImport.update({
   path: '/news/$id',
   getParentRoute: () => AdminRoute,
 } as any)
+const ApiPublicHooksCollectNewsRoute =
+  ApiPublicHooksCollectNewsRouteImport.update({
+    id: '/api/public/hooks/collect-news',
+    path: '/api/public/hooks/collect-news',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -94,6 +101,7 @@ export interface FileRoutesByFullPath {
   '/sources': typeof AdminSourcesRoute
   '/news/$id': typeof AdminNewsIdRoute
   '/news/': typeof AdminNewsIndexRoute
+  '/api/public/hooks/collect-news': typeof ApiPublicHooksCollectNewsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -107,6 +115,7 @@ export interface FileRoutesByTo {
   '/sources': typeof AdminSourcesRoute
   '/news/$id': typeof AdminNewsIdRoute
   '/news': typeof AdminNewsIndexRoute
+  '/api/public/hooks/collect-news': typeof ApiPublicHooksCollectNewsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -122,6 +131,7 @@ export interface FileRoutesById {
   '/_admin/sources': typeof AdminSourcesRoute
   '/_admin/news/$id': typeof AdminNewsIdRoute
   '/_admin/news/': typeof AdminNewsIndexRoute
+  '/api/public/hooks/collect-news': typeof ApiPublicHooksCollectNewsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -137,6 +147,7 @@ export interface FileRouteTypes {
     | '/sources'
     | '/news/$id'
     | '/news/'
+    | '/api/public/hooks/collect-news'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -150,6 +161,7 @@ export interface FileRouteTypes {
     | '/sources'
     | '/news/$id'
     | '/news'
+    | '/api/public/hooks/collect-news'
   id:
     | '__root__'
     | '/'
@@ -164,12 +176,14 @@ export interface FileRouteTypes {
     | '/_admin/sources'
     | '/_admin/news/$id'
     | '/_admin/news/'
+    | '/api/public/hooks/collect-news'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRouteWithChildren
   LoginRoute: typeof LoginRoute
+  ApiPublicHooksCollectNewsRoute: typeof ApiPublicHooksCollectNewsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -258,6 +272,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminNewsIdRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/api/public/hooks/collect-news': {
+      id: '/api/public/hooks/collect-news'
+      path: '/api/public/hooks/collect-news'
+      fullPath: '/api/public/hooks/collect-news'
+      preLoaderRoute: typeof ApiPublicHooksCollectNewsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -291,6 +312,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRouteWithChildren,
   LoginRoute: LoginRoute,
+  ApiPublicHooksCollectNewsRoute: ApiPublicHooksCollectNewsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

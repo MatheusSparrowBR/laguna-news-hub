@@ -8,19 +8,20 @@ export interface CollectNewsSourceLog {
   found: number;
   new: number;
   duplicate: number;
+  insert_errors: number;
+  content_type: "xml" | "html" | "error" | null;
   error: string | null;
-  content_type?: "xml" | "html" | "error" | null;
-  insert_errors?: number;
 }
 
 export interface CollectNewsResult {
-  run_id: string;
+  run_id: string | null;
   status: string;
   project_id: string;
   sources_checked: number;
   total_found: number;
   total_new: number;
   total_duplicate: number;
+  total_insert_errors: number;
   total_errors: number;
   logs: CollectNewsSourceLog[];
 }
