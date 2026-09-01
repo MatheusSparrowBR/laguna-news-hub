@@ -189,7 +189,7 @@ const REGRAS: Record<CategoriaSlug, Palavra[]> = {
     ...p(1, "alerta", "risco", "perigo"),
   ],
   transito: [
-    ...p(3, "congestionamento", "engarrafamento", "pista interditada", "pista bloqueada", "pista liberada", "pista da rodovia", "pista de rolamento", "rodovia interditada", "trânsito lento", "acidente de trânsito"),
+    ...p(3, "congestionamento", "engarrafamento", "pista interditada", "pista bloqueada", "pista liberada", "pista da rodovia", "pista de rolamento", "sai da pista", "saiu da pista", "saída de pista", "rodovia interditada", "trânsito lento", "acidente de trânsito"),
     ...p(2, "trânsito", "rodovia", "acidente", "colisão", "batida", "capotamento", "atropelamento", "lentidão", "tráfego", "desvio", "interdição", "bloqueio"),
     ...p(1, "veículo", "carro", "moto", "caminhão", "motorista"),
     // "pista" isolada é genérica (aeroporto, pista de atletismo): só pontua com contexto
