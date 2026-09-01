@@ -23,8 +23,8 @@ export type CategoriaSlug =
 
 export interface EntradaClassificacao {
   title: string;
-  content?: string | null;
-  source?: string | null;
+  content?: string | null | undefined;
+  source?: string | null | undefined;
 }
 
 export interface ResultadoClassificacao {
