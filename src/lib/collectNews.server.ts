@@ -9,6 +9,8 @@
  */
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
+import { classificarNoticia, type CategoriaSlug } from "@/lib/rules/newsClassification";
+
 
 export type ClienteColeta = SupabaseClient<Database>;
 
@@ -341,6 +343,14 @@ export async function executarColeta(opcoes: OpcoesColeta): Promise<CollectNewsR
   }
 
   const ativas = (fontes ?? []).filter((f) => !!f.rss_url);
+
+  // Mapa slug → id das categorias existentes (o motor de regras nunca inventa id).
+  const { data: categorias } = await supabase.from("categories").select("id, slug").eq("active", true);
+  const categoriaIds: Partial<Record<CategoriaSlug, string>> = {};
+  for (const c of categorias ?? []) {
+    categoriaIds[c.slug as CategoriaSlug] = c.id;
+  }
+
   const logs: CollectNewsSourceLog[] = [];
   let totalFound = 0;
   let totalNew = 0;
@@ -371,6 +381,11 @@ export async function executarColeta(opcoes: OpcoesColeta): Promise<CollectNewsR
           continue;
         }
 
+        const classificacao = classificarNoticia(
+          { title: item.title, content: item.description, source: fonte.name },
+          categoriaIds,
+        );
+
         const { error: erroInsert } = await supabase.from("news").insert({
           project_id: projectId,
           source_id: fonte.id,
@@ -380,11 +395,13 @@ export async function executarColeta(opcoes: OpcoesColeta): Promise<CollectNewsR
           image_url: item.imageUrl,
           discovered_at: dataParaIso(item.pubDate),
           status: "new",
-          importance_score: 5,
+          category_id: classificacao.category_id,
+          importance_score: classificacao.importance_score,
           ai_confidence: 0,
           is_duplicate: false,
           is_demo: false,
         });
+
 
         if (erroInsert) {
           errosInsert++;
