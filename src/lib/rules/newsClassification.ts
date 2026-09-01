@@ -253,10 +253,11 @@ const REGRAS: Record<CategoriaSlug, Palavra[]> = {
     ...p(1, "esporte", "esportivo"),
   ],
   economia: [
-    ...p(3, "vagas de emprego", "investimento", "empreendedor", "geração de emprego", "salário"),
-    ...p(2, "emprego", "vagas", "economia", "empresa", "comércio", "negócios", "renda"),
-    ...p(1, "mercado", "custo"),
+    ...p(3, "vagas de emprego", "geração de emprego", "geração de empregos", "investimento privado", "empreendedor", "empreendedorismo", "setor produtivo", "contratação", "contratações"),
+    ...p(2, "emprego", "empregos", "salário", "salários", "economia", "empresa", "empresas", "indústria", "comércio", "comércio local", "negócios", "investimento", "investimentos", "renda", "vagas"),
+    ...p(1, "mercado", "custo", "faturamento"),
   ],
+
   educacao: [
     ...p(3, "escolas municipais", "rede municipal de ensino", "unidade escolar", "matrícula", "matrículas", "creche", "universidade", "professores"),
     ...p(2, "educação", "aluno", "alunos", "estudantes", "professor", "ensino"),
