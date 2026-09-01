@@ -140,6 +140,48 @@ const CTX_ESCOLA = [
   "sala de aula",
 ];
 
+/** Contexto de saúde: "paciente" isolado não basta. */
+const CTX_SAUDE = [
+  "hospital",
+  "ubs",
+  "médico",
+  "médica",
+  "médicos",
+  "atendimento",
+  "consulta",
+  "tratamento",
+  "vacina",
+  "vacinação",
+  "doença",
+  "saúde",
+  "enfermagem",
+  "enfermeiro",
+  "sus",
+  "internado",
+  "internação",
+  "posto de saúde",
+];
+
+/** Contexto turístico: "praia", "hotel" e "patrimônio" isolados não bastam. */
+const CTX_TURISMO = [
+  "turismo",
+  "turista",
+  "turistas",
+  "visitantes",
+  "visitação",
+  "hospedagem",
+  "pousada",
+  "ocupação",
+  "temporada",
+  "feriado",
+  "veraneio",
+  "banhistas",
+  "diárias",
+  "atração",
+  "atrativo",
+];
+
+
 const REGRAS: Record<CategoriaSlug, Palavra[]> = {
   urgente: [
     ...p(3, "alerta vermelho", "estado de emergência", "estado de calamidade", "evacuação", "situação de emergência"),
@@ -147,15 +189,18 @@ const REGRAS: Record<CategoriaSlug, Palavra[]> = {
     ...p(1, "alerta", "risco", "perigo"),
   ],
   transito: [
-    ...p(3, "congestionamento", "engarrafamento", "pista interditada", "rodovia interditada", "trânsito lento", "acidente de trânsito"),
+    ...p(3, "congestionamento", "engarrafamento", "pista interditada", "pista bloqueada", "pista liberada", "pista da rodovia", "pista de rolamento", "sai da pista", "saiu da pista", "saída de pista", "rodovia interditada", "trânsito lento", "acidente de trânsito"),
     ...p(2, "trânsito", "rodovia", "acidente", "colisão", "batida", "capotamento", "atropelamento", "lentidão", "tráfego", "desvio", "interdição", "bloqueio"),
-    ...p(1, "veículo", "carro", "moto", "caminhão", "motorista", "pista"),
+    ...p(1, "veículo", "carro", "moto", "caminhão", "motorista"),
+    // "pista" isolada é genérica (aeroporto, pista de atletismo): só pontua com contexto
+    c(3, "pista", ...CTX_TRANSITO),
     // BR-101 / SC-436 sozinhas: peso moderado; com contexto de trânsito: peso alto
     ...p(1, "br-101", "br 101", "sc-436", "sc 436", "sc-100"),
     c(3, "br-101", ...CTX_TRANSITO),
     c(3, "br 101", ...CTX_TRANSITO),
     c(3, "sc-436", ...CTX_TRANSITO),
   ],
+
   seguranca: [
     // crimes específicos: peso máximo
     ...p(3, "homicídio", "feminicídio", "assassinato", "assassinado", "assassinada", "tentativa de homicídio", "latrocínio", "estupro", "abuso sexual", "esfaqueado", "esfaqueada", "facada", "facadas", "morto a facadas", "morta a facadas"),
@@ -186,10 +231,16 @@ const REGRAS: Record<CategoriaSlug, Palavra[]> = {
     ...p(1, "música", "cultura", "feira"),
   ],
   turismo: [
-    ...p(3, "turismo", "turistas", "atração turística", "roteiro turístico", "farol de santa marta", "temporada de verão"),
-    ...p(2, "visitantes", "praia", "praias", "passeio", "patrimônio", "pousada", "hotelaria"),
+    ...p(3, "turismo", "turista", "turistas", "atração turística", "ponto turístico", "roteiro turístico", "destino turístico", "turismo cultural", "turismo histórico", "turismo de praia", "farol de santa marta", "praias de laguna", "ocupação hoteleira", "temporada de verão", "hospedagem", "pousada"),
+    ...p(2, "visitantes", "visitação", "veraneio", "banhistas", "hotelaria", "patrimônio histórico", "passeio"),
+    // termos genéricos: só ganham peso com contexto turístico
     ...p(1, "verão", "roteiro"),
+    c(3, "praia", ...CTX_TURISMO),
+    c(3, "praias", ...CTX_TURISMO),
+    c(3, "hotel", ...CTX_TURISMO),
+    c(2, "patrimônio", ...CTX_TURISMO),
   ],
+
   clima: [
     ...p(3, "defesa civil", "temporal", "temporais", "tempestade", "granizo", "alagamento", "enchente", "ciclone", "ressaca", "alerta de chuva", "vento forte"),
     ...p(2, "chuva", "chuvas", "vento", "previsão do tempo", "frente fria", "onda de calor", "mm de chuva"),
@@ -201,10 +252,11 @@ const REGRAS: Record<CategoriaSlug, Palavra[]> = {
     ...p(1, "esporte", "esportivo"),
   ],
   economia: [
-    ...p(3, "vagas de emprego", "investimento", "empreendedor", "geração de emprego", "salário"),
-    ...p(2, "emprego", "vagas", "economia", "empresa", "comércio", "negócios", "renda"),
-    ...p(1, "mercado", "custo"),
+    ...p(3, "vagas de emprego", "geração de emprego", "geração de empregos", "investimento privado", "empreendedor", "empreendedorismo", "setor produtivo", "contratação", "contratações"),
+    ...p(2, "emprego", "empregos", "salário", "salários", "economia", "empresa", "empresas", "indústria", "comércio", "comércio local", "negócios", "investimento", "investimentos", "renda", "vagas"),
+    ...p(1, "mercado", "custo", "faturamento"),
   ],
+
   educacao: [
     ...p(3, "escolas municipais", "rede municipal de ensino", "unidade escolar", "matrícula", "matrículas", "creche", "universidade", "professores"),
     ...p(2, "educação", "aluno", "alunos", "estudantes", "professor", "ensino"),
@@ -214,10 +266,15 @@ const REGRAS: Record<CategoriaSlug, Palavra[]> = {
   ],
   saude: [
     ...p(3, "hospital", "ubs", "vacinação", "posto de saúde", "saúde pública", "sus", "epidemia", "surto"),
-    ...p(2, "saúde", "vacina", "atendimento médico", "médico", "enfermeiro", "doença", "dengue"),
-    ...p(1, "atendimento", "paciente"),
+    ...p(2, "saúde", "vacina", "atendimento médico", "médico", "enfermeiro", "enfermagem", "doença", "dengue", "consulta", "tratamento"),
+    // "paciente" isolado é insuficiente: só ganha peso com contexto de saúde
+    ...p(1, "atendimento"),
+    c(3, "paciente", ...CTX_SAUDE),
+    c(3, "pacientes", ...CTX_SAUDE),
   ],
 };
+
+
 
 
 /** Palavras que elevam diretamente a importância (nunca sozinhas até 10). */
