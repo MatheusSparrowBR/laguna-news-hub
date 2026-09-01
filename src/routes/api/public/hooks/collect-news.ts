@@ -14,8 +14,10 @@ export const Route = createFileRoute("/api/public/hooks/collect-news")({
         if (naoAutorizado) return naoAutorizado;
 
         try {
-          const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+          const { criarClienteAdmin } = await import("@/lib/adminClient.server");
           const { executarColeta } = await import("@/lib/collectNews.server");
+          const supabaseAdmin = criarClienteAdmin();
+
 
           const { data: projeto, error: erroProjeto } = await supabaseAdmin
             .from("projects")
