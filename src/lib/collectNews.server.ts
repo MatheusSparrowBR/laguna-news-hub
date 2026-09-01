@@ -381,6 +381,11 @@ export async function executarColeta(opcoes: OpcoesColeta): Promise<CollectNewsR
           continue;
         }
 
+        const classificacao = classificarNoticia(
+          { title: item.title, content: item.description, source: fonte.name },
+          categoriaIds,
+        );
+
         const { error: erroInsert } = await supabase.from("news").insert({
           project_id: projectId,
           source_id: fonte.id,
@@ -390,11 +395,13 @@ export async function executarColeta(opcoes: OpcoesColeta): Promise<CollectNewsR
           image_url: item.imageUrl,
           discovered_at: dataParaIso(item.pubDate),
           status: "new",
-          importance_score: 5,
+          category_id: classificacao.category_id,
+          importance_score: classificacao.importance_score,
           ai_confidence: 0,
           is_duplicate: false,
           is_demo: false,
         });
+
 
         if (erroInsert) {
           errosInsert++;
