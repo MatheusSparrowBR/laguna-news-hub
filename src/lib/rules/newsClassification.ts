@@ -315,28 +315,36 @@ export function classificarNoticia(
   const encontradas = new Map<string, number>();
 
   for (const slug of Object.keys(REGRAS) as CategoriaSlug[]) {
-    let pontos = 0;
-    let distintas = 0;
+    // melhor pontuação por termo: evita contar duas vezes o mesmo termo
+    // quando ele aparece como regra simples e como regra com contexto.
+    const porTermo = new Map<string, number>();
 
-    for (const { termo, peso } of REGRAS[slug]) {
+    for (const { termo, peso, requer } of REGRAS[slug]) {
+      if (requer && !temContexto(titulo, corpo, requer)) continue;
+
       const noTitulo = contaOcorrencias(titulo, termo);
       const noCorpo = contaOcorrencias(corpo, termo);
       if (noTitulo === 0 && noCorpo === 0) continue;
 
-      distintas++;
       // título pesa 3x; conteúdo 1x (limitado a 2 ocorrências para não inflar)
-      pontos += peso * 3 * Math.min(noTitulo, 2) + peso * Math.min(noCorpo, 2);
-      const anterior = encontradas.get(termo) ?? 0;
       const relevancia = peso * 3 * Math.min(noTitulo, 2) + peso * Math.min(noCorpo, 2);
-      if (relevancia > anterior) encontradas.set(termo, relevancia);
+      if (relevancia > (porTermo.get(termo) ?? 0)) porTermo.set(termo, relevancia);
+    }
+
+    let pontos = 0;
+    for (const [termo, relevancia] of porTermo) {
+      pontos += relevancia;
+      if (relevancia > (encontradas.get(termo) ?? 0)) encontradas.set(termo, relevancia);
     }
 
     // bônus por combinação de palavras diferentes (evita palavra genérica isolada)
+    const distintas = porTermo.size;
     if (distintas >= 2) pontos += 2;
     if (distintas >= 3) pontos += 2;
 
     scores[slug] = pontos;
   }
+
 
   const candidatas = PRIORIDADE_CATEGORIA.filter((slug) => scores[slug] >= LIMIAR_MINIMO);
   let escolhida: CategoriaSlug = CATEGORIA_PADRAO;
