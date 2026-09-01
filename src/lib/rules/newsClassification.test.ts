@@ -43,3 +43,38 @@ describe("classificação por regras", () => {
     expect(a).toEqual(b);
   });
 });
+
+describe("ajustes de regras (token matching e combinações)", () => {
+  const esperado: Array<[string, string]> = [
+    ["Região pode registrar 50 mm de chuva até a madrugada de terça-feira", "Clima"],
+    ["Feira livre movimenta o centro de Laguna", "Eventos"],
+    ["Homem morto a facadas na região", "Segurança"],
+    ["Homens são presos com 36 porções de maconha prontas para venda", "Segurança"],
+    ["Acidente na BR-101 deixa trânsito lento", "Trânsito"],
+    ["BR-101 interditada após colisão", "Trânsito"],
+    ["Homens presos por tráfico na BR-101", "Segurança"],
+    ["Treinamento contra fraudes veiculares reúne forças de segurança na BR-101", "Segurança"],
+    ["Prefeitura de Laguna anuncia nova obra", "Prefeitura"],
+    ["Defesa Civil alerta para chuva forte", "Clima"],
+  ];
+
+  for (const [titulo, categoria] of esperado) {
+    it(`classifica "${titulo.slice(0, 45)}" como ${categoria}`, () => {
+      expect(diagnosticarClassificacao(titulo, "").categoria_prevista).toBe(categoria);
+    });
+  }
+
+  it('"escola" isolada não classifica como Educação', () => {
+    const r = diagnosticarClassificacao("Obras de escola provocam deslizamento e Estado terá de indenizar condomínio", "");
+    expect(r.categoria_prevista).not.toBe("Educação");
+  });
+
+  it('"escola" com contexto escolar classifica como Educação', () => {
+    const r = diagnosticarClassificacao("Escola municipal recebe novos alunos e professores", "");
+    expect(r.categoria_prevista).toBe("Educação");
+  });
+
+  it('"feira" isolada não é suficiente para Eventos', () => {
+    expect(diagnosticarClassificacao("Movimento na feira do bairro", "").scores.eventos).toBeLessThan(4);
+  });
+});
