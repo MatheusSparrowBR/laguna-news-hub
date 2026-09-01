@@ -273,6 +273,8 @@ const REGRAS: Record<CategoriaSlug, Palavra[]> = {
     c(3, "paciente", ...CTX_SAUDE),
     c(3, "pacientes", ...CTX_SAUDE),
   ],
+};
+
 
 
 
