@@ -80,30 +80,99 @@ interface Palavra {
   termo: string;
   /** Peso: 3 = específico, 2 = médio, 1 = genérico. */
   peso: 1 | 2 | 3;
+  /** Só pontua se ao menos um destes termos também aparecer no texto. */
+  requer?: string[];
 }
 
 function p(peso: 1 | 2 | 3, ...termos: string[]): Palavra[] {
   return termos.map((termo) => ({ termo, peso }));
 }
 
+/** Termo composto: só pontua quando acompanhado de um dos termos de contexto. */
+function c(peso: 1 | 2 | 3, termo: string, ...requer: string[]): Palavra {
+  return { termo, peso, requer };
+}
+
+const CTX_CRIME = [
+  "facada",
+  "facadas",
+  "tiro",
+  "tiros",
+  "baleado",
+  "homicídio",
+  "assassinato",
+  "assassinado",
+  "assassinada",
+  "crime",
+  "corpo",
+  "polícia",
+  "esfaqueado",
+  "esfaqueada",
+];
+
+const CTX_TRANSITO = [
+  "acidente",
+  "colisão",
+  "batida",
+  "capotamento",
+  "atropelamento",
+  "interditada",
+  "interdição",
+  "bloqueio",
+  "lentidão",
+  "trânsito lento",
+  "congestionamento",
+  "engarrafamento",
+  "tráfego",
+];
+
+const CTX_ESCOLA = [
+  "alunos",
+  "aluno",
+  "estudantes",
+  "professores",
+  "professor",
+  "matrícula",
+  "matrículas",
+  "ensino",
+  "educação",
+  "merenda",
+  "sala de aula",
+];
+
 const REGRAS: Record<CategoriaSlug, Palavra[]> = {
   urgente: [
-    ...p(3, "alerta vermelho", "estado de emergência", "evacuação", "evacuacao", "situação de emergência"),
-    ...p(2, "urgente", "emergência", "interdição", "interditada", "interditado", "risco iminente"),
+    ...p(3, "alerta vermelho", "estado de emergência", "estado de calamidade", "evacuação", "situação de emergência"),
+    ...p(2, "urgente", "emergência", "risco iminente"),
     ...p(1, "alerta", "risco", "perigo"),
   ],
   transito: [
-    ...p(3, "br-101", "br 101", "sc-436", "sc 436", "sc-100", "engarrafamento", "congestionamento", "pista interditada"),
-    ...p(2, "trânsito", "rodovia", "acidente", "colisão", "capotamento", "atropelamento", "desvio", "detour", "interdição"),
-    ...p(1, "veículo", "carro", "moto", "caminhão", "motorista"),
+    ...p(3, "congestionamento", "engarrafamento", "pista interditada", "rodovia interditada", "trânsito lento", "acidente de trânsito"),
+    ...p(2, "trânsito", "rodovia", "acidente", "colisão", "batida", "capotamento", "atropelamento", "lentidão", "tráfego", "desvio", "interdição", "bloqueio"),
+    ...p(1, "veículo", "carro", "moto", "caminhão", "motorista", "pista"),
+    // BR-101 / SC-436 sozinhas: peso moderado; com contexto de trânsito: peso alto
+    ...p(1, "br-101", "br 101", "sc-436", "sc 436", "sc-100"),
+    c(3, "br-101", ...CTX_TRANSITO),
+    c(3, "br 101", ...CTX_TRANSITO),
+    c(3, "sc-436", ...CTX_TRANSITO),
   ],
   seguranca: [
-    ...p(3, "polícia civil", "polícia militar", "feminicídio", "homicídio", "assalto", "tráfico", "delegacia", "latrocínio"),
-    ...p(2, "polícia", "prisão", "preso", "detido", "roubo", "furto", "crime", "investigação", "apreensão", "bombeiros"),
-    ...p(1, "operação", "suspeito", "vítima", "pm"),
+    // crimes específicos: peso máximo
+    ...p(3, "homicídio", "feminicídio", "assassinato", "assassinado", "assassinada", "tentativa de homicídio", "latrocínio", "estupro", "abuso sexual", "esfaqueado", "esfaqueada", "facada", "facadas", "morto a facadas", "morta a facadas"),
+    // drogas: peso máximo
+    ...p(3, "tráfico", "tráfico de drogas", "traficante", "maconha", "cocaína", "crack", "entorpecente", "entorpecentes", "apreensão de drogas", "porções de maconha", "porções de cocaína"),
+    ...p(3, "polícia civil", "polícia militar", "operação policial", "delegacia", "assalto", "investigação criminal", "fraude", "fraudes"),
+    ...p(2, "polícia", "prisão", "preso", "presa", "presos", "detido", "detida", "roubo", "furto", "crime", "drogas", "droga", "investigação", "apreensão", "arma de fogo"),
+    ...p(1, "operação", "suspeito", "vítima", "bombeiros"),
+    // contexto de morte: só reforça Segurança quando há indício de crime
+    c(3, "morto", ...CTX_CRIME),
+    c(3, "morta", ...CTX_CRIME),
+    c(2, "morte", ...CTX_CRIME),
+    c(2, "vítima", "crime", "corpo", "homicídio", "facada", "facadas", "assassinato"),
   ],
   prefeitura: [
-    ...p(3, "prefeitura", "prefeito", "edital municipal", "obra pública", "câmara de vereadores", "vereadores"),
+    ...p(3, "prefeitura de laguna", "prefeitura anuncia", "prefeitura inicia", "prefeitura entrega", "secretaria municipal", "edital municipal", "obra pública", "câmara de vereadores", "vereadores"),
+    ...p(3, "prefeitura", "prefeito"),
     ...p(2, "secretaria", "secretário", "administração municipal", "serviço público", "licitação", "decreto"),
     ...p(1, "municipal", "município", "gestão"),
   ],
@@ -112,9 +181,9 @@ const REGRAS: Record<CategoriaSlug, Palavra[]> = {
     ...p(1, "cidade", "laguna", "centro", "rua", "população"),
   ],
   eventos: [
-    ...p(3, "festival", "carnaval", "programação cultural", "feira", "show"),
-    ...p(2, "evento", "festa", "programação", "atração", "apresentação", "encontro cultural"),
-    ...p(1, "música", "cultura"),
+    ...p(3, "festival", "carnaval", "programação cultural", "show", "feira livre", "feira de artesanato", "feira cultural", "feira gastronômica", "feira de negócios"),
+    ...p(2, "evento", "festa", "programação", "atração", "apresentação", "encontro cultural", "desfile"),
+    ...p(1, "música", "cultura", "feira"),
   ],
   turismo: [
     ...p(3, "turismo", "turistas", "atração turística", "roteiro turístico", "farol de santa marta", "temporada de verão"),
@@ -122,8 +191,8 @@ const REGRAS: Record<CategoriaSlug, Palavra[]> = {
     ...p(1, "verão", "roteiro"),
   ],
   clima: [
-    ...p(3, "defesa civil", "temporal", "tempestade", "granizo", "alagamento", "enchente", "ciclone", "ressaca", "alerta de chuva"),
-    ...p(2, "chuva", "vento", "previsão do tempo", "frente fria", "onda de calor"),
+    ...p(3, "defesa civil", "temporal", "temporais", "tempestade", "granizo", "alagamento", "enchente", "ciclone", "ressaca", "alerta de chuva", "vento forte"),
+    ...p(2, "chuva", "chuvas", "vento", "previsão do tempo", "frente fria", "onda de calor", "mm de chuva"),
     ...p(1, "previsão", "calor", "frio", "tempo"),
   ],
   esportes: [
@@ -137,9 +206,11 @@ const REGRAS: Record<CategoriaSlug, Palavra[]> = {
     ...p(1, "mercado", "custo"),
   ],
   educacao: [
-    ...p(3, "escolas municipais", "matrícula", "matrículas", "creche", "universidade", "professores"),
-    ...p(2, "escola", "educação", "aluno", "alunos", "professor", "ensino", "rede municipal de ensino"),
-    ...p(1, "curso", "aula"),
+    ...p(3, "escolas municipais", "rede municipal de ensino", "unidade escolar", "matrícula", "matrículas", "creche", "universidade", "professores"),
+    ...p(2, "educação", "aluno", "alunos", "estudantes", "professor", "ensino"),
+    ...p(1, "curso", "aula", "escola"),
+    // "escola" só ganha peso com contexto escolar
+    c(3, "escola", ...CTX_ESCOLA),
   ],
   saude: [
     ...p(3, "hospital", "ubs", "vacinação", "posto de saúde", "saúde pública", "sus", "epidemia", "surto"),
@@ -147,6 +218,7 @@ const REGRAS: Record<CategoriaSlug, Palavra[]> = {
     ...p(1, "atendimento", "paciente"),
   ],
 };
+
 
 /** Palavras que elevam diretamente a importância (nunca sozinhas até 10). */
 const ALTA_PRIORIDADE: Array<{ termo: string; pontos: number }> = [
@@ -203,13 +275,26 @@ export function normalizar(texto: string): string {
     .trim();
 }
 
+/**
+ * Conta ocorrências de palavra/expressão inteira.
+ * A fronteira exclui letras, dígitos e hífen: "feira" NÃO casa em "terça-feira",
+ * mas "feira livre" casa normalmente e "br-101" continua casando.
+ */
 function contaOcorrencias(textoNormalizado: string, termo: string): number {
   const alvo = normalizar(termo);
   if (!alvo) return 0;
   const escapado = alvo.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  const regex = new RegExp(`(?<![a-z0-9])${escapado}(?![a-z0-9])`, "g");
+  const regex = new RegExp(`(?<![a-z0-9-])${escapado}(?![a-z0-9-])`, "g");
   return (textoNormalizado.match(regex) ?? []).length;
 }
+
+/** Verifica se algum termo de contexto aparece no título ou no conteúdo. */
+function temContexto(titulo: string, corpo: string, requer: string[]): boolean {
+  return requer.some(
+    (t) => contaOcorrencias(titulo, t) > 0 || contaOcorrencias(corpo, t) > 0,
+  );
+}
+
 
 /* -------------------------------------------------------------- motor puro */
 
@@ -230,28 +315,36 @@ export function classificarNoticia(
   const encontradas = new Map<string, number>();
 
   for (const slug of Object.keys(REGRAS) as CategoriaSlug[]) {
-    let pontos = 0;
-    let distintas = 0;
+    // melhor pontuação por termo: evita contar duas vezes o mesmo termo
+    // quando ele aparece como regra simples e como regra com contexto.
+    const porTermo = new Map<string, number>();
 
-    for (const { termo, peso } of REGRAS[slug]) {
+    for (const { termo, peso, requer } of REGRAS[slug]) {
+      if (requer && !temContexto(titulo, corpo, requer)) continue;
+
       const noTitulo = contaOcorrencias(titulo, termo);
       const noCorpo = contaOcorrencias(corpo, termo);
       if (noTitulo === 0 && noCorpo === 0) continue;
 
-      distintas++;
       // título pesa 3x; conteúdo 1x (limitado a 2 ocorrências para não inflar)
-      pontos += peso * 3 * Math.min(noTitulo, 2) + peso * Math.min(noCorpo, 2);
-      const anterior = encontradas.get(termo) ?? 0;
       const relevancia = peso * 3 * Math.min(noTitulo, 2) + peso * Math.min(noCorpo, 2);
-      if (relevancia > anterior) encontradas.set(termo, relevancia);
+      if (relevancia > (porTermo.get(termo) ?? 0)) porTermo.set(termo, relevancia);
+    }
+
+    let pontos = 0;
+    for (const [termo, relevancia] of porTermo) {
+      pontos += relevancia;
+      if (relevancia > (encontradas.get(termo) ?? 0)) encontradas.set(termo, relevancia);
     }
 
     // bônus por combinação de palavras diferentes (evita palavra genérica isolada)
+    const distintas = porTermo.size;
     if (distintas >= 2) pontos += 2;
     if (distintas >= 3) pontos += 2;
 
     scores[slug] = pontos;
   }
+
 
   const candidatas = PRIORIDADE_CATEGORIA.filter((slug) => scores[slug] >= LIMIAR_MINIMO);
   let escolhida: CategoriaSlug = CATEGORIA_PADRAO;
@@ -312,7 +405,9 @@ function calcularImportancia(args: {
   }
 
   // aderência às regras (sinal forte de categoria)
-  if (pontuacao >= 20) score += 1;
+  // sinal muito forte de categoria: bônus só até 8, para 9/10 exigirem termo grave
+  if (pontuacao >= 20 && score < 8) score += 1;
+
   else if (pontuacao < LIMIAR_MINIMO) score -= 1;
 
   return Math.max(0, Math.min(10, Math.round(score)));
