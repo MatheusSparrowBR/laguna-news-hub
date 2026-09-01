@@ -275,13 +275,26 @@ export function normalizar(texto: string): string {
     .trim();
 }
 
+/**
+ * Conta ocorrências de palavra/expressão inteira.
+ * A fronteira exclui letras, dígitos e hífen: "feira" NÃO casa em "terça-feira",
+ * mas "feira livre" casa normalmente e "br-101" continua casando.
+ */
 function contaOcorrencias(textoNormalizado: string, termo: string): number {
   const alvo = normalizar(termo);
   if (!alvo) return 0;
   const escapado = alvo.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  const regex = new RegExp(`(?<![a-z0-9])${escapado}(?![a-z0-9])`, "g");
+  const regex = new RegExp(`(?<![a-z0-9-])${escapado}(?![a-z0-9-])`, "g");
   return (textoNormalizado.match(regex) ?? []).length;
 }
+
+/** Verifica se algum termo de contexto aparece no título ou no conteúdo. */
+function temContexto(titulo: string, corpo: string, requer: string[]): boolean {
+  return requer.some(
+    (t) => contaOcorrencias(titulo, t) > 0 || contaOcorrencias(corpo, t) > 0,
+  );
+}
+
 
 /* -------------------------------------------------------------- motor puro */
 
