@@ -189,15 +189,19 @@ const REGRAS: Record<CategoriaSlug, Palavra[]> = {
     ...p(1, "alerta", "risco", "perigo"),
   ],
   transito: [
-    ...p(3, "congestionamento", "engarrafamento", "pista interditada", "rodovia interditada", "trânsito lento", "acidente de trânsito"),
+    ...p(3, "congestionamento", "engarrafamento", "pista interditada", "pista bloqueada", "pista liberada", "pista da rodovia", "pista de rolamento", "rodovia interditada", "trânsito lento", "acidente de trânsito"),
     ...p(2, "trânsito", "rodovia", "acidente", "colisão", "batida", "capotamento", "atropelamento", "lentidão", "tráfego", "desvio", "interdição", "bloqueio"),
-    ...p(1, "veículo", "carro", "moto", "caminhão", "motorista", "pista"),
+    ...p(1, "veículo", "carro", "moto", "caminhão", "motorista"),
+    // "pista" isolada é genérica (aeroporto, pista de atletismo): só pontua com contexto
+    ...p(1, "pista"),
+    c(3, "pista", ...CTX_TRANSITO),
     // BR-101 / SC-436 sozinhas: peso moderado; com contexto de trânsito: peso alto
     ...p(1, "br-101", "br 101", "sc-436", "sc 436", "sc-100"),
     c(3, "br-101", ...CTX_TRANSITO),
     c(3, "br 101", ...CTX_TRANSITO),
     c(3, "sc-436", ...CTX_TRANSITO),
   ],
+
   seguranca: [
     // crimes específicos: peso máximo
     ...p(3, "homicídio", "feminicídio", "assassinato", "assassinado", "assassinada", "tentativa de homicídio", "latrocínio", "estupro", "abuso sexual", "esfaqueado", "esfaqueada", "facada", "facadas", "morto a facadas", "morta a facadas"),
