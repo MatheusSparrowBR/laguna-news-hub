@@ -193,7 +193,6 @@ const REGRAS: Record<CategoriaSlug, Palavra[]> = {
     ...p(2, "trânsito", "rodovia", "acidente", "colisão", "batida", "capotamento", "atropelamento", "lentidão", "tráfego", "desvio", "interdição", "bloqueio"),
     ...p(1, "veículo", "carro", "moto", "caminhão", "motorista"),
     // "pista" isolada é genérica (aeroporto, pista de atletismo): só pontua com contexto
-    ...p(1, "pista"),
     c(3, "pista", ...CTX_TRANSITO),
     // BR-101 / SC-436 sozinhas: peso moderado; com contexto de trânsito: peso alto
     ...p(1, "br-101", "br 101", "sc-436", "sc 436", "sc-100"),
@@ -235,7 +234,7 @@ const REGRAS: Record<CategoriaSlug, Palavra[]> = {
     ...p(3, "turismo", "turista", "turistas", "atração turística", "ponto turístico", "roteiro turístico", "destino turístico", "turismo cultural", "turismo histórico", "turismo de praia", "farol de santa marta", "praias de laguna", "ocupação hoteleira", "temporada de verão", "hospedagem", "pousada"),
     ...p(2, "visitantes", "visitação", "veraneio", "banhistas", "hotelaria", "patrimônio histórico", "passeio"),
     // termos genéricos: só ganham peso com contexto turístico
-    ...p(1, "verão", "roteiro", "praia", "praias", "patrimônio", "hotel"),
+    ...p(1, "verão", "roteiro"),
     c(3, "praia", ...CTX_TURISMO),
     c(3, "praias", ...CTX_TURISMO),
     c(3, "hotel", ...CTX_TURISMO),
@@ -269,7 +268,7 @@ const REGRAS: Record<CategoriaSlug, Palavra[]> = {
     ...p(3, "hospital", "ubs", "vacinação", "posto de saúde", "saúde pública", "sus", "epidemia", "surto"),
     ...p(2, "saúde", "vacina", "atendimento médico", "médico", "enfermeiro", "enfermagem", "doença", "dengue", "consulta", "tratamento"),
     // "paciente" isolado é insuficiente: só ganha peso com contexto de saúde
-    ...p(1, "atendimento", "paciente", "pacientes"),
+    ...p(1, "atendimento"),
     c(3, "paciente", ...CTX_SAUDE),
     c(3, "pacientes", ...CTX_SAUDE),
   ],
