@@ -10,12 +10,15 @@
  */
 
 import {
+  BAIRROS_AMBIGUOS_LAGUNA,
   BAIRROS_LAGUNA,
   DISTRITOS_LAGUNA,
   DOMINIOS_OFICIAIS_LAGUNA,
   ENTIDADES_LAGUNA,
   LOCAIS_EXTERNOS,
   MUNICIPIOS_EXTERNOS,
+  PONTOS_REFERENCIA_LAGUNA,
+  REGIOES,
 } from "./lagunaLocalities";
 
 export type ScopeDecision = "local" | "outside" | "uncertain";
