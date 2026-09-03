@@ -397,6 +397,22 @@ export async function executarColeta(opcoes: OpcoesColeta): Promise<CollectNewsR
           continue;
         }
 
+        // Filtro geográfico em MODO SHADOW: calcula a decisão antes do INSERT,
+        // mas nunca descarta o item nesta fase (permiteInsercao === true).
+        const escopo = avaliarEscopoLaguna({
+          title: item.title,
+          content: item.description ?? "",
+          source: fonte.rss_url ?? fonte.name,
+        });
+        if (escopo.decision === "local") geoLocal++;
+        else if (escopo.decision === "outside") geoOutside++;
+        else geoUncertain++;
+
+        if (!permiteInsercao(escopo.decision)) {
+          log("geo_blocked", { source_id: fonte.id, decision: escopo.decision });
+          continue;
+        }
+
         const classificacao = classificarNoticia(
           { title: item.title, content: item.description, source: fonte.name },
           categoriaIds,
