@@ -12,6 +12,11 @@ import type { Database } from "@/integrations/supabase/types";
 import { classificarNoticia, type CategoriaSlug } from "@/lib/rules/newsClassification";
 import { avaliarEscopoLaguna } from "@/lib/rules/lagunaScope";
 import { GEOGRAPHIC_FILTER_MODE, permiteInsercao } from "@/lib/rules/geoFilterMode";
+import {
+  buscarConteudoCompleto,
+  mapearComLimite,
+  FETCH_CONTEUDO_CONCORRENCIA,
+} from "@/lib/articleContent.server";
 
 
 export type ClienteColeta = SupabaseClient<Database>;
@@ -52,6 +57,12 @@ export interface CollectNewsResult {
   geo_local: number;
   geo_outside: number;
   geo_uncertain: number;
+  /** Quantos itens novos foram analisados com o corpo completo da página. */
+  content_full: number;
+  /** Quantos itens novos caíram no lead do RSS. */
+  content_fallback_rss: number;
+  /** Quantas buscas de página falharam (timeout, HTTP, extração). */
+  content_fetch_errors: number;
   logs: CollectNewsSourceLog[];
 }
 
@@ -309,6 +320,9 @@ export async function executarColeta(opcoes: OpcoesColeta): Promise<CollectNewsR
     geo_local: 0,
     geo_outside: 0,
     geo_uncertain: 0,
+    content_full: 0,
+    content_fallback_rss: 0,
+    content_fetch_errors: 0,
     logs: [],
   };
 
@@ -373,6 +387,10 @@ export async function executarColeta(opcoes: OpcoesColeta): Promise<CollectNewsR
   let geoLocal = 0;
   let geoOutside = 0;
   let geoUncertain = 0;
+  // Contagens da busca de conteúdo completo (somente itens novos).
+  let conteudoCompleto = 0;
+  let fallbackRss = 0;
+  let fetchErro = 0;
 
   for (const fonte of ativas) {
     log("source_start", { source_id: fonte.id, name: fonte.name });
@@ -541,6 +559,9 @@ export async function executarColeta(opcoes: OpcoesColeta): Promise<CollectNewsR
     `outside=${geoOutside}`,
     `uncertain=${geoUncertain}`,
     `geo_mode=${GEOGRAPHIC_FILTER_MODE}`,
+    `conteudo_completo=${conteudoCompleto}`,
+    `fallback_rss=${fallbackRss}`,
+    `fetch_erro=${fetchErro}`,
   ].join(" ");
 
   const detalhesErro = logs
@@ -574,6 +595,9 @@ export async function executarColeta(opcoes: OpcoesColeta): Promise<CollectNewsR
     geo_local: geoLocal,
     geo_outside: geoOutside,
     geo_uncertain: geoUncertain,
+    content_full: conteudoCompleto,
+    content_fallback_rss: fallbackRss,
+    content_fetch_errors: fetchErro,
     logs,
   };
 }
