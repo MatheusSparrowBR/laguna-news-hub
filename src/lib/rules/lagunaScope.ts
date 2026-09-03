@@ -125,11 +125,15 @@ const VERBOS_OCORRENCIA =
 
 /* ------------------------------- entidades compostas e logradouros */
 
-/** Gatilhos: o nome próprio que os segue pertence à entidade/endereço. */
-const GATILHOS_COMPOSTOS = new Set<string>([
-  ...PALAVRAS_LOGRADOURO.map((p) => normalizarTexto(p)),
-  ...PALAVRAS_ENTIDADE_COMPOSTA.map((p) => normalizarTexto(p)),
-]);
+/** Logradouros: o primeiro nome ainda pode ser geográfico ("Rua do Portinho"). */
+const GATILHOS_LOGRADOURO = new Set<string>(
+  PALAVRAS_LOGRADOURO.map((p) => normalizarTexto(p)),
+);
+
+/** Entidades compostas: todo o nome pertence à entidade ("Ferrovia Tereza Cristina"). */
+const GATILHOS_ENTIDADE = new Set<string>(
+  PALAVRAS_ENTIDADE_COMPOSTA.map((p) => normalizarTexto(p)),
+);
 
 /** Conectivos que continuam o nome próprio ("Visconde DE Barbacena"). */
 const CONECTIVOS_NOME = new Set(["de", "da", "do", "dos", "das"]);
@@ -171,12 +175,17 @@ const MAX_PALAVRAS_NOME = 4;
 
 /**
  * Regra GERAL (sem lista de exceções): apaga do texto os nomes próprios que
- * são parte interna de um logradouro ou de uma entidade composta, para que
- * eles não sejam lidos como bairro/localidade.
+ * são parte INTERNA de um logradouro ou de uma entidade composta, para que não
+ * sejam lidos como bairro/localidade.
  *
- * "ferrovia tereza cristina em laguna" → "ferrovia __ __ em laguna"
+ * Entidade composta → todo o nome é mascarado:
+ *   "ferrovia tereza cristina em laguna" → "ferrovia __ __ em laguna"
  *   (perde "Tereza" como bairro, mantém "em Laguna")
- * "rua visconde de barbacena em tubarao" → "rua __ __ __ em tubarao"
+ *
+ * Logradouro → o primeiro nome é preservado (pode ser o próprio lugar) e só os
+ * nomes seguintes são mascarados:
+ *   "rua do portinho" → "rua do portinho" (Portinho continua valendo)
+ *   "rua visconde de barbacena em tubarao" → "rua visconde de __ em tubarao"
  */
 export function mascararEntidadesCompostas(textoNormalizado: string): string {
   if (!textoNormalizado) return textoNormalizado;
@@ -184,13 +193,19 @@ export function mascararEntidadesCompostas(textoNormalizado: string): string {
   const saida = [...tokens];
 
   for (let i = 0; i < tokens.length; i += 1) {
-    if (!GATILHOS_COMPOSTOS.has(tokens[i] ?? "")) continue;
+    const gatilho = tokens[i] ?? "";
+    const ehLogradouro = GATILHOS_LOGRADOURO.has(gatilho);
+    if (!ehLogradouro && !GATILHOS_ENTIDADE.has(gatilho)) continue;
+
     let proprias = 0;
     for (let j = i + 1; j < tokens.length && proprias < MAX_PALAVRAS_NOME; j += 1) {
       const token = tokens[j] ?? "";
       if (FIM_DE_NOME.has(token)) break;
+      const ehConectivo = CONECTIVOS_NOME.has(token);
+      if (!ehConectivo) proprias += 1;
+      // em logradouro, o primeiro nome próprio é preservado
+      if (ehLogradouro && !ehConectivo && proprias === 1) continue;
       saida[j] = "__";
-      if (!CONECTIVOS_NOME.has(token)) proprias += 1;
     }
   }
 
