@@ -1,12 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Newspaper, RefreshCw, Loader2 } from "lucide-react";
+import { Newspaper, RefreshCw, Loader2, FlaskConical } from "lucide-react";
 import { toast } from "sonner";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { EmptyState } from "@/components/common/EmptyState";
 import { LoadingState } from "@/components/common/LoadingState";
 import { NewsFilters } from "@/components/news/NewsFilters";
 import { NewsList } from "@/components/news/NewsList";
+import { PipelinePreviewDialog } from "@/components/news/PipelinePreviewDialog";
 import type { NewsActionHandlers } from "@/components/news/NewsActions";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -68,6 +69,7 @@ function NewsPage() {
   const alterarStatus = useAlterarStatusNoticia();
   const [filtros, setFiltros] = useState(filtrosIniciais);
   const [coletando, setColetando] = useState(false);
+  const [previewAberto, setPreviewAberto] = useState(false);
 
   const nomesFontes = useMemo(() => fontes.map((f) => f.nome), [fontes]);
   const filtradas = useMemo(() => filtrarNoticias(noticias, filtros), [noticias, filtros]);
@@ -131,6 +133,17 @@ function NewsPage() {
       titulo="Notícias"
       descricao="Gerencie as notícias encontradas e o conteúdo preparado pela IA."
       acoes={
+        <div className="flex flex-wrap items-center gap-2">
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => setPreviewAberto(true)}
+          disabled={isLoading || !projeto?.id || filtradas.length === 0}
+          title="Diagnóstico somente leitura das 10 primeiras notícias filtradas"
+        >
+          <FlaskConical className="size-4" />
+          Preview do pipeline (10)
+        </Button>
         <Button
           size="sm"
           onClick={handleAtualizar}
@@ -143,6 +156,7 @@ function NewsPage() {
           )}
           {coletando ? "Coletando notícias..." : "Atualizar notícias"}
         </Button>
+        </div>
       }
     >
       <div className="mb-3 flex flex-wrap items-center gap-2">
@@ -179,6 +193,13 @@ function NewsPage() {
           <NewsListWithDemoBadge noticias={filtradas} handlers={handlers} />
         )}
       </div>
+
+      <PipelinePreviewDialog
+        open={previewAberto}
+        onOpenChange={setPreviewAberto}
+        projectId={projeto?.id}
+        newsIds={filtradas.slice(0, 10).map((n) => n.id)}
+      />
     </PageContainer>
   );
 }
