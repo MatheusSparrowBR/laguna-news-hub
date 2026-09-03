@@ -12,6 +12,7 @@ import {
   Save,
   Pencil,
   Brain,
+  FlaskConical,
   Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -32,6 +33,7 @@ import { NewsTimeline } from "@/components/news/NewsTimeline";
 import { StatusBadge } from "@/components/common/StatusBadge";
 import { CategoryBadge } from "@/components/common/CategoryBadge";
 import { AnalysisResultPanel } from "@/components/news/AnalysisResultPanel";
+import { PipelinePreviewDialog } from "@/components/news/PipelinePreviewDialog";
 import { useProject } from "@/hooks/useProject";
 import { useNoticia, useAlterarStatusNoticia, useSalvarAnaliseNoticia } from "@/services/queries";
 import { analisarNoticiaComIA, type AnalysisData } from "@/services/analyzeNews";
@@ -69,13 +71,14 @@ function NewsDetailPage() {
   const [hashtagsEditadas, setHashtagsEditadas] = useState("");
 
   const [analisando, setAnalisando] = useState(false);
+  const [previewAberto, setPreviewAberto] = useState(false);
   const [resultadoAnalise, setResultadoAnalise] = useState<{ analysis: AnalysisData; status: string } | null>(null);
 
   if (isLoading) {
     return (
       <PageContainer titulo="Detalhe da notícia">
         <LoadingState titulo="Carregando notícia..." />
-      </PageContainer>
+    </PageContainer>
     );
   }
 
@@ -83,7 +86,7 @@ function NewsDetailPage() {
     return (
       <PageContainer titulo="Detalhe da notícia">
         <EmptyState titulo="Erro ao carregar notícia" descricao={error.message} />
-      </PageContainer>
+    </PageContainer>
     );
   }
 
@@ -96,7 +99,7 @@ function NewsDetailPage() {
             <Link to="/news">Voltar às notícias</Link>
           </Button>
         </div>
-      </PageContainer>
+    </PageContainer>
     );
   }
 
@@ -370,6 +373,19 @@ function NewsDetailPage() {
                 {analisando ? "Analisando..." : "Analisar com IA"}
               </Button>
 
+              {/* Diagnóstico somente leitura do pipeline (não grava nada) */}
+              <Button
+                className="w-full"
+                variant="outline"
+                size="sm"
+                onClick={() => setPreviewAberto(true)}
+                disabled={!projeto?.id}
+              >
+                <FlaskConical className="size-4" />
+                Preview do processamento
+              </Button>
+
+
               <Separator className="my-2" />
 
               {(noticia.status === "aguardando_aprovacao" || noticia.status === "revisao_obrigatoria" || noticia.status === "em_analise") && (
@@ -416,6 +432,12 @@ function NewsDetailPage() {
           </Card>
         </div>
       </div>
+      <PipelinePreviewDialog
+        open={previewAberto}
+        onOpenChange={setPreviewAberto}
+        projectId={projeto?.id}
+        newsIds={[id]}
+      />
     </PageContainer>
   );
 }
