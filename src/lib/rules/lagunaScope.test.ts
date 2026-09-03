@@ -127,3 +127,63 @@ describe("refinamento: pontos de referência, regiões e fato compartilhado", ()
     expect(decisao("Ação recolhe resíduos no bairro Passagem")).not.toBe("local");
   });
 });
+
+describe("entidades compostas, logradouros e municípios externos", () => {
+  it("1. Ferrovia Tereza Cristina não é LOCAL apenas por 'Tereza'", () => {
+    expect(decisao("Ferrovia Tereza Cristina anuncia investimento na malha ferroviária")).not.toBe(
+      "local",
+    );
+  });
+
+  it("2. obra no bairro Tereza, em Laguna, é LOCAL", () => {
+    expect(decisao("Obra no bairro Tereza, em Laguna, entra na fase final")).toBe("local");
+  });
+
+  it("3. Rua Visconde de Barbacena, em Tubarão, não é LOCAL", () => {
+    expect(decisao("Ação recolhe resíduos na Rua Visconde de Barbacena, em Tubarão")).not.toBe(
+      "local",
+    );
+  });
+
+  it("4. moradores do bairro Barbacena, em Laguna, é LOCAL", () => {
+    expect(decisao("Moradores do bairro Barbacena, em Laguna, pedem melhorias")).toBe("local");
+  });
+
+  it("5. granizo em Braço do Norte é OUTSIDE", () => {
+    expect(decisao("Granizo atinge ruas em Braço do Norte")).toBe("outside");
+  });
+
+  it("6. matéria regional citando Braço do Norte e Laguna não é OUTSIDE automático", () => {
+    expect(
+      decisao("Encontro regional discute saúde sobre Braço do Norte e Laguna"),
+    ).not.toBe("outside");
+  });
+
+  it("7. morador de Laguna atendido em Braço do Norte não é LOCAL", () => {
+    expect(
+      decisao("Morador de Laguna é atendido em Braço do Norte após acidente"),
+    ).not.toBe("local");
+  });
+
+  it("8. Ferrovia Tereza Cristina em Laguna é LOCAL pela localização explícita", () => {
+    expect(decisao("Ferrovia Tereza Cristina inicia obras em Laguna")).toBe("local");
+  });
+
+  it("9. Ponte Anita Garibaldi, em Laguna, é LOCAL", () => {
+    expect(decisao("Acidente na Ponte Anita Garibaldi, em Laguna, deixa feridos")).toBe("local");
+  });
+
+  it("10. Ponte Anita Garibaldi entre Laguna e Pescaria Brava não decide LOCAL sozinha", () => {
+    expect(
+      decisao("Obras na Ponte Anita Garibaldi entre Laguna e Pescaria Brava seguem"),
+    ).not.toBe("local");
+  });
+
+  it("nome de bairro dentro de entidade composta é ignorado como localidade", () => {
+    const r = avaliarEscopoLaguna({
+      title: "Ferrovia Tereza Cristina amplia operação",
+      content: "A concessionária informou novos investimentos",
+    });
+    expect(r.matched_localities).not.toContain("Tereza");
+  });
+});
