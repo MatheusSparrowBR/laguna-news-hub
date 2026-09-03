@@ -278,29 +278,46 @@ export function avaliarEscopoLaguna(entrada: EntradaEscopo): ResultadoEscopo {
     }
   }
 
-  // bairros/distritos comprovados
+  // bairros/distritos comprovados — lidos no texto SEM entidades compostas
   for (const loc of [...BAIRROS_LAGUNA, ...DISTRITOS_LAGUNA]) {
-    if (contem(titulo, loc)) {
-      marcar(PESO_FORTE, FATOR_TITULO);
-      temForte = true;
-      matched_localities.push(loc);
-      razoes.push(`localidade de Laguna no título: ${loc}`);
-    } else if (contem(corpo, loc)) {
-      marcar(PESO_FORTE, FATOR_CORPO);
-      temForte = true;
-      matched_localities.push(loc);
-      razoes.push(`localidade de Laguna no conteúdo: ${loc}`);
+    const noTitulo = contem(tituloGeo, loc);
+    const noCorpo = contem(corpoGeo, loc);
+    if (!noTitulo && !noCorpo) {
+      // nome existia apenas dentro de logradouro/entidade composta
+      if (contem(titulo, loc) || contem(corpo, loc)) {
+        razoes.push(`"${loc}" ignorado: nome interno de logradouro/entidade`);
+      }
+      continue;
     }
+    marcar(PESO_FORTE, noTitulo ? FATOR_TITULO : FATOR_CORPO);
+    temForte = true;
+    matched_localities.push(loc);
+    razoes.push(
+      `localidade de Laguna no ${noTitulo ? "título" : "conteúdo"}: ${loc}`,
+    );
   }
 
-  // bairros de nome ambíguo: sinal médio, nunca decide sozinho
+  // bairros de nome ambíguo: só pontuam com Laguna presente no texto, e ainda
+  // assim como sinal MÉDIO — nunca decidem "local" sozinhos.
+  const lagunaPresente =
+    temMuitoForte || temForte || contem(titulo, "laguna") || contem(corpo, "laguna");
   for (const loc of BAIRROS_AMBIGUOS_LAGUNA) {
-    if (contem(titulo, loc) || contem(corpo, loc)) {
-      marcar(PESO_MEDIO, contem(titulo, loc) ? FATOR_TITULO : FATOR_CORPO);
-      temMedio = true;
-      matched_localities.push(`${loc} (ambíguo)`);
-      razoes.push(`bairro de nome ambíguo: ${loc}`);
+    const noTitulo = contem(tituloGeo, loc);
+    const noCorpo = contem(corpoGeo, loc);
+    if (!noTitulo && !noCorpo) {
+      if (contem(titulo, loc) || contem(corpo, loc)) {
+        razoes.push(`"${loc}" ignorado: nome interno de logradouro/entidade`);
+      }
+      continue;
     }
+    if (!lagunaPresente) {
+      razoes.push(`bairro ambíguo "${loc}" sem contexto de Laguna: ignorado`);
+      continue;
+    }
+    marcar(PESO_MEDIO, noTitulo ? FATOR_TITULO : FATOR_CORPO);
+    temMedio = true;
+    matched_localities.push(`${loc} (ambíguo)`);
+    razoes.push(`bairro de nome ambíguo: ${loc}`);
   }
 
   // regiões: nem local nem outside por si só
