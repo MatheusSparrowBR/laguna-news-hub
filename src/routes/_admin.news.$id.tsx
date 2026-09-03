@@ -78,12 +78,6 @@ function NewsDetailPage() {
     return (
       <PageContainer titulo="Detalhe da notícia">
         <LoadingState titulo="Carregando notícia..." />
-        <PipelinePreviewDialog
-        open={previewAberto}
-        onOpenChange={setPreviewAberto}
-        projectId={projeto?.id}
-        newsIds={[id]}
-      />
     </PageContainer>
     );
   }
@@ -92,12 +86,6 @@ function NewsDetailPage() {
     return (
       <PageContainer titulo="Detalhe da notícia">
         <EmptyState titulo="Erro ao carregar notícia" descricao={error.message} />
-        <PipelinePreviewDialog
-        open={previewAberto}
-        onOpenChange={setPreviewAberto}
-        projectId={projeto?.id}
-        newsIds={[id]}
-      />
     </PageContainer>
     );
   }
@@ -111,12 +99,6 @@ function NewsDetailPage() {
             <Link to="/news">Voltar às notícias</Link>
           </Button>
         </div>
-        <PipelinePreviewDialog
-        open={previewAberto}
-        onOpenChange={setPreviewAberto}
-        projectId={projeto?.id}
-        newsIds={[id]}
-      />
     </PageContainer>
     );
   }
