@@ -53,11 +53,11 @@ export type OrigemConteudo =
 export interface ResultadoConteudo {
   success: boolean;
   content: string | null;
-  title?: string;
+  title?: string | undefined;
   /** De onde o corpo veio, quando houve sucesso. */
-  via?: OrigemConteudo;
+  via?: OrigemConteudo | undefined;
   /** Motivo da falha, quando success === false. */
-  reason?: string;
+  reason?: string | undefined;
 }
 
 /* -------------------------------------------------------- HTML → texto puro */
