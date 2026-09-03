@@ -107,9 +107,21 @@ const PADROES_PESSOA_DE_LAGUNA: RegExp[] = [
   /\b(?:homem|mulher|jovem|idoso|idosa|menino|menina|rapaz|crianca|motorista|motociclista|ciclista|natural|nascido|nascida|morador|moradora)\s+(?:de\s+\d+\s+anos\s+)?de laguna\b/,
 ];
 
+/**
+ * Fato compartilhado entre Laguna e outro município (ponte, divisa, rodovia).
+ * Nunca decide "local" sozinho: no máximo "uncertain".
+ */
+const PADROES_COMPARTILHADOS: RegExp[] = [
+  /\bentre laguna e\b/,
+  /\be laguna\b(?=.*\b(?:divisa|limite|trecho)\b)/,
+  /\bdivisa (?:entre|de|com) laguna\b/,
+];
+
 /** Verbos que indicam ocorrência do fato no local citado. */
 const VERBOS_OCORRENCIA =
   "(?:acontece|ocorre|ocorreu|registra|registrado|registrada|deixa|termina|comeca|sera|foi|passa|tera|atinge|abre|inaugura|anuncia|prende|preso|presa)";
+
+
 
 /* ------------------------------------------------------------- motor */
 
