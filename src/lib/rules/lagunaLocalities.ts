@@ -134,7 +134,67 @@ export const MUNICIPIOS_EXTERNOS: string[] = [
   "Palhoça",
   "Mafra",
   "Pescaria Brava",
+  "Braço do Norte", // comprovado: sulagora.com.br notícias 25565 e 25567
 ];
 
 /** Locais externos específicos comprovados (não municípios). */
 export const LOCAIS_EXTERNOS: string[] = ["Praia da Pinheira"];
+
+/**
+ * Substantivos que introduzem um LOGRADOURO. O nome que vem depois deles é
+ * parte do endereço, não uma localidade autônoma.
+ * Ex.: "Rua Visconde de Barbacena" → "Barbacena" NÃO é bairro de Laguna aqui.
+ */
+export const PALAVRAS_LOGRADOURO: string[] = [
+  "rua",
+  "avenida",
+  "av",
+  "rodovia",
+  "estrada",
+  "alameda",
+  "travessa",
+  "praca",
+  "largo",
+  "beco",
+  "servidao",
+  "viela",
+  "marginal",
+];
+
+/**
+ * Substantivos que introduzem uma ENTIDADE COMPOSTA (empresa, obra, órgão).
+ * O nome próprio seguinte pertence à entidade, não ao território.
+ * Ex.: "Ferrovia Tereza Cristina" → "Tereza" NÃO é bairro de Laguna aqui.
+ * Regra geral e editável — evita lista infinita de exceções.
+ */
+export const PALAVRAS_ENTIDADE_COMPOSTA: string[] = [
+  "ferrovia",
+  "ferroviaria",
+  "empresa",
+  "grupo",
+  "companhia",
+  "industria",
+  "transportadora",
+  "construtora",
+  "cooperativa",
+  "sociedade",
+  "sindicato",
+  "associacao",
+  "fundacao",
+  "instituto",
+  "universidade",
+  "faculdade",
+  "colegio",
+  "banco",
+  "supermercado",
+  "mercado",
+  "clube",
+  "igreja",
+  "capela",
+  "emissora",
+  "condominio",
+  "edificio",
+  "residencial",
+  "loteamento",
+];
+

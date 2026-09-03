@@ -17,6 +17,8 @@ import {
   ENTIDADES_LAGUNA,
   LOCAIS_EXTERNOS,
   MUNICIPIOS_EXTERNOS,
+  PALAVRAS_ENTIDADE_COMPOSTA,
+  PALAVRAS_LOGRADOURO,
   PONTOS_REFERENCIA_LAGUNA,
   REGIOES,
 } from "./lagunaLocalities";
@@ -121,13 +123,103 @@ const PADROES_COMPARTILHADOS: RegExp[] = [
 const VERBOS_OCORRENCIA =
   "(?:acontece|ocorre|ocorreu|registra|registrado|registrada|deixa|termina|comeca|sera|foi|passa|tera|atinge|abre|inaugura|anuncia|prende|preso|presa)";
 
+/* ------------------------------- entidades compostas e logradouros */
 
+/** Logradouros: o primeiro nome ainda pode ser geográfico ("Rua do Portinho"). */
+const GATILHOS_LOGRADOURO = new Set<string>(
+  PALAVRAS_LOGRADOURO.map((p) => normalizarTexto(p)),
+);
+
+/** Entidades compostas: todo o nome pertence à entidade ("Ferrovia Tereza Cristina"). */
+const GATILHOS_ENTIDADE = new Set<string>(
+  PALAVRAS_ENTIDADE_COMPOSTA.map((p) => normalizarTexto(p)),
+);
+
+/** Conectivos que continuam o nome próprio ("Visconde DE Barbacena"). */
+const CONECTIVOS_NOME = new Set(["de", "da", "do", "dos", "das"]);
+
+/** Palavras que encerram o nome próprio e devolvem o texto ao contexto geográfico. */
+const FIM_DE_NOME = new Set([
+  "em",
+  "no",
+  "na",
+  "nos",
+  "nas",
+  "e",
+  "com",
+  "que",
+  "para",
+  "por",
+  "pela",
+  "pelo",
+  "sobre",
+  "apos",
+  "durante",
+  "ate",
+  "entre",
+  "nesta",
+  "neste",
+  "foi",
+  "sera",
+  "tem",
+  "teve",
+  "vai",
+  "anuncia",
+  "informa",
+  "recebe",
+  "registra",
+]);
+
+/** Máximo de palavras próprias absorvidas por uma entidade composta. */
+const MAX_PALAVRAS_NOME = 4;
+
+/**
+ * Regra GERAL (sem lista de exceções): apaga do texto os nomes próprios que
+ * são parte INTERNA de um logradouro ou de uma entidade composta, para que não
+ * sejam lidos como bairro/localidade.
+ *
+ * Entidade composta → todo o nome é mascarado:
+ *   "ferrovia tereza cristina em laguna" → "ferrovia __ __ em laguna"
+ *   (perde "Tereza" como bairro, mantém "em Laguna")
+ *
+ * Logradouro → o primeiro nome é preservado (pode ser o próprio lugar) e só os
+ * nomes seguintes são mascarados:
+ *   "rua do portinho" → "rua do portinho" (Portinho continua valendo)
+ *   "rua visconde de barbacena em tubarao" → "rua visconde de __ em tubarao"
+ */
+export function mascararEntidadesCompostas(textoNormalizado: string): string {
+  if (!textoNormalizado) return textoNormalizado;
+  const tokens = textoNormalizado.split(" ");
+  const saida = [...tokens];
+
+  for (let i = 0; i < tokens.length; i += 1) {
+    const gatilho = tokens[i] ?? "";
+    const ehLogradouro = GATILHOS_LOGRADOURO.has(gatilho);
+    if (!ehLogradouro && !GATILHOS_ENTIDADE.has(gatilho)) continue;
+
+    let proprias = 0;
+    for (let j = i + 1; j < tokens.length && proprias < MAX_PALAVRAS_NOME; j += 1) {
+      const token = tokens[j] ?? "";
+      if (FIM_DE_NOME.has(token)) break;
+      const ehConectivo = CONECTIVOS_NOME.has(token);
+      if (!ehConectivo) proprias += 1;
+      // em logradouro, o primeiro nome próprio é preservado
+      if (ehLogradouro && !ehConectivo && proprias === 1) continue;
+      saida[j] = "__";
+    }
+  }
+
+  return saida.join(" ");
+}
 
 /* ------------------------------------------------------------- motor */
 
 export function avaliarEscopoLaguna(entrada: EntradaEscopo): ResultadoEscopo {
   const titulo = normalizarTexto(entrada.title ?? "");
   const corpo = normalizarTexto(entrada.content ?? "");
+  /** Texto sem os nomes internos de logradouros/entidades compostas. */
+  const tituloGeo = mascararEntidadesCompostas(titulo);
+  const corpoGeo = mascararEntidadesCompostas(corpo);
   const fonte = (entrada.source ?? "").toLowerCase();
 
   const matched_localities: string[] = [];
@@ -140,6 +232,8 @@ export function avaliarEscopoLaguna(entrada: EntradaEscopo): ResultadoEscopo {
   let temForte = false;
   let temMedio = false;
   let temRegiao = false;
+  /** true quando o único sinal muito forte veio do domínio oficial. */
+  let muitoForteApenasFonte = false;
 
   const marcar = (peso: number, fator: number) => {
     scoreLaguna += peso * fator;
@@ -149,6 +243,7 @@ export function avaliarEscopoLaguna(entrada: EntradaEscopo): ResultadoEscopo {
   if (DOMINIOS_OFICIAIS_LAGUNA.some((d) => fonte.includes(d))) {
     marcar(PESO_MUITO_FORTE, FATOR_TITULO);
     temMuitoForte = true;
+    muitoForteApenasFonte = true;
     matched_entities.push("fonte oficial de Laguna");
     razoes.push("fonte oficial do município");
   }
@@ -158,6 +253,7 @@ export function avaliarEscopoLaguna(entrada: EntradaEscopo): ResultadoEscopo {
     if (re.test(titulo)) {
       marcar(PESO_MUITO_FORTE, FATOR_TITULO);
       temMuitoForte = true;
+      muitoForteApenasFonte = false;
       matched_localities.push("Laguna (título)");
       razoes.push("fato situado em Laguna no título");
       break;
@@ -165,6 +261,7 @@ export function avaliarEscopoLaguna(entrada: EntradaEscopo): ResultadoEscopo {
     if (re.test(corpo)) {
       marcar(PESO_MUITO_FORTE, FATOR_CORPO);
       temMuitoForte = true;
+      muitoForteApenasFonte = false;
       matched_localities.push("Laguna (conteúdo)");
       razoes.push("fato situado em Laguna no conteúdo");
       break;
@@ -201,29 +298,46 @@ export function avaliarEscopoLaguna(entrada: EntradaEscopo): ResultadoEscopo {
     }
   }
 
-  // bairros/distritos comprovados
+  // bairros/distritos comprovados — lidos no texto SEM entidades compostas
   for (const loc of [...BAIRROS_LAGUNA, ...DISTRITOS_LAGUNA]) {
-    if (contem(titulo, loc)) {
-      marcar(PESO_FORTE, FATOR_TITULO);
-      temForte = true;
-      matched_localities.push(loc);
-      razoes.push(`localidade de Laguna no título: ${loc}`);
-    } else if (contem(corpo, loc)) {
-      marcar(PESO_FORTE, FATOR_CORPO);
-      temForte = true;
-      matched_localities.push(loc);
-      razoes.push(`localidade de Laguna no conteúdo: ${loc}`);
+    const noTitulo = contem(tituloGeo, loc);
+    const noCorpo = contem(corpoGeo, loc);
+    if (!noTitulo && !noCorpo) {
+      // nome existia apenas dentro de logradouro/entidade composta
+      if (contem(titulo, loc) || contem(corpo, loc)) {
+        razoes.push(`"${loc}" ignorado: nome interno de logradouro/entidade`);
+      }
+      continue;
     }
+    marcar(PESO_FORTE, noTitulo ? FATOR_TITULO : FATOR_CORPO);
+    temForte = true;
+    matched_localities.push(loc);
+    razoes.push(
+      `localidade de Laguna no ${noTitulo ? "título" : "conteúdo"}: ${loc}`,
+    );
   }
 
-  // bairros de nome ambíguo: sinal médio, nunca decide sozinho
+  // bairros de nome ambíguo: só pontuam com Laguna presente no texto, e ainda
+  // assim como sinal MÉDIO — nunca decidem "local" sozinhos.
+  const lagunaPresente =
+    temMuitoForte || temForte || contem(titulo, "laguna") || contem(corpo, "laguna");
   for (const loc of BAIRROS_AMBIGUOS_LAGUNA) {
-    if (contem(titulo, loc) || contem(corpo, loc)) {
-      marcar(PESO_MEDIO, contem(titulo, loc) ? FATOR_TITULO : FATOR_CORPO);
-      temMedio = true;
-      matched_localities.push(`${loc} (ambíguo)`);
-      razoes.push(`bairro de nome ambíguo: ${loc}`);
+    const noTitulo = contem(tituloGeo, loc);
+    const noCorpo = contem(corpoGeo, loc);
+    if (!noTitulo && !noCorpo) {
+      if (contem(titulo, loc) || contem(corpo, loc)) {
+        razoes.push(`"${loc}" ignorado: nome interno de logradouro/entidade`);
+      }
+      continue;
     }
+    if (!lagunaPresente) {
+      razoes.push(`bairro ambíguo "${loc}" sem contexto de Laguna: ignorado`);
+      continue;
+    }
+    marcar(PESO_MEDIO, noTitulo ? FATOR_TITULO : FATOR_CORPO);
+    temMedio = true;
+    matched_localities.push(`${loc} (ambíguo)`);
+    razoes.push(`bairro de nome ambíguo: ${loc}`);
   }
 
   // regiões: nem local nem outside por si só
@@ -319,6 +433,16 @@ export function avaliarEscopoLaguna(entrada: EntradaEscopo): ResultadoEscopo {
   if (decision === "local" && fatoCompartilhado) {
     decision = "uncertain";
     razoes.push("fato compartilhado entre Laguna e outro município");
+  }
+  // fonte oficial não situa o fato: município externo claro no título prevalece
+  if (
+    decision === "local" &&
+    muitoForteApenasFonte &&
+    !temForte &&
+    scoreExterno >= LIMIAR_OUTSIDE
+  ) {
+    decision = "uncertain";
+    razoes.push("fonte oficial de Laguna, mas fato situado em município externo");
   }
   // sinal médio/fraco (bairro ambíguo, coletivo, menção solta) nunca decide só
   if (decision === "local" && !temMuitoForte && !temForte) {
