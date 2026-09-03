@@ -217,6 +217,8 @@ export function avaliarEscopoLaguna(entrada: EntradaEscopo): ResultadoEscopo {
   let temForte = false;
   let temMedio = false;
   let temRegiao = false;
+  /** true quando o único sinal muito forte veio do domínio oficial. */
+  let muitoForteApenasFonte = false;
 
   const marcar = (peso: number, fator: number) => {
     scoreLaguna += peso * fator;
@@ -226,6 +228,7 @@ export function avaliarEscopoLaguna(entrada: EntradaEscopo): ResultadoEscopo {
   if (DOMINIOS_OFICIAIS_LAGUNA.some((d) => fonte.includes(d))) {
     marcar(PESO_MUITO_FORTE, FATOR_TITULO);
     temMuitoForte = true;
+    muitoForteApenasFonte = true;
     matched_entities.push("fonte oficial de Laguna");
     razoes.push("fonte oficial do município");
   }
