@@ -137,7 +137,9 @@ export function avaliarEscopoLaguna(entrada: EntradaEscopo): ResultadoEscopo {
 
   let scoreLaguna = 0;
   let temMuitoForte = false;
+  let temForte = false;
   let temMedio = false;
+  let temRegiao = false;
 
   const marcar = (peso: number, fator: number) => {
     scoreLaguna += peso * fator;
