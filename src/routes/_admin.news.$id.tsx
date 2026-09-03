@@ -370,6 +370,19 @@ function NewsDetailPage() {
                 {analisando ? "Analisando..." : "Analisar com IA"}
               </Button>
 
+              {/* Diagnóstico somente leitura do pipeline (não grava nada) */}
+              <Button
+                className="w-full"
+                variant="outline"
+                size="sm"
+                onClick={() => setPreviewAberto(true)}
+                disabled={!projeto?.id}
+              >
+                <FlaskConical className="size-4" />
+                Preview do processamento
+              </Button>
+
+
               <Separator className="my-2" />
 
               {(noticia.status === "aguardando_aprovacao" || noticia.status === "revisao_obrigatoria" || noticia.status === "em_analise") && (
