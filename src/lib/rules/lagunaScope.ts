@@ -123,13 +123,88 @@ const PADROES_COMPARTILHADOS: RegExp[] = [
 const VERBOS_OCORRENCIA =
   "(?:acontece|ocorre|ocorreu|registra|registrado|registrada|deixa|termina|comeca|sera|foi|passa|tera|atinge|abre|inaugura|anuncia|prende|preso|presa)";
 
+/* ------------------------------- entidades compostas e logradouros */
 
+/** Gatilhos: o nome próprio que os segue pertence à entidade/endereço. */
+const GATILHOS_COMPOSTOS = new Set<string>([
+  ...PALAVRAS_LOGRADOURO.map((p) => normalizarTexto(p)),
+  ...PALAVRAS_ENTIDADE_COMPOSTA.map((p) => normalizarTexto(p)),
+]);
+
+/** Conectivos que continuam o nome próprio ("Visconde DE Barbacena"). */
+const CONECTIVOS_NOME = new Set(["de", "da", "do", "dos", "das"]);
+
+/** Palavras que encerram o nome próprio e devolvem o texto ao contexto geográfico. */
+const FIM_DE_NOME = new Set([
+  "em",
+  "no",
+  "na",
+  "nos",
+  "nas",
+  "e",
+  "com",
+  "que",
+  "para",
+  "por",
+  "pela",
+  "pelo",
+  "sobre",
+  "apos",
+  "durante",
+  "ate",
+  "entre",
+  "nesta",
+  "neste",
+  "foi",
+  "sera",
+  "tem",
+  "teve",
+  "vai",
+  "anuncia",
+  "informa",
+  "recebe",
+  "registra",
+]);
+
+/** Máximo de palavras próprias absorvidas por uma entidade composta. */
+const MAX_PALAVRAS_NOME = 4;
+
+/**
+ * Regra GERAL (sem lista de exceções): apaga do texto os nomes próprios que
+ * são parte interna de um logradouro ou de uma entidade composta, para que
+ * eles não sejam lidos como bairro/localidade.
+ *
+ * "ferrovia tereza cristina em laguna" → "ferrovia __ __ em laguna"
+ *   (perde "Tereza" como bairro, mantém "em Laguna")
+ * "rua visconde de barbacena em tubarao" → "rua __ __ __ em tubarao"
+ */
+export function mascararEntidadesCompostas(textoNormalizado: string): string {
+  if (!textoNormalizado) return textoNormalizado;
+  const tokens = textoNormalizado.split(" ");
+  const saida = [...tokens];
+
+  for (let i = 0; i < tokens.length; i += 1) {
+    if (!GATILHOS_COMPOSTOS.has(tokens[i] ?? "")) continue;
+    let proprias = 0;
+    for (let j = i + 1; j < tokens.length && proprias < MAX_PALAVRAS_NOME; j += 1) {
+      const token = tokens[j] ?? "";
+      if (FIM_DE_NOME.has(token)) break;
+      saida[j] = "__";
+      if (!CONECTIVOS_NOME.has(token)) proprias += 1;
+    }
+  }
+
+  return saida.join(" ");
+}
 
 /* ------------------------------------------------------------- motor */
 
 export function avaliarEscopoLaguna(entrada: EntradaEscopo): ResultadoEscopo {
   const titulo = normalizarTexto(entrada.title ?? "");
   const corpo = normalizarTexto(entrada.content ?? "");
+  /** Texto sem os nomes internos de logradouros/entidades compostas. */
+  const tituloGeo = mascararEntidadesCompostas(titulo);
+  const corpoGeo = mascararEntidadesCompostas(corpo);
   const fonte = (entrada.source ?? "").toLowerCase();
 
   const matched_localities: string[] = [];
