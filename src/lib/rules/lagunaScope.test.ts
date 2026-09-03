@@ -76,7 +76,7 @@ describe("refinamento: pontos de referência, regiões e fato compartilhado", ()
 
   it("perseguição na Ponte Anita Garibaldi é LOCAL", () => {
     expect(
-      decisao(
+      d(
         "Perseguição termina na Ponte Anita Garibaldi com apreensão de cinco quilos de cocaína",
         "Entorpecentes seriam levados ao Rio Grande do Sul",
       ),
@@ -84,98 +84,98 @@ describe("refinamento: pontos de referência, regiões e fato compartilhado", ()
   });
 
   it("acidente na Ponte Anita Garibaldi é LOCAL ou UNCERTAIN", () => {
-    expect(["local", "uncertain"]).toContain(decisao("Acidente na Ponte Anita Garibaldi"));
+    expect(["local", "uncertain"]).toContain(d("Acidente na Ponte Anita Garibaldi"));
   });
 
   it("interdição entre Laguna e Pescaria Brava não é LOCAL automaticamente", () => {
-    expect(decisao("Interdição da ponte entre Laguna e Pescaria Brava")).not.toBe("local");
+    expect(d("Interdição da ponte entre Laguna e Pescaria Brava")).not.toBe("local");
   });
 
   it("moradores de Laguna afetados por obra em Tubarão não é OUTSIDE automático", () => {
     expect(["local", "uncertain"]).toContain(
-      decisao("Moradores de Laguna são afetados por obra em Tubarão"),
+      d("Moradores de Laguna são afetados por obra em Tubarão"),
     );
   });
 
   it("Prefeitura de Tubarão anuncia nova obra é OUTSIDE", () => {
-    expect(decisao("Prefeitura de Tubarão anuncia nova obra")).toBe("outside");
+    expect(d("Prefeitura de Tubarão anuncia nova obra")).toBe("outside");
   });
 
   it("homem de Laguna preso em Tubarão é OUTSIDE", () => {
-    expect(decisao("Homem de Laguna é preso em Tubarão")).toBe("outside");
+    expect(d("Homem de Laguna é preso em Tubarão")).toBe("outside");
   });
 
   it("moradores de Cabeçuda é LOCAL", () => {
-    expect(decisao("Moradores de Cabeçuda recebem nova rede de água")).toBe("local");
+    expect(d("Moradores de Cabeçuda recebem nova rede de água")).toBe("local");
   });
 
   it("obras no Centro Histórico de Laguna é LOCAL", () => {
-    expect(decisao("Obras no Centro Histórico de Laguna avançam nesta semana")).toBe("local");
+    expect(d("Obras no Centro Histórico de Laguna avançam nesta semana")).toBe("local");
   });
 
   it("notícia sobre a Amurel é UNCERTAIN", () => {
-    expect(decisao("Conset reúne candidatos a deputado estadual da Amurel")).toBe("uncertain");
+    expect(d("Conset reúne candidatos a deputado estadual da Amurel")).toBe("uncertain");
   });
 
   it("notícia no Planalto Norte é UNCERTAIN", () => {
     expect(
-      decisao("Temporal transforma ruas de cidade de SC em tapete de granizo", "Granizo cobriu vias no Planalto Norte"),
+      d("Temporal transforma ruas de cidade de SC em tapete de granizo", "Granizo cobriu vias no Planalto Norte"),
     ).toBe("uncertain");
   });
 
   it("bairro ambíguo sozinho não gera LOCAL", () => {
-    expect(decisao("Ação recolhe resíduos no bairro Passagem")).not.toBe("local");
+    expect(d("Ação recolhe resíduos no bairro Passagem")).not.toBe("local");
   });
 });
 
 describe("entidades compostas, logradouros e municípios externos", () => {
   it("1. Ferrovia Tereza Cristina não é LOCAL apenas por 'Tereza'", () => {
-    expect(decisao("Ferrovia Tereza Cristina anuncia investimento na malha ferroviária")).not.toBe(
+    expect(d("Ferrovia Tereza Cristina anuncia investimento na malha ferroviária")).not.toBe(
       "local",
     );
   });
 
   it("2. obra no bairro Tereza, em Laguna, é LOCAL", () => {
-    expect(decisao("Obra no bairro Tereza, em Laguna, entra na fase final")).toBe("local");
+    expect(d("Obra no bairro Tereza, em Laguna, entra na fase final")).toBe("local");
   });
 
   it("3. Rua Visconde de Barbacena, em Tubarão, não é LOCAL", () => {
-    expect(decisao("Ação recolhe resíduos na Rua Visconde de Barbacena, em Tubarão")).not.toBe(
+    expect(d("Ação recolhe resíduos na Rua Visconde de Barbacena, em Tubarão")).not.toBe(
       "local",
     );
   });
 
   it("4. moradores do bairro Barbacena, em Laguna, é LOCAL", () => {
-    expect(decisao("Moradores do bairro Barbacena, em Laguna, pedem melhorias")).toBe("local");
+    expect(d("Moradores do bairro Barbacena, em Laguna, pedem melhorias")).toBe("local");
   });
 
   it("5. granizo em Braço do Norte é OUTSIDE", () => {
-    expect(decisao("Granizo atinge ruas em Braço do Norte")).toBe("outside");
+    expect(d("Granizo atinge ruas em Braço do Norte")).toBe("outside");
   });
 
   it("6. matéria regional citando Braço do Norte e Laguna não é OUTSIDE automático", () => {
     expect(
-      decisao("Encontro regional discute saúde sobre Braço do Norte e Laguna"),
+      d("Encontro regional discute saúde sobre Braço do Norte e Laguna"),
     ).not.toBe("outside");
   });
 
   it("7. morador de Laguna atendido em Braço do Norte não é LOCAL", () => {
     expect(
-      decisao("Morador de Laguna é atendido em Braço do Norte após acidente"),
+      d("Morador de Laguna é atendido em Braço do Norte após acidente"),
     ).not.toBe("local");
   });
 
   it("8. Ferrovia Tereza Cristina em Laguna é LOCAL pela localização explícita", () => {
-    expect(decisao("Ferrovia Tereza Cristina inicia obras em Laguna")).toBe("local");
+    expect(d("Ferrovia Tereza Cristina inicia obras em Laguna")).toBe("local");
   });
 
   it("9. Ponte Anita Garibaldi, em Laguna, é LOCAL", () => {
-    expect(decisao("Acidente na Ponte Anita Garibaldi, em Laguna, deixa feridos")).toBe("local");
+    expect(d("Acidente na Ponte Anita Garibaldi, em Laguna, deixa feridos")).toBe("local");
   });
 
   it("10. Ponte Anita Garibaldi entre Laguna e Pescaria Brava não decide LOCAL sozinha", () => {
     expect(
-      decisao("Obras na Ponte Anita Garibaldi entre Laguna e Pescaria Brava seguem"),
+      d("Obras na Ponte Anita Garibaldi entre Laguna e Pescaria Brava seguem"),
     ).not.toBe("local");
   });
 
