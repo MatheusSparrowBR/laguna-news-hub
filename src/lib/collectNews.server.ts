@@ -305,6 +305,10 @@ export async function executarColeta(opcoes: OpcoesColeta): Promise<CollectNewsR
     total_duplicate: 0,
     total_insert_errors: 0,
     total_errors: 0,
+    geo_mode: GEOGRAPHIC_FILTER_MODE,
+    geo_local: 0,
+    geo_outside: 0,
+    geo_uncertain: 0,
     logs: [],
   };
 
