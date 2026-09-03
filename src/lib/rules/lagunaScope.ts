@@ -419,6 +419,16 @@ export function avaliarEscopoLaguna(entrada: EntradaEscopo): ResultadoEscopo {
     decision = "uncertain";
     razoes.push("fato compartilhado entre Laguna e outro município");
   }
+  // fonte oficial não situa o fato: município externo claro no título prevalece
+  if (
+    decision === "local" &&
+    muitoForteApenasFonte &&
+    !temForte &&
+    scoreExterno >= LIMIAR_OUTSIDE
+  ) {
+    decision = "uncertain";
+    razoes.push("fonte oficial de Laguna, mas fato situado em município externo");
+  }
   // sinal médio/fraco (bairro ambíguo, coletivo, menção solta) nunca decide só
   if (decision === "local" && !temMuitoForte && !temForte) {
     decision = "uncertain";
