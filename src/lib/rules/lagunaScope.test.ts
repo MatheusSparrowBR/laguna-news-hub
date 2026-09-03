@@ -69,3 +69,61 @@ describe("filtro geográfico de Laguna", () => {
     expect(a).toEqual(b);
   });
 });
+
+describe("refinamento: pontos de referência, regiões e fato compartilhado", () => {
+  const decisao = (title: string, content = "") =>
+    avaliarEscopoLaguna({ title, content }).decision;
+
+  it("perseguição na Ponte Anita Garibaldi é LOCAL", () => {
+    expect(
+      decisao(
+        "Perseguição termina na Ponte Anita Garibaldi com apreensão de cinco quilos de cocaína",
+        "Entorpecentes seriam levados ao Rio Grande do Sul",
+      ),
+    ).toBe("local");
+  });
+
+  it("acidente na Ponte Anita Garibaldi é LOCAL ou UNCERTAIN", () => {
+    expect(["local", "uncertain"]).toContain(decisao("Acidente na Ponte Anita Garibaldi"));
+  });
+
+  it("interdição entre Laguna e Pescaria Brava não é LOCAL automaticamente", () => {
+    expect(decisao("Interdição da ponte entre Laguna e Pescaria Brava")).not.toBe("local");
+  });
+
+  it("moradores de Laguna afetados por obra em Tubarão não é OUTSIDE automático", () => {
+    expect(["local", "uncertain"]).toContain(
+      decisao("Moradores de Laguna são afetados por obra em Tubarão"),
+    );
+  });
+
+  it("Prefeitura de Tubarão anuncia nova obra é OUTSIDE", () => {
+    expect(decisao("Prefeitura de Tubarão anuncia nova obra")).toBe("outside");
+  });
+
+  it("homem de Laguna preso em Tubarão é OUTSIDE", () => {
+    expect(decisao("Homem de Laguna é preso em Tubarão")).toBe("outside");
+  });
+
+  it("moradores de Cabeçuda é LOCAL", () => {
+    expect(decisao("Moradores de Cabeçuda recebem nova rede de água")).toBe("local");
+  });
+
+  it("obras no Centro Histórico de Laguna é LOCAL", () => {
+    expect(decisao("Obras no Centro Histórico de Laguna avançam nesta semana")).toBe("local");
+  });
+
+  it("notícia sobre a Amurel é UNCERTAIN", () => {
+    expect(decisao("Conset reúne candidatos a deputado estadual da Amurel")).toBe("uncertain");
+  });
+
+  it("notícia no Planalto Norte é UNCERTAIN", () => {
+    expect(
+      decisao("Temporal transforma ruas de cidade de SC em tapete de granizo", "Granizo cobriu vias no Planalto Norte"),
+    ).toBe("uncertain");
+  });
+
+  it("bairro ambíguo sozinho não gera LOCAL", () => {
+    expect(decisao("Ação recolhe resíduos no bairro Passagem")).not.toBe("local");
+  });
+});

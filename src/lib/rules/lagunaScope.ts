@@ -10,12 +10,15 @@
  */
 
 import {
+  BAIRROS_AMBIGUOS_LAGUNA,
   BAIRROS_LAGUNA,
   DISTRITOS_LAGUNA,
   DOMINIOS_OFICIAIS_LAGUNA,
   ENTIDADES_LAGUNA,
   LOCAIS_EXTERNOS,
   MUNICIPIOS_EXTERNOS,
+  PONTOS_REFERENCIA_LAGUNA,
+  REGIOES,
 } from "./lagunaLocalities";
 
 export type ScopeDecision = "local" | "outside" | "uncertain";
@@ -104,9 +107,21 @@ const PADROES_PESSOA_DE_LAGUNA: RegExp[] = [
   /\b(?:homem|mulher|jovem|idoso|idosa|menino|menina|rapaz|crianca|motorista|motociclista|ciclista|natural|nascido|nascida|morador|moradora)\s+(?:de\s+\d+\s+anos\s+)?de laguna\b/,
 ];
 
+/**
+ * Fato compartilhado entre Laguna e outro município (ponte, divisa, rodovia).
+ * Nunca decide "local" sozinho: no máximo "uncertain".
+ */
+const PADROES_COMPARTILHADOS: RegExp[] = [
+  /\bentre laguna e\b/,
+  /\be laguna\b(?=.*\b(?:divisa|limite|trecho)\b)/,
+  /\bdivisa (?:entre|de|com) laguna\b/,
+];
+
 /** Verbos que indicam ocorrência do fato no local citado. */
 const VERBOS_OCORRENCIA =
   "(?:acontece|ocorre|ocorreu|registra|registrado|registrada|deixa|termina|comeca|sera|foi|passa|tera|atinge|abre|inaugura|anuncia|prende|preso|presa)";
+
+
 
 /* ------------------------------------------------------------- motor */
 
@@ -122,7 +137,9 @@ export function avaliarEscopoLaguna(entrada: EntradaEscopo): ResultadoEscopo {
 
   let scoreLaguna = 0;
   let temMuitoForte = false;
+  let temForte = false;
   let temMedio = false;
+  let temRegiao = false;
 
   const marcar = (peso: number, fator: number) => {
     scoreLaguna += peso * fator;
@@ -158,12 +175,29 @@ export function avaliarEscopoLaguna(entrada: EntradaEscopo): ResultadoEscopo {
   for (const ent of ENTIDADES_LAGUNA) {
     if (contem(titulo, ent)) {
       marcar(PESO_FORTE, FATOR_TITULO);
+      temForte = true;
       matched_entities.push(ent);
       razoes.push(`entidade de Laguna no título: ${ent}`);
     } else if (contem(corpo, ent)) {
       marcar(PESO_FORTE, FATOR_CORPO);
+      temForte = true;
       matched_entities.push(ent);
       razoes.push(`entidade de Laguna no conteúdo: ${ent}`);
+    }
+  }
+
+  // pontos de referência exclusivos (sinal forte contextual)
+  for (const ref of PONTOS_REFERENCIA_LAGUNA) {
+    if (contem(titulo, ref)) {
+      marcar(PESO_FORTE, FATOR_TITULO);
+      temForte = true;
+      matched_entities.push(ref);
+      razoes.push(`ponto de referência de Laguna no título: ${ref}`);
+    } else if (contem(corpo, ref)) {
+      marcar(PESO_FORTE, FATOR_CORPO);
+      temForte = true;
+      matched_entities.push(ref);
+      razoes.push(`ponto de referência de Laguna no conteúdo: ${ref}`);
     }
   }
 
@@ -171,14 +205,35 @@ export function avaliarEscopoLaguna(entrada: EntradaEscopo): ResultadoEscopo {
   for (const loc of [...BAIRROS_LAGUNA, ...DISTRITOS_LAGUNA]) {
     if (contem(titulo, loc)) {
       marcar(PESO_FORTE, FATOR_TITULO);
+      temForte = true;
       matched_localities.push(loc);
       razoes.push(`localidade de Laguna no título: ${loc}`);
     } else if (contem(corpo, loc)) {
       marcar(PESO_FORTE, FATOR_CORPO);
+      temForte = true;
       matched_localities.push(loc);
       razoes.push(`localidade de Laguna no conteúdo: ${loc}`);
     }
   }
+
+  // bairros de nome ambíguo: sinal médio, nunca decide sozinho
+  for (const loc of BAIRROS_AMBIGUOS_LAGUNA) {
+    if (contem(titulo, loc) || contem(corpo, loc)) {
+      marcar(PESO_MEDIO, contem(titulo, loc) ? FATOR_TITULO : FATOR_CORPO);
+      temMedio = true;
+      matched_localities.push(`${loc} (ambíguo)`);
+      razoes.push(`bairro de nome ambíguo: ${loc}`);
+    }
+  }
+
+  // regiões: nem local nem outside por si só
+  for (const reg of REGIOES) {
+    if (contem(titulo, reg) || contem(corpo, reg)) {
+      temRegiao = true;
+      razoes.push(`referência regional: ${reg}`);
+    }
+  }
+
 
   // sinais médios (coletivo de Laguna afetado)
   for (const re of PADROES_MEDIOS) {
@@ -255,6 +310,31 @@ export function avaliarEscopoLaguna(entrada: EntradaEscopo): ResultadoEscopo {
   } else {
     decision = "uncertain";
     if (razoes.length === 0) razoes.push("nenhuma localidade clara identificada");
+  }
+
+  // ------------------------------------------------------- travas finais
+  const fatoCompartilhado = PADROES_COMPARTILHADOS.some(
+    (re) => re.test(titulo) || re.test(corpo),
+  );
+  if (decision === "local" && fatoCompartilhado) {
+    decision = "uncertain";
+    razoes.push("fato compartilhado entre Laguna e outro município");
+  }
+  // sinal médio/fraco (bairro ambíguo, coletivo, menção solta) nunca decide só
+  if (decision === "local" && !temMuitoForte && !temForte) {
+    decision = "uncertain";
+    razoes.push("apenas sinais médios/fracos de Laguna");
+  }
+  // região sem município/localidade específica nunca gera local nem outside
+  if (temRegiao && !temMuitoForte && !temForte) {
+    if (decision === "local") {
+      decision = "uncertain";
+      razoes.push("referência apenas regional");
+    }
+    if (decision === "outside" && scoreExterno < LIMIAR_OUTSIDE) {
+      decision = "uncertain";
+      razoes.push("região não identifica município");
+    }
   }
 
   return {
