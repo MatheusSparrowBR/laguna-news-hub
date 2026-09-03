@@ -506,6 +506,10 @@ export async function executarColeta(opcoes: OpcoesColeta): Promise<CollectNewsR
     `erros_insert=${totalInsertErrors}`,
     `fontes_com_erro=${totalErrors}`,
     `origem=${origem}`,
+    `local=${geoLocal}`,
+    `outside=${geoOutside}`,
+    `uncertain=${geoUncertain}`,
+    `geo_mode=${GEOGRAPHIC_FILTER_MODE}`,
   ].join(" ");
 
   const detalhesErro = logs
