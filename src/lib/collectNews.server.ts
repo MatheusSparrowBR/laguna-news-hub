@@ -383,6 +383,8 @@ export async function executarColeta(opcoes: OpcoesColeta): Promise<CollectNewsR
       let duplicadas = 0;
       let errosInsert = 0;
 
+      // 1) deduplicação primeiro: a página completa só é buscada de itens NOVOS.
+      const novosItens: FeedItem[] = [];
       for (const item of itens) {
         const { data: existente } = await supabase
           .from("news")
@@ -396,12 +398,40 @@ export async function executarColeta(opcoes: OpcoesColeta): Promise<CollectNewsR
           duplicadas++;
           continue;
         }
+        novosItens.push(item);
+      }
+
+      // 2) conteúdo completo dos itens novos, com concorrência limitada.
+      //    Falha individual nunca interrompe a coleta: cai para o lead do RSS.
+      const conteudos = await mapearComLimite(
+        novosItens,
+        FETCH_CONTEUDO_CONCORRENCIA,
+        (item) => buscarConteudoCompleto(item.link),
+      );
+
+      // 3) análise geográfica + temática + INSERT, item por item.
+      for (let i = 0; i < novosItens.length; i += 1) {
+        const item = novosItens[i] as FeedItem;
+        const buscado = conteudos[i];
+        const leadRss = item.description ?? "";
+
+        let analysisContent = leadRss;
+        if (buscado?.success && buscado.content) {
+          analysisContent = buscado.content;
+          conteudoCompleto++;
+        } else {
+          fallbackRss++;
+          if (buscado?.reason) {
+            fetchErro++;
+            log("content_fetch_fallback", { source_id: fonte.id, motivo: buscado.reason });
+          }
+        }
 
         // Filtro geográfico em MODO SHADOW: calcula a decisão antes do INSERT,
         // mas nunca descarta o item nesta fase (permiteInsercao === true).
         const escopo = avaliarEscopoLaguna({
           title: item.title,
-          content: item.description ?? "",
+          content: analysisContent,
           source: fonte.rss_url ?? fonte.name,
         });
         if (escopo.decision === "local") geoLocal++;
@@ -414,15 +444,16 @@ export async function executarColeta(opcoes: OpcoesColeta): Promise<CollectNewsR
         }
 
         const classificacao = classificarNoticia(
-          { title: item.title, content: item.description, source: fonte.name },
+          { title: item.title, content: analysisContent, source: fonte.name },
           categoriaIds,
         );
 
+        // original_content continua recebendo o lead do RSS (nesta etapa).
         const { error: erroInsert } = await supabase.from("news").insert({
           project_id: projectId,
           source_id: fonte.id,
           title: item.title.substring(0, 500),
-          original_content: item.description ?? "",
+          original_content: leadRss,
           source_url: item.link,
           image_url: item.imageUrl,
           discovered_at: dataParaIso(item.pubDate),
