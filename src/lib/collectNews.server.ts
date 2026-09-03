@@ -369,6 +369,10 @@ export async function executarColeta(opcoes: OpcoesColeta): Promise<CollectNewsR
   let totalDuplicate = 0;
   let totalInsertErrors = 0;
   let totalErrors = 0;
+  // Contagens do filtro geográfico em modo shadow (somente itens novos).
+  let geoLocal = 0;
+  let geoOutside = 0;
+  let geoUncertain = 0;
 
   for (const fonte of ativas) {
     log("source_start", { source_id: fonte.id, name: fonte.name });
