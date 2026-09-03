@@ -14,6 +14,15 @@ import type {
  * SOMENTE LEITURA: apenas SELECT. Nenhum INSERT/UPDATE/DELETE.
  * Não chama coleta, cron, edge function nem IA.
  */
+type Relacao = { name: string | null } | { name: string | null }[] | null;
+
+/** Supabase pode tipar a relação como objeto ou array; normaliza para o nome. */
+function nomeRelacao(valor: Relacao): string | null {
+  if (!valor) return null;
+  const alvo = Array.isArray(valor) ? valor[0] : valor;
+  return alvo?.name ?? null;
+}
+
 export const previewPipelineServer = createServerFn({ method: "POST" })
   .middleware([analyzeAuthMiddleware])
   .inputValidator((input) =>
@@ -57,8 +66,8 @@ export const previewPipelineServer = createServerFn({ method: "POST" })
       title: n.title,
       original_content: n.original_content,
       source_url: n.source_url,
-      source_name: (n.sources as { name: string } | null)?.name ?? null,
-      categoria_atual: (n.categories as { name: string } | null)?.name ?? null,
+      source_name: nomeRelacao(n.sources),
+      categoria_atual: nomeRelacao(n.categories),
       importance_atual: n.importance_score,
     }));
 
