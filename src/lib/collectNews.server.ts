@@ -539,6 +539,10 @@ export async function executarColeta(opcoes: OpcoesColeta): Promise<CollectNewsR
     total_duplicate: totalDuplicate,
     total_insert_errors: totalInsertErrors,
     total_errors: totalErrors,
+    geo_mode: GEOGRAPHIC_FILTER_MODE,
+    geo_local: geoLocal,
+    geo_outside: geoOutside,
+    geo_uncertain: geoUncertain,
     logs,
   };
 }
