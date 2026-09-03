@@ -92,7 +92,7 @@ describe("extração do HTML", () => {
   });
 
   it("usa meta description apenas como último recurso", () => {
-    const html = `<html><head><meta name="description" content="Descricao razoavelmente longa da materia publicada hoje pela redacao local." /></head><body><div>oi</div></body></html>`;
+    const html = `<html><head><meta name="description" content="Descricao razoavelmente longa da materia publicada hoje pela redacao local de Laguna." /></head><body><div>oi</div></body></html>`;
     const r = extrairCorpoDeHtml(html, "https://outrosite.com/materia/3");
     expect(r.via).toBe("meta-description");
   });
