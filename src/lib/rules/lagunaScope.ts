@@ -238,6 +238,7 @@ export function avaliarEscopoLaguna(entrada: EntradaEscopo): ResultadoEscopo {
     if (re.test(titulo)) {
       marcar(PESO_MUITO_FORTE, FATOR_TITULO);
       temMuitoForte = true;
+      muitoForteApenasFonte = false;
       matched_localities.push("Laguna (título)");
       razoes.push("fato situado em Laguna no título");
       break;
@@ -245,6 +246,7 @@ export function avaliarEscopoLaguna(entrada: EntradaEscopo): ResultadoEscopo {
     if (re.test(corpo)) {
       marcar(PESO_MUITO_FORTE, FATOR_CORPO);
       temMuitoForte = true;
+      muitoForteApenasFonte = false;
       matched_localities.push("Laguna (conteúdo)");
       razoes.push("fato situado em Laguna no conteúdo");
       break;
