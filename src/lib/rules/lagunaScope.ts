@@ -312,6 +312,31 @@ export function avaliarEscopoLaguna(entrada: EntradaEscopo): ResultadoEscopo {
     if (razoes.length === 0) razoes.push("nenhuma localidade clara identificada");
   }
 
+  // ------------------------------------------------------- travas finais
+  const fatoCompartilhado = PADROES_COMPARTILHADOS.some(
+    (re) => re.test(titulo) || re.test(corpo),
+  );
+  if (decision === "local" && fatoCompartilhado) {
+    decision = "uncertain";
+    razoes.push("fato compartilhado entre Laguna e outro município");
+  }
+  // sinal médio/fraco (bairro ambíguo, coletivo, menção solta) nunca decide só
+  if (decision === "local" && !temMuitoForte && !temForte) {
+    decision = "uncertain";
+    razoes.push("apenas sinais médios/fracos de Laguna");
+  }
+  // região sem município/localidade específica nunca gera local nem outside
+  if (temRegiao && !temMuitoForte && !temForte) {
+    if (decision === "local") {
+      decision = "uncertain";
+      razoes.push("referência apenas regional");
+    }
+    if (decision === "outside" && scoreExterno < LIMIAR_OUTSIDE) {
+      decision = "uncertain";
+      razoes.push("região não identifica município");
+    }
+  }
+
   return {
     decision,
     in_scope: decision === "local" ? true : decision === "outside" ? false : null,
