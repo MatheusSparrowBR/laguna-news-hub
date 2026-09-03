@@ -46,6 +46,12 @@ export interface CollectNewsResult {
   total_duplicate: number;
   total_insert_errors: number;
   total_errors: number;
+  /** Modo do filtro geográfico usado nesta execução (fase atual: "shadow"). */
+  geo_mode: string;
+  /** Contagens geográficas — apenas itens NOVOS (duplicados não são reavaliados). */
+  geo_local: number;
+  geo_outside: number;
+  geo_uncertain: number;
   logs: CollectNewsSourceLog[];
 }
 
