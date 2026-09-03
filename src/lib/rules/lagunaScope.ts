@@ -175,12 +175,29 @@ export function avaliarEscopoLaguna(entrada: EntradaEscopo): ResultadoEscopo {
   for (const ent of ENTIDADES_LAGUNA) {
     if (contem(titulo, ent)) {
       marcar(PESO_FORTE, FATOR_TITULO);
+      temForte = true;
       matched_entities.push(ent);
       razoes.push(`entidade de Laguna no título: ${ent}`);
     } else if (contem(corpo, ent)) {
       marcar(PESO_FORTE, FATOR_CORPO);
+      temForte = true;
       matched_entities.push(ent);
       razoes.push(`entidade de Laguna no conteúdo: ${ent}`);
+    }
+  }
+
+  // pontos de referência exclusivos (sinal forte contextual)
+  for (const ref of PONTOS_REFERENCIA_LAGUNA) {
+    if (contem(titulo, ref)) {
+      marcar(PESO_FORTE, FATOR_TITULO);
+      temForte = true;
+      matched_entities.push(ref);
+      razoes.push(`ponto de referência de Laguna no título: ${ref}`);
+    } else if (contem(corpo, ref)) {
+      marcar(PESO_FORTE, FATOR_CORPO);
+      temForte = true;
+      matched_entities.push(ref);
+      razoes.push(`ponto de referência de Laguna no conteúdo: ${ref}`);
     }
   }
 
@@ -188,14 +205,35 @@ export function avaliarEscopoLaguna(entrada: EntradaEscopo): ResultadoEscopo {
   for (const loc of [...BAIRROS_LAGUNA, ...DISTRITOS_LAGUNA]) {
     if (contem(titulo, loc)) {
       marcar(PESO_FORTE, FATOR_TITULO);
+      temForte = true;
       matched_localities.push(loc);
       razoes.push(`localidade de Laguna no título: ${loc}`);
     } else if (contem(corpo, loc)) {
       marcar(PESO_FORTE, FATOR_CORPO);
+      temForte = true;
       matched_localities.push(loc);
       razoes.push(`localidade de Laguna no conteúdo: ${loc}`);
     }
   }
+
+  // bairros de nome ambíguo: sinal médio, nunca decide sozinho
+  for (const loc of BAIRROS_AMBIGUOS_LAGUNA) {
+    if (contem(titulo, loc) || contem(corpo, loc)) {
+      marcar(PESO_MEDIO, contem(titulo, loc) ? FATOR_TITULO : FATOR_CORPO);
+      temMedio = true;
+      matched_localities.push(`${loc} (ambíguo)`);
+      razoes.push(`bairro de nome ambíguo: ${loc}`);
+    }
+  }
+
+  // regiões: nem local nem outside por si só
+  for (const reg of REGIOES) {
+    if (contem(titulo, reg) || contem(corpo, reg)) {
+      temRegiao = true;
+      razoes.push(`referência regional: ${reg}`);
+    }
+  }
+
 
   // sinais médios (coletivo de Laguna afetado)
   for (const re of PADROES_MEDIOS) {
