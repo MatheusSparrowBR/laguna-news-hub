@@ -10,6 +10,8 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
 import { classificarNoticia, type CategoriaSlug } from "@/lib/rules/newsClassification";
+import { avaliarEscopoLaguna } from "@/lib/rules/lagunaScope";
+import { GEOGRAPHIC_FILTER_MODE, permiteInsercao } from "@/lib/rules/geoFilterMode";
 
 
 export type ClienteColeta = SupabaseClient<Database>;
