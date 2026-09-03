@@ -10,6 +10,8 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
 import { classificarNoticia, type CategoriaSlug } from "@/lib/rules/newsClassification";
+import { avaliarEscopoLaguna } from "@/lib/rules/lagunaScope";
+import { GEOGRAPHIC_FILTER_MODE, permiteInsercao } from "@/lib/rules/geoFilterMode";
 
 
 export type ClienteColeta = SupabaseClient<Database>;
@@ -44,6 +46,12 @@ export interface CollectNewsResult {
   total_duplicate: number;
   total_insert_errors: number;
   total_errors: number;
+  /** Modo do filtro geográfico usado nesta execução (fase atual: "shadow"). */
+  geo_mode: string;
+  /** Contagens geográficas — apenas itens NOVOS (duplicados não são reavaliados). */
+  geo_local: number;
+  geo_outside: number;
+  geo_uncertain: number;
   logs: CollectNewsSourceLog[];
 }
 
@@ -297,6 +305,10 @@ export async function executarColeta(opcoes: OpcoesColeta): Promise<CollectNewsR
     total_duplicate: 0,
     total_insert_errors: 0,
     total_errors: 0,
+    geo_mode: GEOGRAPHIC_FILTER_MODE,
+    geo_local: 0,
+    geo_outside: 0,
+    geo_uncertain: 0,
     logs: [],
   };
 
@@ -357,6 +369,10 @@ export async function executarColeta(opcoes: OpcoesColeta): Promise<CollectNewsR
   let totalDuplicate = 0;
   let totalInsertErrors = 0;
   let totalErrors = 0;
+  // Contagens do filtro geográfico em modo shadow (somente itens novos).
+  let geoLocal = 0;
+  let geoOutside = 0;
+  let geoUncertain = 0;
 
   for (const fonte of ativas) {
     log("source_start", { source_id: fonte.id, name: fonte.name });
@@ -378,6 +394,22 @@ export async function executarColeta(opcoes: OpcoesColeta): Promise<CollectNewsR
 
         if (existente) {
           duplicadas++;
+          continue;
+        }
+
+        // Filtro geográfico em MODO SHADOW: calcula a decisão antes do INSERT,
+        // mas nunca descarta o item nesta fase (permiteInsercao === true).
+        const escopo = avaliarEscopoLaguna({
+          title: item.title,
+          content: item.description ?? "",
+          source: fonte.rss_url ?? fonte.name,
+        });
+        if (escopo.decision === "local") geoLocal++;
+        else if (escopo.decision === "outside") geoOutside++;
+        else geoUncertain++;
+
+        if (!permiteInsercao(escopo.decision)) {
+          log("geo_blocked", { source_id: fonte.id, decision: escopo.decision });
           continue;
         }
 
@@ -474,6 +506,10 @@ export async function executarColeta(opcoes: OpcoesColeta): Promise<CollectNewsR
     `erros_insert=${totalInsertErrors}`,
     `fontes_com_erro=${totalErrors}`,
     `origem=${origem}`,
+    `local=${geoLocal}`,
+    `outside=${geoOutside}`,
+    `uncertain=${geoUncertain}`,
+    `geo_mode=${GEOGRAPHIC_FILTER_MODE}`,
   ].join(" ");
 
   const detalhesErro = logs
@@ -503,6 +539,10 @@ export async function executarColeta(opcoes: OpcoesColeta): Promise<CollectNewsR
     total_duplicate: totalDuplicate,
     total_insert_errors: totalInsertErrors,
     total_errors: totalErrors,
+    geo_mode: GEOGRAPHIC_FILTER_MODE,
+    geo_local: geoLocal,
+    geo_outside: geoOutside,
+    geo_uncertain: geoUncertain,
     logs,
   };
 }
