@@ -2,7 +2,7 @@ import type { TemplateKey } from "@/lib/templates/postTemplates";
 import { DIMENSOES, MARCA, SAFE_AREA, temaDoTemplate } from "./artTemplates";
 import { ajustarTexto } from "./textFit";
 
-export interface OfficialInstagramStoryArtInput { template: TemplateKey; title: string; summary?: string | null; imageUrl?: string | null; dateLabel?: string | null; location?: string | null; photoCredit?: string | null; sponsorName?: string | null; }
+export interface OfficialInstagramStoryArtInput { template: TemplateKey; title: string; summary?: string | null | undefined; imageUrl?: string | null | undefined; dateLabel?: string | null | undefined; location?: string | null | undefined; photoCredit?: string | null | undefined; sponsorName?: string | null | undefined; }
 export const OFFICIAL_INSTAGRAM_STORY_TEMPLATE = { key: "hora-news-laguna-official-story", format: "story" as const, width: DIMENSOES.story.width, height: DIMENSOES.story.height, logoPath: "/branding/hora-news-laguna-logo.png", logoX: 770, logoY: 1670, logoWidth: 250, logoHeight: 250 } as const;
 const FONT = "Inter, Arial, Helvetica, sans-serif";
 const W = DIMENSOES.story.width, H = DIMENSOES.story.height;
