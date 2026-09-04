@@ -132,7 +132,10 @@ export const salvarDecisaoEditorial = createServerFn({ method: "POST" })
       throw new Error("Notícia não encontrada neste projeto.");
     }
 
-    const statusBanco = data.decision === "archived" ? "ignored" : data.decision;
+    // O enum do banco usa `ignored` tanto para rejeitados quanto para arquivados.
+    const statusBanco = data.decision === "archived" || data.decision === "rejected"
+      ? "ignored"
+      : data.decision;
     const mudou = noticia.status !== statusBanco;
 
     if (!mudou) return { ok: true, mudou: false, status: data.decision };
