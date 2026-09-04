@@ -10,13 +10,19 @@ import { OFFICIAL_INSTAGRAM_STORY_TEMPLATE } from "@/lib/art/officialInstagramSt
 
 type ArtSelection = "feed" | "story" | "both";
 
-/** Preview e exportação dos formatos oficiais do Instagram. A logo PNG é uma camada HTML real. */
+function primeiroFormatoSeguro(formatos: readonly ArtFormat[]): "feed" | "story" {
+  if (formatos.includes("feed")) return "feed";
+  return "story";
+}
+
 export function ArtPreview({ entrada, formatos = ["feed", "story"] }: { entrada: Omit<EntradaArte, "format">; formatos?: readonly ArtFormat[] }) {
   const permitidos = useMemo(() => {
     const result = formatos.filter((f) => f === "feed" || f === "story");
     return result.length ? Array.from(new Set(result)) : (["feed", "story"] as ArtFormat[]);
   }, [formatos]);
-  const [selection, setSelection] = useState<ArtSelection>(permitidos.includes("feed") && permitidos.includes("story") ? "both" : permitidos[0]);
+  const [selection, setSelection] = useState<ArtSelection>(() =>
+    permitidos.includes("feed") && permitidos.includes("story") ? "both" : primeiroFormatoSeguro(permitidos),
+  );
   const exibidos = selection === "both" ? permitidos : permitidos.filter((f) => f === selection);
   const svgs = useMemo(() => exibidos.map((formato) => ({ formato, svg: renderizarArteSvg({ ...entrada, format: formato }) })), [entrada, exibidos]);
   const [previewUrls, setPreviewUrls] = useState<Record<string, string>>({});
@@ -28,8 +34,9 @@ export function ArtPreview({ entrada, formatos = ["feed", "story"] }: { entrada:
   }, [svgs]);
 
   useEffect(() => {
-    if (selection === "both" && permitidos.length < 2) setSelection(permitidos[0]);
-    else if (selection !== "both" && !permitidos.includes(selection)) setSelection(permitidos[0]);
+    const primeiro = primeiroFormatoSeguro(permitidos);
+    if (selection === "both" && permitidos.length < 2) setSelection(primeiro);
+    else if (selection !== "both" && !permitidos.includes(selection)) setSelection(primeiro);
   }, [permitidos, selection]);
 
   const baixar = async (formato: ArtFormat) => {
