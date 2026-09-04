@@ -92,6 +92,11 @@ export interface Source {
   ativa: boolean;
   ultimaColeta: string;
   noticiasColetadas: number;
+  /** Saúde da fonte (preenchida pela coleta). */
+  ultimoHttpStatus?: number | null;
+  ultimoErro?: string | null;
+  ultimaNoticiaEm?: string | null;
+  falhasConsecutivas?: number;
 }
 
 export interface DailyMetric {

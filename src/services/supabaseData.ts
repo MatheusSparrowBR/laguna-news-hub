@@ -164,7 +164,9 @@ export async function salvarProjeto(
 export async function obterFontes(projectId: string): Promise<FonteBanco[]> {
   const { data, error } = await supabase
     .from("sources")
-    .select("id, name, url, source_type, rss_url, category_id, active, last_checked_at, created_at")
+    .select(
+      "id, name, url, source_type, rss_url, category_id, active, last_checked_at, created_at, last_http_status, last_error, last_news_found_at, consecutive_failures",
+    )
     .eq("project_id", projectId)
     .order("created_at", { ascending: false });
   if (error) throw error;
@@ -190,6 +192,10 @@ export async function obterFontes(projectId: string): Promise<FonteBanco[]> {
     noticiasColetadas: porFonte.get(f.id) ?? 0,
     categoryId: f.category_id,
     rssUrl: f.rss_url,
+    ultimoHttpStatus: f.last_http_status,
+    ultimoErro: f.last_error,
+    ultimaNoticiaEm: f.last_news_found_at,
+    falhasConsecutivas: f.consecutive_failures ?? 0,
   }));
 }
 
