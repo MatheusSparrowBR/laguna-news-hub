@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { renderizarArteSvg, svgParaBlobUrl, type EntradaArte } from "@/lib/art/renderArt";
 import { baixarArquivo, exportarArte } from "@/lib/art/exportArt";
 import { DIMENSOES, ROTULO_FORMATO, type ArtFormat } from "@/lib/art/artTemplates";
-import { OFFICIAL_INSTAGRAM_TEMPLATE } from "@/lib/art/officialInstagramTemplateV2";
+import { OFFICIAL_INSTAGRAM_TEMPLATE } from "@/lib/art/officialInstagramTemplateV3";
 import { OFFICIAL_INSTAGRAM_STORY_TEMPLATE } from "@/lib/art/officialInstagramStoryTemplate";
 
 type ArtSelection = "feed" | "story" | "both";
