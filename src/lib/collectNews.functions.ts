@@ -28,9 +28,12 @@ export interface CollectNewsResult {
 }
 
 /**
- * Server Function: coleta manual das notícias dos feeds RSS das fontes ativas.
- * Usa o cliente Supabase do usuário autenticado (RLS aplicada) e o mesmo
- * núcleo compartilhado usado pela coleta automática.
+ * Coleta manual das notícias dos feeds RSS das fontes ativas.
+ *
+ * A requisição continua sendo autenticada e o projeto é validado com o
+ * cliente RLS do usuário. Depois dessa autorização, a execução usa o
+ * cliente privilegiado somente no servidor, porque automation_runs é uma
+ * tabela de infraestrutura protegida contra INSERT/UPDATE pelo frontend.
  */
 export const collectNewsServer = createServerFn({ method: "POST" })
   .middleware([analyzeAuthMiddleware])
@@ -41,18 +44,33 @@ export const collectNewsServer = createServerFn({ method: "POST" })
     const { project_id } = data;
     const { supabase, userId } = context;
     const { executarColeta } = await import("@/lib/collectNews.server");
+    const { criarClienteAdmin } = await import("@/lib/adminClient.server");
 
+    // Authorization MUST happen with the user's RLS-scoped client first.
     const { data: projeto, error: erroProjeto } = await supabase
       .from("projects")
       .select("id, owner_id")
       .eq("id", project_id)
       .maybeSingle();
 
-    if (erroProjeto) throw new Error(`Erro ao validar projeto: ${erroProjeto.message}`);
-    if (!projeto) throw new Error("Projeto não encontrado.");
+    if (erroProjeto) {
+      throw new Error(`Erro ao validar projeto: ${erroProjeto.message}`);
+    }
+    if (!projeto) {
+      throw new Error("Projeto não encontrado.");
+    }
     if (projeto.owner_id !== userId) {
       throw new Error("Você não tem permissão para coletar notícias deste projeto.");
     }
 
-    return executarColeta({ supabase, projectId: project_id, origem: "manual" });
+    // After ownership is proven, use the privileged client for the internal
+    // run ledger and all collection writes. The project_id is fixed to the
+    // already-authorized project and never taken from an untrusted fallback.
+    const supabaseAdmin = criarClienteAdmin();
+
+    return executarColeta({
+      supabase: supabaseAdmin,
+      projectId: project_id,
+      origem: "manual",
+    });
   });
