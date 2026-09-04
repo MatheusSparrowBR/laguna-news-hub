@@ -5,27 +5,20 @@ import { Button } from "@/components/ui/button";
 import { renderizarArteSvg, svgParaBlobUrl, type EntradaArte } from "@/lib/art/renderArt";
 import { baixarArquivo, exportarArte } from "@/lib/art/exportArt";
 import { DIMENSOES, ROTULO_FORMATO, type ArtFormat } from "@/lib/art/artTemplates";
+import { OFFICIAL_INSTAGRAM_TEMPLATE } from "@/lib/art/officialInstagramTemplateV2";
+import { OFFICIAL_INSTAGRAM_STORY_TEMPLATE } from "@/lib/art/officialInstagramStoryTemplate";
 
 type ArtSelection = "feed" | "story" | "both";
 
-/** Preview e exportação dos formatos oficiais do Instagram. A prévia usa o mesmo SVG da exportação. */
-export function ArtPreview({
-  entrada,
-  formatos = ["feed", "story"],
-}: {
-  entrada: Omit<EntradaArte, "format">;
-  formatos?: readonly ArtFormat[];
-}) {
+/** Preview e exportação dos formatos oficiais do Instagram. A logo PNG é uma camada HTML real. */
+export function ArtPreview({ entrada, formatos = ["feed", "story"] }: { entrada: Omit<EntradaArte, "format">; formatos?: readonly ArtFormat[] }) {
   const permitidos = useMemo(() => {
     const result = formatos.filter((f) => f === "feed" || f === "story");
     return result.length ? Array.from(new Set(result)) : (["feed", "story"] as ArtFormat[]);
   }, [formatos]);
   const [selection, setSelection] = useState<ArtSelection>(permitidos.includes("feed") && permitidos.includes("story") ? "both" : permitidos[0]);
   const exibidos = selection === "both" ? permitidos : permitidos.filter((f) => f === selection);
-  const svgs = useMemo(
-    () => exibidos.map((formato) => ({ formato, svg: renderizarArteSvg({ ...entrada, format: formato }) })),
-    [entrada, exibidos],
-  );
+  const svgs = useMemo(() => exibidos.map((formato) => ({ formato, svg: renderizarArteSvg({ ...entrada, format: formato }) })), [entrada, exibidos]);
   const [previewUrls, setPreviewUrls] = useState<Record<string, string>>({});
 
   useEffect(() => {
@@ -49,9 +42,7 @@ export function ArtPreview({
     }
   };
 
-  const baixarSelecionados = async () => {
-    for (const formato of exibidos) await baixar(formato);
-  };
+  const baixarSelecionados = async () => { for (const formato of exibidos) await baixar(formato); };
 
   return (
     <div className="space-y-4">
@@ -68,10 +59,16 @@ export function ArtPreview({
         {svgs.map(({ formato }) => {
           const { width, height } = DIMENSOES[formato];
           const largura = formato === "story" ? 190 : 300;
+          const altura = Math.round((largura * height) / width);
           const url = previewUrls[formato];
+          const logo = formato === "feed" ? OFFICIAL_INSTAGRAM_TEMPLATE : formato === "story" ? OFFICIAL_INSTAGRAM_STORY_TEMPLATE : null;
+          const escala = largura / width;
           return (
             <figure key={formato} className="space-y-2">
-              {url ? <img src={url} alt={`Arte ${ROTULO_FORMATO[formato]}: ${entrada.title}`} width={largura} height={Math.round((largura * height) / width)} className="w-full max-w-[300px] rounded-lg border border-border shadow-sm" /> : <div className="flex aspect-[4/5] w-full max-w-[300px] items-center justify-center rounded-lg border border-border bg-muted text-xs text-muted-foreground">Carregando preview…</div>}
+              <div className="relative overflow-hidden rounded-lg border border-border shadow-sm" style={{ width: largura, height: altura }}>
+                {url ? <img src={url} alt={`Arte ${ROTULO_FORMATO[formato]}: ${entrada.title}`} width={largura} height={altura} className="block h-full w-full" /> : <div className="flex h-full w-full items-center justify-center bg-muted text-xs text-muted-foreground">Carregando preview…</div>}
+                {logo ? <img src={logo.logoPath} alt="Logo HORA NEWS LAGUNA" width={Math.round(logo.logoWidth * escala)} height={Math.round(logo.logoHeight * escala)} className="pointer-events-none absolute object-contain" style={{ left: Math.round(logo.logoX * escala), top: Math.round(logo.logoY * escala) }} /> : null}
+              </div>
               <figcaption className="text-xs text-muted-foreground">{ROTULO_FORMATO[formato]} · {width}×{height}</figcaption>
               <Button type="button" size="sm" variant="outline" className="w-full max-w-[300px]" onClick={() => void baixar(formato)}><Download className="size-4" /> Baixar {formato === "feed" ? "Feed" : "Stories"}</Button>
             </figure>
