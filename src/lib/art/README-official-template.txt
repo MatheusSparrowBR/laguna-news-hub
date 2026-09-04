@@ -1,0 +1,1 @@
+The active Instagram renderer is src/lib/art/officialInstagramTemplateV2.ts and is routed through renderArt.ts.
