@@ -6,13 +6,14 @@ import { analyzeAuthMiddleware } from "@/integrations/supabase/analyze-auth-midd
  * Server Functions do fluxo editorial.
  *
  * - override geográfico (mantém a decisão automática intacta)
- * - decisão editorial (aprovar / rejeitar / enviar para revisão)
+ * - decisão editorial (aprovar / rejeitar / enviar para revisão / arquivar)
  * - estado da integração com o Instagram (somente leitura)
  *
  * Nunca chama IA, nunca publica, nunca altera notícias em massa.
  */
 
 const decisaoGeografica = z.enum(["local", "outside", "uncertain"]);
+const decisaoEditorial = z.enum(["approved", "rejected", "review_required", "archived"]);
 
 export const salvarOverrideGeografico = createServerFn({ method: "POST" })
   .middleware([analyzeAuthMiddleware])
@@ -54,7 +55,6 @@ export const salvarOverrideGeografico = createServerFn({ method: "POST" })
     );
 
     if (atual) {
-      // A decisão automática (decision) NUNCA é sobrescrita.
       const { error } = await supabase
         .from("news_geography")
         .update({
@@ -82,7 +82,6 @@ export const salvarOverrideGeografico = createServerFn({ method: "POST" })
       if (error) throw new Error("Não foi possível salvar a revisão geográfica.");
     }
 
-    // Auditoria somente quando a decisão vigente mudou de fato.
     if (mudou) {
       const { registrarAuditoria } = await import("@/lib/audit.server");
       await registrarAuditoria(supabase, {
@@ -108,7 +107,6 @@ export const salvarOverrideGeografico = createServerFn({ method: "POST" })
     };
   });
 
-
 export const salvarDecisaoEditorial = createServerFn({ method: "POST" })
   .middleware([analyzeAuthMiddleware])
   .inputValidator((input) =>
@@ -116,7 +114,7 @@ export const salvarDecisaoEditorial = createServerFn({ method: "POST" })
       .object({
         project_id: z.string().uuid(),
         news_id: z.string().uuid(),
-        decision: z.enum(["approved", "rejected", "review_required", "archived"]),
+        decision: decisaoEditorial,
         note: z.string().max(1000).optional(),
       })
       .parse(input),
@@ -134,22 +132,21 @@ export const salvarDecisaoEditorial = createServerFn({ method: "POST" })
       throw new Error("Notícia não encontrada neste projeto.");
     }
 
-    // Idempotente: repetir a mesma decisão não grava e não audita.
-    const { houveMudancaStatus } = await import("@/lib/rules/editorialAudit");
-    const mudou = houveMudancaStatus(noticia.status, data.decision);
+    const statusBanco = data.decision === "archived" ? "ignored" : data.decision;
+    const mudou = noticia.status !== statusBanco;
 
     if (!mudou) return { ok: true, mudou: false, status: data.decision };
 
     const { error } = await supabase
       .from("news")
-      .update({ status: data.decision })
+      .update({ status: statusBanco })
       .eq("id", data.news_id);
-    if (error) throw new Error("Não foi possível salvar a decisão editorial.");
+    if (error) throw new Error(`Não foi possível salvar a decisão editorial: ${error.message}`);
 
     const acao =
-      data.decision === "approved"
+      statusBanco === "approved"
         ? "editorial_approve"
-        : data.decision === "rejected"
+        : statusBanco === "ignored"
           ? "editorial_reject"
           : "editorial_review";
 
@@ -160,11 +157,15 @@ export const salvarDecisaoEditorial = createServerFn({ method: "POST" })
       action: acao,
       entityType: "news",
       entityId: data.news_id,
-      details: { de: noticia.status, para: data.decision, nota: data.note ?? null },
+      details: {
+        de: noticia.status,
+        para: data.decision,
+        status_banco: statusBanco,
+        nota: data.note ?? null,
+      },
     });
 
     return { ok: true, mudou: true, status: data.decision };
-
   });
 
 export const obterEstadoInstagram = createServerFn({ method: "POST" })
@@ -174,7 +175,6 @@ export const obterEstadoInstagram = createServerFn({ method: "POST" })
     const { supabase } = context;
     const { validateConnection } = await import("@/lib/instagram/instagramPublisher.server");
     const estado = await validateConnection(supabase, data.project_id);
-    // Nunca devolve token nem segredo: apenas se a configuração existe.
     return {
       conectado: estado.conectado,
       pendencias: estado.pendencias,
