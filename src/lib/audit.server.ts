@@ -11,6 +11,8 @@ type Cliente = SupabaseClient<Database>;
 
 export type AcaoAuditavel =
   | "geo_override"
+  | "instagram_connect"
+  | "instagram_verify"
   | "editorial_approve"
   | "editorial_reject"
   | "editorial_review"

@@ -123,6 +123,70 @@ export async function salvarConexao(
   if (error) throw new Error(`Não foi possível salvar a conexão: ${error.message}`);
 }
 
+/**
+ * Troca o token curto por um token de longa duração (60 dias).
+ * Não lança quando a troca falha: mantém o token curto e informa a validade.
+ */
+export async function trocarPorTokenLongo(
+  accessToken: string,
+): Promise<{ accessToken: string; expiresInSeconds: number | null }> {
+  const appSecret = process.env["META_APP_SECRET"];
+  if (!appSecret) throw new ErroConfiguracaoMeta();
+
+  const url = new URL("https://graph.instagram.com/access_token");
+  url.searchParams.set("grant_type", "ig_exchange_token");
+  url.searchParams.set("client_secret", appSecret);
+  url.searchParams.set("access_token", accessToken);
+
+  const resposta = await fetch(url, { method: "GET" });
+  if (!resposta.ok) {
+    console.error("[instagram-oauth] troca por token longo falhou", resposta.status);
+    return { accessToken, expiresInSeconds: null };
+  }
+  const json = (await resposta.json()) as { access_token?: string; expires_in?: number };
+  return {
+    accessToken: json.access_token ?? accessToken,
+    expiresInSeconds: json.expires_in ?? null,
+  };
+}
+
+export interface PerfilInstagram {
+  id: string;
+  username: string | null;
+  accountType: string | null;
+  name: string | null;
+}
+
+/** Consulta o perfil autorizado. Usada na conexão e na verificação. */
+export async function obterPerfil(
+  accessToken: string,
+): Promise<{ ok: true; perfil: PerfilInstagram } | { ok: false; status: number }> {
+  const url = new URL("https://graph.instagram.com/v21.0/me");
+  url.searchParams.set("fields", "id,username,account_type,name");
+  const resposta = await fetch(url, {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+  if (!resposta.ok) {
+    console.error("[instagram-oauth] consulta de perfil falhou", resposta.status);
+    return { ok: false, status: resposta.status };
+  }
+  const json = (await resposta.json()) as {
+    id?: string;
+    username?: string;
+    account_type?: string;
+    name?: string;
+  };
+  return {
+    ok: true,
+    perfil: {
+      id: String(json.id ?? ""),
+      username: json.username ?? null,
+      accountType: json.account_type ?? null,
+      name: json.name ?? null,
+    },
+  };
+}
+
 /** Desconecta a conta: remove a conexão sem apagar posts nem histórico. */
 export async function desconectar(supabase: Cliente, projectId: string): Promise<void> {
   const { error } = await supabase
@@ -131,4 +195,9 @@ export async function desconectar(supabase: Cliente, projectId: string): Promise
     .eq("project_id", projectId)
     .eq("provider", "instagram");
   if (error) throw new Error(`Não foi possível desconectar: ${error.message}`);
+
+  // Credenciais seguras também são apagadas; posts e histórico permanecem.
+  const { apagarToken } = await import("./tokenStore.server");
+  await apagarToken(projectId);
 }
+

@@ -23,7 +23,13 @@ import {
   salvarDecisaoEditorial,
   salvarOverrideGeografico,
   obterEstadoInstagram,
+  desconectarInstagram,
 } from "@/lib/editorial.functions";
+import {
+  iniciarConexaoInstagram,
+  publicarAgora,
+  verificarConexaoInstagram,
+} from "@/lib/instagram.functions";
 
 /** Hooks das áreas editorial, publicações e monetização. */
 
@@ -231,6 +237,57 @@ export function useMarcarAvisoLido(projectId?: string) {
   return useMutation({
     mutationFn: (id: string) => marcarAvisoLido(id),
     onSuccess: invalidar,
+    onError: (erro: Error) => toast.error(erro.message),
+  });
+}
+
+/* --------------------------------------------------- Instagram (conexão) */
+
+export function useConectarInstagram(projectId?: string) {
+  return useMutation({
+    mutationFn: () => iniciarConexaoInstagram({ data: { project_id: projectId! } }),
+    onSuccess: (resultado) => {
+      // Redireciona o navegador para a autorização oficial do Instagram.
+      window.location.href = resultado.url;
+    },
+    onError: (erro: Error) => toast.error(erro.message),
+  });
+}
+
+export function useVerificarInstagram(projectId?: string) {
+  const invalidar = useInvalidar(["estado-instagram"], projectId);
+  return useMutation({
+    mutationFn: () => verificarConexaoInstagram({ data: { project_id: projectId! } }),
+    onSuccess: (resultado) => {
+      invalidar();
+      if (resultado.status === "connected") toast.success(resultado.mensagem);
+      else toast.warning(resultado.mensagem);
+    },
+    onError: (erro: Error) => toast.error(erro.message),
+  });
+}
+
+export function useDesconectarInstagram(projectId?: string) {
+  const invalidar = useInvalidar(["estado-instagram"], projectId);
+  return useMutation({
+    mutationFn: () => desconectarInstagram({ data: { project_id: projectId! } }),
+    onSuccess: () => {
+      invalidar();
+      toast.success("Instagram desconectado. Publicações e histórico foram preservados.");
+    },
+    onError: (erro: Error) => toast.error(erro.message),
+  });
+}
+
+export function usePublicarAgora(projectId?: string) {
+  const invalidar = useInvalidar(["posts", "logs-publicacao", "metricas-internas"], projectId);
+  return useMutation({
+    mutationFn: (entrada: { post_id: string }) =>
+      publicarAgora({ data: { project_id: projectId!, post_id: entrada.post_id } }),
+    onSuccess: (resultado) => {
+      invalidar();
+      toast.success(resultado.mensagem);
+    },
     onError: (erro: Error) => toast.error(erro.message),
   });
 }

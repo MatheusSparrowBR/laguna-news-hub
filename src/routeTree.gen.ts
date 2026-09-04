@@ -30,6 +30,7 @@ import { Route as AdminSponsorsIndexRouteImport } from './routes/_admin.sponsors
 import { Route as AdminSponsorsCampaignsRouteImport } from './routes/_admin.sponsors.campaigns'
 import { Route as AdminSponsorsDeliverablesRouteImport } from './routes/_admin.sponsors.deliverables'
 import { Route as ApiPublicHooksCollectNewsRouteImport } from './routes/api/public/hooks/collect-news'
+import { Route as ApiPublicIntegrationsInstagramCallbackRouteImport } from './routes/api/public/integrations/instagram/callback'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -137,6 +138,12 @@ const ApiPublicHooksCollectNewsRoute =
     path: '/api/public/hooks/collect-news',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicIntegrationsInstagramCallbackRoute =
+  ApiPublicIntegrationsInstagramCallbackRouteImport.update({
+    id: '/api/public/integrations/instagram/callback',
+    path: '/api/public/integrations/instagram/callback',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -159,6 +166,7 @@ export interface FileRoutesByFullPath {
   '/posts/': typeof AdminPostsIndexRoute
   '/sponsors/': typeof AdminSponsorsIndexRoute
   '/api/public/hooks/collect-news': typeof ApiPublicHooksCollectNewsRoute
+  '/api/public/integrations/instagram/callback': typeof ApiPublicIntegrationsInstagramCallbackRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -181,6 +189,7 @@ export interface FileRoutesByTo {
   '/posts': typeof AdminPostsIndexRoute
   '/sponsors': typeof AdminSponsorsIndexRoute
   '/api/public/hooks/collect-news': typeof ApiPublicHooksCollectNewsRoute
+  '/api/public/integrations/instagram/callback': typeof ApiPublicIntegrationsInstagramCallbackRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -205,6 +214,7 @@ export interface FileRoutesById {
   '/_admin/posts/': typeof AdminPostsIndexRoute
   '/_admin/sponsors/': typeof AdminSponsorsIndexRoute
   '/api/public/hooks/collect-news': typeof ApiPublicHooksCollectNewsRoute
+  '/api/public/integrations/instagram/callback': typeof ApiPublicIntegrationsInstagramCallbackRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -229,6 +239,7 @@ export interface FileRouteTypes {
     | '/posts/'
     | '/sponsors/'
     | '/api/public/hooks/collect-news'
+    | '/api/public/integrations/instagram/callback'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -251,6 +262,7 @@ export interface FileRouteTypes {
     | '/posts'
     | '/sponsors'
     | '/api/public/hooks/collect-news'
+    | '/api/public/integrations/instagram/callback'
   id:
     | '__root__'
     | '/'
@@ -274,6 +286,7 @@ export interface FileRouteTypes {
     | '/_admin/posts/'
     | '/_admin/sponsors/'
     | '/api/public/hooks/collect-news'
+    | '/api/public/integrations/instagram/callback'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -281,6 +294,7 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRouteWithChildren
   LoginRoute: typeof LoginRoute
   ApiPublicHooksCollectNewsRoute: typeof ApiPublicHooksCollectNewsRoute
+  ApiPublicIntegrationsInstagramCallbackRoute: typeof ApiPublicIntegrationsInstagramCallbackRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -432,6 +446,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksCollectNewsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/integrations/instagram/callback': {
+      id: '/api/public/integrations/instagram/callback'
+      path: '/api/public/integrations/instagram/callback'
+      fullPath: '/api/public/integrations/instagram/callback'
+      preLoaderRoute: typeof ApiPublicIntegrationsInstagramCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -482,6 +503,8 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRouteWithChildren,
   LoginRoute: LoginRoute,
   ApiPublicHooksCollectNewsRoute: ApiPublicHooksCollectNewsRoute,
+  ApiPublicIntegrationsInstagramCallbackRoute:
+    ApiPublicIntegrationsInstagramCallbackRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
