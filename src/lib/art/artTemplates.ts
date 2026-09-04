@@ -29,8 +29,6 @@ export const ROTULO_FORMATO: Record<ArtFormat, string> = {
   story: "Story 1080×1920",
 };
 
-/* --------------------------------------------------------- paleta oficial */
-
 export const MARCA = {
   primary: "#0B3D91",
   secondary: "#1E6BB8",
@@ -41,15 +39,10 @@ export const MARCA = {
 } as const;
 
 export interface ArtTheme {
-  /** Rótulo do selo de categoria. */
   label: string;
-  /** Cor do selo de categoria. */
   badge: string;
-  /** Cor do texto do selo. */
   badgeText: string;
-  /** Selo de urgência visível ("AGORA"). */
   urgent: boolean;
-  /** Composição de foto máxima, com pouquíssimo texto. */
   minimal: boolean;
 }
 
@@ -82,11 +75,9 @@ export const ART_TEMPLATES: Record<TemplateKey, ArtTheme> = {
   educacao: tema({ label: "EDUCAÇÃO" }),
   economia: tema({ label: "ECONOMIA" }),
   comunidade: tema({ label: "COMUNIDADE", badge: MARCA.secondary }),
-  foto_especial: tema({ label: "FOTO ESPECIAL", badge: MARCA.primary, minimal: true }),
   patrocinado: tema({ label: "PUBLICIDADE", badge: MARCA.accent, badgeText: MARCA.text }),
 };
 
-/** Área segura (px) das artes; nada de texto encosta na borda. */
 export const SAFE_AREA = 60;
 
 export const CORES_APOIO = {
