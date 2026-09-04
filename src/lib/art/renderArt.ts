@@ -1,22 +1,13 @@
 /**
- * Renderização das artes em SVG — determinística, pura, sem IA.
+ * Renderização determinística das artes HORA NEWS LAGUNA — sem IA.
  *
- * Gera a string SVG completa (1080×1350, 1080×1080 ou 1080×1920) com todos os
- * componentes reutilizáveis: logo, faixa de categoria, selo urgente, imagem,
- * título, subtítulo, fonte, data, patrocinador, rodapé e CTA.
- *
- * Nada de DOM, rede, banco ou secrets: só entrada → SVG.
+ * Feed: 1080×1350 (formato principal). A fotografia ocupa toda a composição;
+ * um overlay discreto azul é aplicado apenas onde melhora a leitura.
  */
 
-import { APP_NAME, CIDADE_COMPLETA, NOME_DO_PERFIL } from "@/config/app";
+import { CIDADE_COMPLETA, NOME_DO_PERFIL } from "@/config/app";
 import type { TemplateKey } from "@/lib/templates/postTemplates";
-import {
-  DIMENSOES,
-  SAFE_AREA,
-  CORES_APOIO,
-  temaDoTemplate,
-  type ArtFormat,
-} from "./artTemplates";
+import { DIMENSOES, MARCA, SAFE_AREA, temaDoTemplate, type ArtFormat } from "./artTemplates";
 import { ajustarTexto } from "./textFit";
 
 export interface EntradaArte {
@@ -24,17 +15,14 @@ export interface EntradaArte {
   format: ArtFormat;
   title: string;
   subtitle?: string | null;
-  /** URL absoluta da imagem (opcional). Sem imagem, usa fundo sólido. */
   imageUrl?: string | null;
   sourceName?: string | null;
-  /** Data já formatada para exibição (ex.: "04/09/2026"). */
   dateLabel?: string | null;
   sponsorName?: string | null;
   sponsorLogoUrl?: string | null;
   cta?: string | null;
 }
 
-/** Escapa texto para uso seguro dentro do SVG. */
 export function escaparXml(texto: string): string {
   return texto
     .replace(/&/g, "&amp;")
@@ -44,39 +32,39 @@ export function escaparXml(texto: string): string {
     .replace(/'/g, "&apos;");
 }
 
-const FONTE = "'Helvetica Neue', Helvetica, Arial, sans-serif";
+const FONTE = "Inter, Arial, sans-serif";
 
 interface Layout {
-  imagemAltura: number;
-  painelY: number;
-  painelAltura: number;
-  tituloFonte: number;
+  titleFont: number;
+  titleMaxHeight: number;
+  contentBottom: number;
 }
 
 function layoutDoFormato(format: ArtFormat): Layout {
-  const { height } = DIMENSOES[format];
+  const height = DIMENSOES[format].height;
   if (format === "story") {
-    return {
-      imagemAltura: Math.round(height * 0.5),
-      painelY: Math.round(height * 0.5),
-      painelAltura: Math.round(height * 0.42),
-      tituloFonte: 86,
-    };
+    return { titleFont: 86, titleMaxHeight: 420, contentBottom: height - 250 };
   }
   if (format === "square") {
-    return {
-      imagemAltura: Math.round(height * 0.48),
-      painelY: Math.round(height * 0.48),
-      painelAltura: Math.round(height * 0.44),
-      tituloFonte: 72,
-    };
+    return { titleFont: 72, titleMaxHeight: 330, contentBottom: height - 190 };
   }
-  return {
-    imagemAltura: Math.round(height * 0.52),
-    painelY: Math.round(height * 0.52),
-    painelAltura: Math.round(height * 0.4),
-    tituloFonte: 78,
-  };
+  return { titleFont: 78, titleMaxHeight: 390, contentBottom: height - 205 };
+}
+
+function logoSvg(x: number, y: number, scale = 1): string {
+  const w = 330 * scale;
+  return [
+    `<g transform="translate(${x} ${y}) scale(${scale})">`,
+    `<circle cx="32" cy="34" r="28" fill="${MARCA.accent}"/>`,
+    `<path d="M20 54V28l12-10 12 10v26H20Z" fill="${MARCA.primary}"/>`,
+    `<path d="M25 27h14v27H25z" fill="${MARCA.white}" opacity=".95"/>`,
+    `<path d="M16 16h32" stroke="${MARCA.secondary}" stroke-width="5" stroke-linecap="round"/>`,
+    `<text x="70" y="30" font-family="${FONTE}" font-size="30" font-weight="800" fill="${MARCA.white}" letter-spacing="1">HORA NEWS</text>`,
+    `<text x="70" y="58" font-family="${FONTE}" font-size="24" font-weight="700" fill="${MARCA.accent}">LAGUNA</text>`,
+    `<text x="70" y="84" font-family="${FONTE}" font-size="14" font-weight="600" fill="${MARCA.white}">INFORMAÇÃO QUE CONECTA NOSSA CIDADE</text>`,
+    `</g>`,
+    `<!-- logo width ${w} -->`,
+  ].join("");
 }
 
 /** Gera o SVG completo da arte. */
@@ -88,120 +76,105 @@ export function renderizarArteSvg(entrada: EntradaArte): string {
 
   const titulo = ajustarTexto(entrada.title, {
     larguraMax: larguraUtil,
-    alturaMax: layout.painelAltura - 220,
-    fontSizeInicial: layout.tituloFonte,
+    alturaMax: layout.titleMaxHeight,
+    fontSizeInicial: layout.titleFont,
     fontSizeMinimo: 40,
-    lineHeight: 1.12,
+    lineHeight: 1.08,
     peso: "bold",
   });
 
   const subtitulo = entrada.subtitle
     ? ajustarTexto(entrada.subtitle, {
         larguraMax: larguraUtil,
-        alturaMax: 140,
-        fontSizeInicial: 38,
-        fontSizeMinimo: 26,
-        lineHeight: 1.25,
+        alturaMax: 120,
+        fontSizeInicial: 34,
+        fontSizeMinimo: 24,
+        lineHeight: 1.2,
         peso: "regular",
       })
     : null;
 
   const partes: string[] = [];
+  const gradientId = `hora-overlay-${entrada.template}-${entrada.format}`.replace(/[^a-z0-9-]/gi, "-");
 
-  // Fundo
-  partes.push(`<rect width="${width}" height="${height}" fill="${tema.bg}"/>`);
+  // Fundo oficial.
+  partes.push(`<rect width="${width}" height="${height}" fill="${MARCA.background}"/>`);
 
-  // Imagem (object-fit: cover via preserveAspectRatio) ou bloco sólido
+  // A foto é dominante (80–90%+). Não existe faixa azul sólida inferior.
   if (entrada.imageUrl) {
     partes.push(
-      `<clipPath id="clipImg"><rect x="0" y="0" width="${width}" height="${layout.imagemAltura}"/></clipPath>`,
-      `<image href="${escaparXml(entrada.imageUrl)}" x="0" y="0" width="${width}" height="${layout.imagemAltura}" preserveAspectRatio="xMidYMid slice" clip-path="url(#clipImg)"/>`,
-      `<rect x="0" y="${layout.imagemAltura - 220}" width="${width}" height="220" fill="${tema.bg}" opacity="0.55"/>`,
+      `<defs><linearGradient id="${gradientId}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${MARCA.primary}" stop-opacity="0"/><stop offset="58%" stop-color="${MARCA.primary}" stop-opacity="0.04"/><stop offset="100%" stop-color="${MARCA.primary}" stop-opacity="0.86"/></linearGradient></defs>`,
+      `<image href="${escaparXml(entrada.imageUrl)}" x="0" y="0" width="${width}" height="${height}" preserveAspectRatio="xMidYMid slice"/>`,
+      `<rect x="0" y="0" width="${width}" height="${height}" fill="url(#${gradientId})"/>`,
     );
   } else {
+    partes.push(`<rect x="0" y="0" width="${width}" height="${height}" fill="${MARCA.primary}" opacity="0.08"/>`);
+  }
+
+  // Categoria no topo esquerdo.
+  const faixaY = SAFE_AREA;
+  const labelWidth = Math.min(larguraUtil * 0.62, Math.max(190, tema.label.length * 24 + 72));
+  partes.push(
+    `<rect x="${SAFE_AREA}" y="${faixaY}" width="${labelWidth}" height="64" rx="10" fill="${tema.badge}"/>`,
+    `<text x="${SAFE_AREA + 24}" y="${faixaY + 43}" font-family="${FONTE}" font-size="30" font-weight="800" letter-spacing="1.4" fill="${tema.badgeText}">${escaparXml(tema.label)}</text>`,
+  );
+
+  // Data/local no topo direito, sem competir com o título.
+  const meta = [CIDADE_COMPLETA, entrada.dateLabel].filter(Boolean).join(" • ");
+  if (meta) {
     partes.push(
-      `<rect x="0" y="0" width="${width}" height="${layout.imagemAltura}" fill="${tema.accent}" opacity="0.35"/>`,
+      `<text x="${width - SAFE_AREA}" y="${faixaY + 40}" text-anchor="end" font-family="${FONTE}" font-size="22" font-weight="700" fill="${MARCA.white}">${escaparXml(meta)}</text>`,
     );
   }
 
-  // Logo / marca
-  partes.push(
-    `<rect x="${SAFE_AREA}" y="${SAFE_AREA}" width="${Math.min(560, larguraUtil)}" height="88" rx="16" fill="${CORES_APOIO.branco}" opacity="0.94"/>`,
-    `<text x="${SAFE_AREA + 24}" y="${SAFE_AREA + 58}" font-family="${FONTE}" font-size="36" font-weight="700" fill="${CORES_APOIO.azul}">${escaparXml(APP_NAME.replace("Projeto ", ""))}</text>`,
-  );
+  // Título e subtítulo sobre a região inferior da fotografia.
+  const titleBlockHeight = titulo.linhas.length * titulo.fontSize * titulo.lineHeight;
+  let cursorY = layout.contentBottom - titleBlockHeight;
+  cursorY = Math.max(SAFE_AREA + 160, cursorY);
 
-  // Faixa de categoria + selo urgente
-  const faixaY = layout.painelY - 76;
-  const rotulo = escaparXml(tema.label);
-  const larguraFaixa = Math.min(larguraUtil, rotulo.length * 24 + 64);
-  partes.push(
-    `<rect x="${SAFE_AREA}" y="${faixaY}" width="${larguraFaixa}" height="76" rx="8" fill="${tema.accent}"/>`,
-    `<text x="${SAFE_AREA + 32}" y="${faixaY + 51}" font-family="${FONTE}" font-size="38" font-weight="800" letter-spacing="2" fill="${tema.accentText}">${rotulo}</text>`,
-  );
-  if (tema.urgent) {
-    partes.push(
-      `<rect x="${width - SAFE_AREA - 260}" y="${faixaY}" width="260" height="76" rx="8" fill="${CORES_APOIO.branco}"/>`,
-      `<text x="${width - SAFE_AREA - 130}" y="${faixaY + 51}" text-anchor="middle" font-family="${FONTE}" font-size="38" font-weight="800" fill="#C62828">AGORA</text>`,
-    );
-  }
-
-  // Painel de texto
-  partes.push(
-    `<rect x="0" y="${layout.painelY}" width="${width}" height="${height - layout.painelY}" fill="${tema.panel}"/>`,
-  );
-
-  // Título
-  let cursorY = layout.painelY + SAFE_AREA + titulo.fontSize;
   for (const linha of titulo.linhas) {
     partes.push(
-      `<text x="${SAFE_AREA}" y="${cursorY}" font-family="${FONTE}" font-size="${titulo.fontSize}" font-weight="800" fill="${tema.title}">${escaparXml(linha)}</text>`,
+      `<text x="${SAFE_AREA}" y="${cursorY}" font-family="${FONTE}" font-size="${titulo.fontSize}" font-weight="800" fill="${MARCA.white}" stroke="${MARCA.primary}" stroke-opacity="0.2" stroke-width="1">${escaparXml(linha)}</text>`,
     );
     cursorY += titulo.fontSize * titulo.lineHeight;
   }
 
-  // Subtítulo
   if (subtitulo) {
-    cursorY += 24;
+    cursorY += 18;
     for (const linha of subtitulo.linhas) {
       partes.push(
-        `<text x="${SAFE_AREA}" y="${cursorY}" font-family="${FONTE}" font-size="${subtitulo.fontSize}" font-weight="400" fill="${tema.muted}">${escaparXml(linha)}</text>`,
+        `<text x="${SAFE_AREA}" y="${cursorY}" font-family="${FONTE}" font-size="${subtitulo.fontSize}" font-weight="500" fill="${MARCA.white}" opacity="0.96">${escaparXml(linha)}</text>`,
       );
       cursorY += subtitulo.fontSize * subtitulo.lineHeight;
     }
   }
 
-  // Patrocinador (bloco explícito de publicidade)
+  // Assinatura visual integrada, sem banner azul sólido.
+  const logoY = height - SAFE_AREA - 118;
+  partes.push(
+    `<g opacity="0.98">${logoSvg(SAFE_AREA, logoY, 1)}</g>`,
+  );
+
+  // Publicidade permanece explicitamente identificada.
   if (entrada.sponsorName) {
-    const y = height - SAFE_AREA - 200;
+    const y = logoY - 58;
     partes.push(
-      `<rect x="${SAFE_AREA}" y="${y}" width="${larguraUtil}" height="84" rx="12" fill="${tema.accent}" opacity="0.12"/>`,
-      `<text x="${SAFE_AREA + 24}" y="${y + 54}" font-family="${FONTE}" font-size="34" font-weight="700" fill="${tema.title}">PUBLICIDADE • ${escaparXml(entrada.sponsorName)}</text>`,
+      `<rect x="${width - SAFE_AREA - 390}" y="${y}" width="390" height="48" rx="10" fill="${MARCA.white}" opacity="0.92"/>`,
+      `<text x="${width - SAFE_AREA - 366}" y="${y + 32}" font-family="${FONTE}" font-size="18" font-weight="800" fill="${MARCA.text}">PUBLICIDADE • ${escaparXml(entrada.sponsorName)}</text>`,
     );
     if (entrada.sponsorLogoUrl) {
-      partes.push(
-        `<image href="${escaparXml(entrada.sponsorLogoUrl)}" x="${width - SAFE_AREA - 84}" y="${y + 10}" width="64" height="64" preserveAspectRatio="xMidYMid meet"/>`,
-      );
+      partes.push(`<image href="${escaparXml(entrada.sponsorLogoUrl)}" x="${width - SAFE_AREA - 58}" y="${y + 5}" width="38" height="38" preserveAspectRatio="xMidYMid meet"/>`);
     }
   }
 
-  // Rodapé: fonte, data, CTA
-  const rodapeY = height - SAFE_AREA - 70;
+  // Fonte/CTA em safe area inferior, mantendo a marca como elemento principal.
   const fonteTexto = entrada.sponsorName
     ? "Conteúdo publicitário"
     : entrada.sourceName
       ? `Fonte: ${entrada.sourceName}`
       : CIDADE_COMPLETA;
   partes.push(
-    `<line x1="${SAFE_AREA}" y1="${rodapeY - 24}" x2="${width - SAFE_AREA}" y2="${rodapeY - 24}" stroke="${CORES_APOIO.cinza}" stroke-width="2"/>`,
-    `<text x="${SAFE_AREA}" y="${rodapeY + 18}" font-family="${FONTE}" font-size="30" font-weight="600" fill="${tema.muted}">${escaparXml(fonteTexto)}</text>`,
-  );
-  if (entrada.dateLabel) {
-    partes.push(
-      `<text x="${width - SAFE_AREA}" y="${rodapeY + 18}" text-anchor="end" font-family="${FONTE}" font-size="30" font-weight="600" fill="${tema.muted}">${escaparXml(entrada.dateLabel)}</text>`,
-    );
-  }
-  partes.push(
-    `<text x="${SAFE_AREA}" y="${rodapeY + 58}" font-family="${FONTE}" font-size="28" font-weight="700" fill="${tema.title}">${escaparXml(entrada.cta ?? NOME_DO_PERFIL)}</text>`,
+    `<text x="${width - SAFE_AREA}" y="${height - SAFE_AREA}" text-anchor="end" font-family="${FONTE}" font-size="18" font-weight="600" fill="${MARCA.white}" opacity="0.92">${escaparXml(entrada.cta ?? fonteTexto)}</text>`,
   );
 
   return [
@@ -211,7 +184,6 @@ export function renderizarArteSvg(entrada: EntradaArte): string {
   ].join("");
 }
 
-/** Data URL do SVG — usada no preview e na exportação. */
 export function svgParaDataUrl(svg: string): string {
   return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
 }
