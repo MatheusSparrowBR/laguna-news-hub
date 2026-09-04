@@ -32,13 +32,13 @@ import type { NoticiaEditorial } from "@/services/editorialData";
 export const Route = createFileRoute("/_admin/editorial/")({
   head: () => ({
     meta: [
-      { title: "Caixa de entrada editorial | Notícias Laguna" },
+      { title: "Caixa de entrada editorial | HORA NEWS LAGUNA" },
       {
         name: "description",
         content:
           "Central de decisão humana: aprove, rejeite ou envie para revisão as notícias coletadas em Laguna.",
       },
-      { property: "og:title", content: "Caixa de entrada editorial | Notícias Laguna" },
+      { property: "og:title", content: "Caixa de entrada editorial | HORA NEWS LAGUNA" },
       {
         property: "og:description",
         content: "Decida o que vira publicação no perfil de notícias de Laguna.",

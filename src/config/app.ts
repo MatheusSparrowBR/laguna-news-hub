@@ -4,7 +4,7 @@
  */
 export const NOME_DO_PERFIL = "@noticiaslaguna";
 
-export const APP_NAME = "Projeto Notícias Laguna";
+export const APP_NAME = "HORA NEWS LAGUNA";
 export const CIDADE = "Laguna";
 export const ESTADO = "SC";
 export const CIDADE_COMPLETA = `${CIDADE} - ${ESTADO}`;

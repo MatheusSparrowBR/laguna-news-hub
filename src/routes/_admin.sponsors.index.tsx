@@ -31,12 +31,12 @@ import type { Sponsor } from "@/services/editorialData";
 export const Route = createFileRoute("/_admin/sponsors/")({
   head: () => ({
     meta: [
-      { title: "Patrocinadores | Notícias Laguna" },
+      { title: "Patrocinadores | HORA NEWS LAGUNA" },
       {
         name: "description",
         content: "Cadastro de patrocinadores e visão geral das campanhas contratadas.",
       },
-      { property: "og:title", content: "Patrocinadores | Notícias Laguna" },
+      { property: "og:title", content: "Patrocinadores | HORA NEWS LAGUNA" },
       {
         property: "og:description",
         content: "Controle comercial dos patrocinadores do perfil de notícias de Laguna.",

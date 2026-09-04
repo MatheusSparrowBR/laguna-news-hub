@@ -32,7 +32,7 @@ import type { NewsItem } from "@/lib/types";
 export const Route = createFileRoute("/_admin/feed")({
   head: () => ({
     meta: [
-      { title: "Feed | Projeto Notícias Laguna" },
+      { title: "Feed | HORA NEWS LAGUNA" },
       {
         name: "description",
         content:

@@ -43,7 +43,7 @@ import { useQueryClient } from "@tanstack/react-query";
 export const Route = createFileRoute("/_admin/news/$id")({
   head: () => ({
     meta: [
-      { title: "Detalhe da notícia | Projeto Notícias Laguna" },
+      { title: "Detalhe da notícia | HORA NEWS LAGUNA" },
       {
         name: "description",
         content: "Visualize os detalhes da notícia, conteúdo gerado pela IA e controle de status.",

@@ -31,13 +31,13 @@ import type { Campanha } from "@/services/editorialData";
 export const Route = createFileRoute("/_admin/sponsors/campaigns")({
   head: () => ({
     meta: [
-      { title: "Campanhas | Notícias Laguna" },
+      { title: "Campanhas | HORA NEWS LAGUNA" },
       {
         name: "description",
         content:
           "Campanhas contratadas pelos patrocinadores, com período, valor e publicações previstas.",
       },
-      { property: "og:title", content: "Campanhas | Notícias Laguna" },
+      { property: "og:title", content: "Campanhas | HORA NEWS LAGUNA" },
       {
         property: "og:description",
         content: "Controle das campanhas dos patrocinadores de Laguna.",

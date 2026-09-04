@@ -21,12 +21,12 @@ import { STATUS_POST_ROTULO } from "./_admin.posts.index";
 export const Route = createFileRoute("/_admin/publishing")({
   head: () => ({
     meta: [
-      { title: "Fila de publicação | Notícias Laguna" },
+      { title: "Fila de publicação | HORA NEWS LAGUNA" },
       {
         name: "description",
         content: "Acompanhe o que está pronto, aprovado, agendado, publicado ou com falha.",
       },
-      { property: "og:title", content: "Fila de publicação | Notícias Laguna" },
+      { property: "og:title", content: "Fila de publicação | HORA NEWS LAGUNA" },
       {
         property: "og:description",
         content: "Controle das publicações do perfil de notícias de Laguna.",

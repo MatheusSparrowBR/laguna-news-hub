@@ -52,7 +52,7 @@ import { CollectResultPanel } from "@/components/sources/CollectResultPanel";
 export const Route = createFileRoute("/_admin/sources")({
   head: () => ({
     meta: [
-      { title: "Fontes | Projeto Notícias Laguna" },
+      { title: "Fontes | HORA NEWS LAGUNA" },
       {
         name: "description",
         content: "Gerencie as fontes de notícias monitoradas pelo sistema.",

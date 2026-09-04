@@ -20,7 +20,7 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/_admin/instagram")({
   head: () => ({
     meta: [
-      { title: "Instagram | Projeto Notícias Laguna" },
+      { title: "Instagram | HORA NEWS LAGUNA" },
       {
         name: "description",
         content: "Monitore o desempenho do perfil do Instagram e conecte sua conta.",
