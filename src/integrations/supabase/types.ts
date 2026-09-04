@@ -824,9 +824,13 @@ export type Database = {
         Row: {
           active: boolean
           category_id: string | null
+          consecutive_failures: number
           created_at: string
           id: string
           last_checked_at: string | null
+          last_error: string | null
+          last_http_status: number | null
+          last_news_found_at: string | null
           name: string
           project_id: string
           rss_url: string | null
@@ -837,9 +841,13 @@ export type Database = {
         Insert: {
           active?: boolean
           category_id?: string | null
+          consecutive_failures?: number
           created_at?: string
           id?: string
           last_checked_at?: string | null
+          last_error?: string | null
+          last_http_status?: number | null
+          last_news_found_at?: string | null
           name: string
           project_id: string
           rss_url?: string | null
@@ -850,9 +858,13 @@ export type Database = {
         Update: {
           active?: boolean
           category_id?: string | null
+          consecutive_failures?: number
           created_at?: string
           id?: string
           last_checked_at?: string | null
+          last_error?: string | null
+          last_http_status?: number | null
+          last_news_found_at?: string | null
           name?: string
           project_id?: string
           rss_url?: string | null
@@ -1060,6 +1072,10 @@ export type Database = {
     Functions: {
       claim_admin_project: { Args: { _name?: string }; Returns: string }
       owns_project: { Args: { _project_id: string }; Returns: boolean }
+      recalcular_delivered_posts: {
+        Args: { _campaign_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       app_role: "admin" | "editor" | "viewer"
