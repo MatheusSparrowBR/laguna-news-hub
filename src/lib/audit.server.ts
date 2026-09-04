@@ -27,10 +27,8 @@ export type AcaoAuditavel =
   | "campaign_update"
   | "deliverable_create"
   | "deliverable_update"
-  | "instagram_connect"
   | "instagram_disconnect";
 
-/** Chaves proibidas em `details` — removidas antes de gravar. */
 const CHAVES_PROIBIDAS = /(token|secret|password|senha|api[_-]?key|authorization|cookie)/i;
 
 export function sanitizarDetalhes(
@@ -45,8 +43,12 @@ export function sanitizarDetalhes(
   return saida;
 }
 
+/**
+ * Auditoria é escrita exclusivamente pelo backend com a conexão privilegiada.
+ * O caller continua responsável por validar project_id com o usuário autenticado.
+ */
 export async function registrarAuditoria(
-  supabase: Cliente,
+  _supabase: Cliente,
   entrada: {
     projectId: string;
     actorId: string | null;
@@ -56,7 +58,8 @@ export async function registrarAuditoria(
     details?: Record<string, unknown>;
   },
 ): Promise<void> {
-  const { error } = await supabase.from("audit_logs").insert({
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { error } = await supabaseAdmin.from("audit_logs").insert({
     project_id: entrada.projectId,
     actor_id: entrada.actorId,
     action: entrada.action,
@@ -77,9 +80,9 @@ export type TipoNotificacao =
   | "instagram_disconnected"
   | "source_failing";
 
-
+/** Notificações de sistema também são escritas apenas pelo backend. */
 export async function criarNotificacao(
-  supabase: Cliente,
+  _supabase: Cliente,
   entrada: {
     projectId: string;
     kind: TipoNotificacao;
@@ -90,7 +93,8 @@ export async function criarNotificacao(
     campaignId?: string | null;
   },
 ): Promise<void> {
-  const { error } = await supabase.from("notifications").insert({
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { error } = await supabaseAdmin.from("notifications").insert({
     project_id: entrada.projectId,
     kind: entrada.kind,
     title: entrada.title,
