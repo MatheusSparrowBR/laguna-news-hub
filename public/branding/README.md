@@ -1,1 +1,3 @@
-A identidade oficial do Instagram é renderizada por src/lib/art/officialInstagramTemplateV2.ts e usa a marca HORA NEWS LAGUNA em public/branding/hora-news-laguna-logo.svg.
+# Branding HORA NEWS LAGUNA
+
+`hora-news-laguna-logo.png` é o asset oficial e fixo usado na arte das publicações de Instagram.
