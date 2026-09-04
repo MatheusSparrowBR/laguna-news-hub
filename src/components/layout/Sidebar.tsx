@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { LogOut } from "lucide-react";
 import { useState } from "react";
-import { navItems } from "./navigation";
+import { navGroups } from "./navigation";
 import { APP_NAME, CIDADE_COMPLETA } from "@/config/app";
 import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
 import { useAuth } from "@/hooks/useAuth";
