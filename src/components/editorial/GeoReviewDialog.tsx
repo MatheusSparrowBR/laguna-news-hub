@@ -32,7 +32,7 @@ export function GeoReviewDialog({
   noticia: NoticiaEditorial | null;
   aberto: boolean;
   onOpenChange: (v: boolean) => void;
-  onSalvar: (entrada: { manual_decision: DecisaoGeo; review_notes?: string }) => void;
+  onSalvar: (entrada: { manual_decision: DecisaoGeo; review_notes?: string | undefined }) => void;
   salvando?: boolean;
 }) {
   const geo = noticia?.geo ?? null;

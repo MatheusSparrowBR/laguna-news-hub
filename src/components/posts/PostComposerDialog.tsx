@@ -48,7 +48,7 @@ interface Props {
   patrocinadores: Sponsor[];
   campanhas: Campanha[];
   salvando?: boolean;
-  onSalvar: (entrada: EntradaPost & { id?: string }) => void;
+  onSalvar: (entrada: EntradaPost & { id?: string | undefined }) => void;
 }
 
 /** Compositor de publicação: notícia editorial ou conteúdo patrocinado. */
