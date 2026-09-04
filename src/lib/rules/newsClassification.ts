@@ -181,6 +181,35 @@ const CTX_TURISMO = [
   "atrativo",
 ];
 
+/** Contexto econômico: "empresa"/"empresas" isoladas não bastam. */
+const CTX_ECONOMIA = [
+  "emprego",
+  "empregos",
+  "vagas",
+  "vaga",
+  "contratação",
+  "contratações",
+  "investimento",
+  "investimentos",
+  "economia",
+  "faturamento",
+  "mercado",
+  "negócios",
+  "indústria",
+  "salário",
+  "salários",
+  "renda",
+  "produção",
+  "exportação",
+  "empreendedor",
+  "empreendedorismo",
+  "setor produtivo",
+  "lucro",
+  "receita",
+  "expansão",
+  "comércio",
+];
+
 
 const REGRAS: Record<CategoriaSlug, Palavra[]> = {
   urgente: [
