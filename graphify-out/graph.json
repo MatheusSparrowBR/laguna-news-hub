@@ -11130,7 +11130,7 @@
       "file_type": "code",
       "norm_label": "route",
       "source_file": "src/routes/api/public/hooks/collect-news.ts",
-      "source_location": "L9"
+      "source_location": "L12"
     },
     {
       "id": "src_routes_api_public_integrations_instagram_callback",
@@ -21603,7 +21603,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/api/public/hooks/collect-news.ts",
-      "source_location": "L13",
+      "source_location": "L16",
       "weight": 1.0
     },
     {
@@ -23670,7 +23670,7 @@
       "context": "import",
       "deferred": true,
       "source_file": "src/routes/api/public/hooks/collect-news.ts",
-      "source_location": "L17",
+      "source_location": "L20",
       "weight": 1.0
     },
     {
@@ -23683,7 +23683,7 @@
       "context": "import",
       "deferred": true,
       "source_file": "src/routes/api/public/hooks/collect-news.ts",
-      "source_location": "L18",
+      "source_location": "L21",
       "weight": 1.0
     },
     {
@@ -52093,7 +52093,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/api/public/hooks/collect-news.ts",
-      "source_location": "L9",
+      "source_location": "L12",
       "weight": 1.0
     },
     {
@@ -55529,5 +55529,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "78c4e26e933d67644db9fdb217484c5a39f74cae"
+  "built_at_commit": "f23b1f498f9b1b0db7a3b78e6fc9d3858ba7c466"
 }
