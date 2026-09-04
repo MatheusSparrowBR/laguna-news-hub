@@ -130,7 +130,7 @@ export function useOverrideGeografico(projectId?: string) {
     mutationFn: (entrada: {
       news_id: string;
       manual_decision: "local" | "outside" | "uncertain";
-      review_notes?: string;
+      review_notes?: string | undefined;
     }) => salvarOverrideGeografico({ data: { project_id: projectId!, ...entrada } }),
     onSuccess: () => {
       invalidar();
