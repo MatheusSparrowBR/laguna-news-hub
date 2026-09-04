@@ -12,3 +12,16 @@ export function renderizarArteSvg(entrada: EntradaArte): string {
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">${image}<rect x="40" y="${height - 420}" width="${width - 80}" height="360" rx="24" fill="#0B3D91" opacity=".92"/><text x="70" y="${height - 270}" font-family="Inter, Arial, sans-serif" font-size="54" font-weight="900" fill="#FFFFFF">${escaparXml(entrada.title)}</text><text x="70" y="${height - 100}" font-family="Inter, Arial, sans-serif" font-size="24" fill="#FFC107">HORA NEWS LAGUNA</text></svg>`;
 }
 export function svgParaDataUrl(svg: string): string { return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`; }
+
+/**
+ * Blob URL mantém a origem do documento no SVG. Isso permite que imagens
+ * locais do template, como a logo PNG oficial, sejam carregadas pelo browser
+ * tanto no preview quanto no Canvas, ao contrário de referências locais dentro
+ * de data:image/svg+xml em alguns navegadores.
+ */
+export function svgParaBlobUrl(svg: string): string {
+  if (typeof URL === "undefined" || typeof Blob === "undefined") {
+    throw new Error("Blob URLs não estão disponíveis neste ambiente.");
+  }
+  return URL.createObjectURL(new Blob([svg], { type: "image/svg+xml" }));
+}
