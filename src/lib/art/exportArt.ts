@@ -5,7 +5,7 @@
  */
 
 import { DIMENSOES, type ArtFormat } from "./artTemplates";
-import { svgParaDataUrl } from "./renderArt";
+import { svgParaBlobUrl } from "./renderArt";
 
 export type ArtMimeType = "image/png" | "image/jpeg";
 
@@ -37,32 +37,37 @@ export async function exportarArte(
     throw new Error("A exportação da arte só está disponível no navegador.");
   }
   const { width, height } = DIMENSOES[format];
-  const img = await carregarImagem(svgParaDataUrl(svg));
+  const svgUrl = svgParaBlobUrl(svg);
+  try {
+    const img = await carregarImagem(svgUrl);
 
-  const canvas = document.createElement("canvas");
-  canvas.width = width;
-  canvas.height = height;
-  const ctx = canvas.getContext("2d");
-  if (!ctx) throw new Error("Canvas indisponível neste navegador.");
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) throw new Error("Canvas indisponível neste navegador.");
 
-  if (mimeType === "image/jpeg") {
-    ctx.fillStyle = "#FFFFFF";
-    ctx.fillRect(0, 0, width, height);
+    if (mimeType === "image/jpeg") {
+      ctx.fillStyle = "#FFFFFF";
+      ctx.fillRect(0, 0, width, height);
+    }
+    ctx.drawImage(img, 0, 0, width, height);
+
+    const blob = await new Promise<Blob | null>((resolve) =>
+      canvas.toBlob(resolve, mimeType, mimeType === "image/jpeg" ? 0.92 : undefined),
+    );
+    if (!blob) throw new Error("Não foi possível gerar o arquivo da arte.");
+
+    return {
+      blob,
+      mimeType,
+      width,
+      height,
+      extensao: mimeType === "image/jpeg" ? "jpg" : "png",
+    };
+  } finally {
+    URL.revokeObjectURL(svgUrl);
   }
-  ctx.drawImage(img, 0, 0, width, height);
-
-  const blob = await new Promise<Blob | null>((resolve) =>
-    canvas.toBlob(resolve, mimeType, mimeType === "image/jpeg" ? 0.92 : undefined),
-  );
-  if (!blob) throw new Error("Não foi possível gerar o arquivo da arte.");
-
-  return {
-    blob,
-    mimeType,
-    width,
-    height,
-    extensao: mimeType === "image/jpeg" ? "jpg" : "png",
-  };
 }
 
 /** Dispara o download local do arquivo gerado. */
