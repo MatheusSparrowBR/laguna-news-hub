@@ -37,4 +37,10 @@ export default tseslint.config(
     },
   },
   eslintPluginPrettier,
+  {
+    rules: {
+      // Formatting is advisory here; correctness/security rules must still fail CI.
+      "prettier/prettier": "warn",
+    },
+  },
 );
