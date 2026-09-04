@@ -4,7 +4,7 @@ import { ajustarTexto } from "./textFit";
 
 export interface OfficialInstagramArtInput { template: TemplateKey; title: string; summary?: string | null; imageUrl?: string | null; dateLabel?: string | null; location?: string | null; photoCredit?: string | null; sponsorName?: string | null; }
 
-export const OFFICIAL_INSTAGRAM_TEMPLATE = { key: "hora-news-laguna-official", format: "feed" as const, width: 1080, height: 1350, logoPath: "/branding/hora-news-laguna-logo.svg" } as const;
+export const OFFICIAL_INSTAGRAM_TEMPLATE = { key: "hora-news-laguna-official", format: "feed" as const, width: 1080, height: 1350, logoPath: "/branding/hora-news-laguna-logo.png" } as const;
 const FONT = "Inter, Arial, Helvetica, sans-serif";
 function esc(v: string): string { return v.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;").replace(/'/g, "&apos;"); }
 
@@ -35,6 +35,7 @@ export function renderOfficialInstagramSvg(input: OfficialInstagramArtInput): st
   const footerY = 1205;
   parts.push(`<line x1="${safe}" y1="${footerY - 32}" x2="${W - safe}" y2="${footerY - 32}" stroke="${MARCA.secondary}" stroke-width="2" stroke-opacity=".7"/>`);
   parts.push(`<text x="${safe}" y="${footerY + 12}" font-family="${FONT}" font-size="20" font-weight="700" fill="${MARCA.white}">●  ${location}</text><text x="350" y="${footerY + 12}" font-family="${FONT}" font-size="19" font-weight="600" fill="${MARCA.white}">│  Foto: ${credit}</text>`);
+  // Logo oficial PNG: asset fixo da marca. O SVG é exibido/exportado como Blob URL para permitir o carregamento do PNG local.
   parts.push(`<image href="${OFFICIAL_INSTAGRAM_TEMPLATE.logoPath}" x="825" y="1150" width="195" height="195" preserveAspectRatio="xMidYMid meet"/>`);
   parts.push(`<path d="M0 1288 C230 1250 380 1320 610 1282 C790 1250 920 1270 1080 1238 L1080 1350 L0 1350Z" fill="${MARCA.secondary}" opacity=".95"/><path d="M0 1315 C250 1280 430 1342 680 1305 C850 1280 950 1300 1080 1270" fill="none" stroke="${MARCA.accent}" stroke-width="7"/>`);
   parts.push(`</svg>`);
