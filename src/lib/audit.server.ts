@@ -72,7 +72,9 @@ export type TipoNotificacao =
   | "campaign_ending"
   | "sponsored_post_pending"
   | "publication_failed"
-  | "instagram_disconnected";
+  | "instagram_disconnected"
+  | "source_failing";
+
 
 export async function criarNotificacao(
   supabase: Cliente,
