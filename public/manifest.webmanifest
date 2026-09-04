@@ -1,0 +1,10 @@
+{
+  "name": "HORA NEWS LAGUNA",
+  "short_name": "HORA NEWS",
+  "description": "Painel editorial de notícias locais de Laguna - SC.",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#0f2b4a",
+  "icons": [{ "src": "/favicon.ico", "sizes": "48x48", "type": "image/x-icon" }]
+}

@@ -22,13 +22,13 @@ import type { NewsItem } from "@/lib/types";
 export const Route = createFileRoute("/_admin/news/")({
   head: () => ({
     meta: [
-      { title: "Notícias | Projeto Notícias Laguna" },
+      { title: "Notícias | HORA NEWS LAGUNA" },
       {
         name: "description",
         content:
           "Centro de controle editorial: filtre as notícias de Laguna, revise a análise da IA e aprove o conteúdo preparado.",
       },
-      { property: "og:title", content: "Notícias | Projeto Notícias Laguna" },
+      { property: "og:title", content: "Notícias | HORA NEWS LAGUNA" },
       {
         property: "og:description",
         content: "Gerencie as notícias encontradas e o conteúdo preparado pela IA.",

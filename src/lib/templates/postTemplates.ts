@@ -167,7 +167,7 @@ export function gerarTituloPost(entrada: EntradaTituloPost): string {
 
 /* ------------------------------------------------- FASE 11 — hashtags */
 
-const HASHTAGS_BASE = ["#Laguna", "#LagunaSC", "#SantaCatarina", "#NoticiasLaguna"] as const;
+const HASHTAGS_BASE = ["#HoraNewsLaguna", "#Laguna", "#LagunaSC", "#NoticiasLaguna"] as const;
 
 const HASHTAGS_CATEGORIA: Record<TemplateKey, readonly string[]> = {
   urgente: ["#Urgente", "#PlantaoLaguna"],

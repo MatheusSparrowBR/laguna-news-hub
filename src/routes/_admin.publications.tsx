@@ -17,7 +17,7 @@ import type { Publication, PublicationStatus } from "@/lib/types";
 export const Route = createFileRoute("/_admin/publications")({
   head: () => ({
     meta: [
-      { title: "Publicações | Projeto Notícias Laguna" },
+      { title: "Publicações | HORA NEWS LAGUNA" },
       {
         name: "description",
         content: "Gerencie as publicações do perfil de notícias de Laguna no Instagram.",

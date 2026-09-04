@@ -17,12 +17,12 @@ import type { PostRegistro } from "@/services/editorialData";
 export const Route = createFileRoute("/_admin/calendar")({
   head: () => ({
     meta: [
-      { title: "Calendário editorial | Notícias Laguna" },
+      { title: "Calendário editorial | HORA NEWS LAGUNA" },
       {
         name: "description",
         content: "Veja por dia, semana ou mês as publicações agendadas e publicadas.",
       },
-      { property: "og:title", content: "Calendário editorial | Notícias Laguna" },
+      { property: "og:title", content: "Calendário editorial | HORA NEWS LAGUNA" },
       {
         property: "og:description",
         content: "Agenda das publicações do perfil de notícias de Laguna.",

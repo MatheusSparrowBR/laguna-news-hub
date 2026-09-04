@@ -22,13 +22,13 @@ import type { PostRegistro } from "@/services/editorialData";
 export const Route = createFileRoute("/_admin/posts/")({
   head: () => ({
     meta: [
-      { title: "Publicações | Notícias Laguna" },
+      { title: "Publicações | HORA NEWS LAGUNA" },
       {
         name: "description",
         content:
           "Monte publicações de notícia ou patrocinadas com título, legenda, hashtags e arte prontos.",
       },
-      { property: "og:title", content: "Publicações | Notícias Laguna" },
+      { property: "og:title", content: "Publicações | HORA NEWS LAGUNA" },
       {
         property: "og:description",
         content: "Compositor de publicações do perfil de notícias de Laguna.",

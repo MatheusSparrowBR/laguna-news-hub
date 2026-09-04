@@ -20,13 +20,13 @@ import type { NoticiaEditorial } from "@/services/editorialData";
 export const Route = createFileRoute("/_admin/editorial/geografia")({
   head: () => ({
     meta: [
-      { title: "Revisão geográfica | Notícias Laguna" },
+      { title: "Revisão geográfica | HORA NEWS LAGUNA" },
       {
         name: "description",
         content:
           "Confira e corrija se cada notícia é de Laguna, com as evidências usadas pela análise automática.",
       },
-      { property: "og:title", content: "Revisão geográfica | Notícias Laguna" },
+      { property: "og:title", content: "Revisão geográfica | HORA NEWS LAGUNA" },
       {
         property: "og:description",
         content: "Decisão automática e correção manual do filtro de Laguna.",

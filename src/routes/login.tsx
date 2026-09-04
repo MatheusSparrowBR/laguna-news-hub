@@ -12,7 +12,7 @@ import { useAuth } from "@/hooks/useAuth";
 export const Route = createFileRoute("/login")({
   head: () => ({
     meta: [
-      { title: "Login | Projeto Notícias Laguna" },
+      { title: "Login | HORA NEWS LAGUNA" },
       {
         name: "description",
         content: "Acesse o painel administrativo do perfil de notícias de Laguna.",

@@ -13,7 +13,7 @@ import { formatarNumero } from "@/lib/format";
 export const Route = createFileRoute("/_admin/analytics")({
   head: () => ({
     meta: [
-      { title: "Analytics | Projeto Notícias Laguna" },
+      { title: "Analytics | HORA NEWS LAGUNA" },
       {
         name: "description",
         content: "Análise de desempenho do perfil e das publicações.",

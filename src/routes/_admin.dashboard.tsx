@@ -29,13 +29,13 @@ import { DebugAuthButton } from "@/components/debug/DebugAuthButton";
 export const Route = createFileRoute("/_admin/dashboard")({
   head: () => ({
     meta: [
-      { title: "Dashboard | Projeto Notícias Laguna" },
+      { title: "Dashboard | HORA NEWS LAGUNA" },
       {
         name: "description",
         content:
           "Visão geral das notícias encontradas, aprovações pendentes e desempenho do perfil de notícias de Laguna.",
       },
-      { property: "og:title", content: "Dashboard | Projeto Notícias Laguna" },
+      { property: "og:title", content: "Dashboard | HORA NEWS LAGUNA" },
       {
         property: "og:description",
         content: "Visão geral do painel de notícias locais de Laguna - SC.",

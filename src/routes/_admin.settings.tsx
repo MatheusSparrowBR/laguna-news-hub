@@ -25,7 +25,7 @@ import { useModoDados } from "@/services/dataMode";
 export const Route = createFileRoute("/_admin/settings")({
   head: () => ({
     meta: [
-      { title: "Configurações | Projeto Notícias Laguna" },
+      { title: "Configurações | HORA NEWS LAGUNA" },
       {
         name: "description",
         content: "Ajuste as configurações do sistema de notícias.",

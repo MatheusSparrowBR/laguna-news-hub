@@ -36,12 +36,12 @@ import { formatarDataHora } from "@/lib/format";
 export const Route = createFileRoute("/_admin/sponsors/deliverables")({
   head: () => ({
     meta: [
-      { title: "Entregas patrocinadas | Notícias Laguna" },
+      { title: "Entregas patrocinadas | HORA NEWS LAGUNA" },
       {
         name: "description",
         content: "Controle das publicações contratadas, agendadas e já entregues por campanha.",
       },
-      { property: "og:title", content: "Entregas patrocinadas | Notícias Laguna" },
+      { property: "og:title", content: "Entregas patrocinadas | HORA NEWS LAGUNA" },
       {
         property: "og:description",
         content: "Acompanhe as entregas de cada campanha de patrocínio.",

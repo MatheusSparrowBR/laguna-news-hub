@@ -79,13 +79,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Projeto Notícias Laguna | Painel administrativo" },
+      { title: "HORA NEWS LAGUNA | Painel administrativo" },
       {
         name: "description",
         content:
           "Painel administrativo para operar um perfil de notícias locais de Laguna - SC.",
       },
-      { property: "og:title", content: "Projeto Notícias Laguna" },
+      { property: "og:title", content: "HORA NEWS LAGUNA" },
       {
         property: "og:description",
         content: "Painel administrativo de notícias locais de Laguna - SC.",
@@ -105,6 +105,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap",
       },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "manifest", href: "/manifest.webmanifest" },
     ],
   }),
 
