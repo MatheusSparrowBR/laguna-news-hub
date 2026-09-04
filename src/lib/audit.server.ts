@@ -44,11 +44,13 @@ export function sanitizarDetalhes(
 }
 
 /**
- * Auditoria é escrita exclusivamente pelo backend com a conexão privilegiada.
- * O caller continua responsável por validar project_id com o usuário autenticado.
+ * Grava auditoria através de uma RPC SECURITY DEFINER que exige que o
+ * usuário autenticado seja dono do projeto e usa auth.uid() como actor_id.
+ * O fallback administrativo mantém compatibilidade com ambientes antigos
+ * ainda não migrados, mas erros não são mais engolidos silenciosamente.
  */
 export async function registrarAuditoria(
-  _supabase: Cliente,
+  supabase: Cliente,
   entrada: {
     projectId: string;
     actorId: string | null;
@@ -58,6 +60,23 @@ export async function registrarAuditoria(
     details?: Record<string, unknown>;
   },
 ): Promise<void> {
+  const detalhes = sanitizarDetalhes(entrada.details);
+
+  const rpc = await supabase.rpc("registrar_auditoria", {
+    p_project_id: entrada.projectId,
+    p_action: entrada.action,
+    p_entity_type: entrada.entityType,
+    p_entity_id: entrada.entityId ?? null,
+    p_details: detalhes,
+  } as never);
+
+  if (!rpc.error) return;
+
+  const funcaoNaoExiste = /function .*registrar_auditoria.*does not exist|PGRST202/i.test(rpc.error.message);
+  if (!funcaoNaoExiste) {
+    throw new Error(`Falha ao registrar auditoria: ${rpc.error.message}`);
+  }
+
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { error } = await supabaseAdmin.from("audit_logs").insert({
     project_id: entrada.projectId,
@@ -65,9 +84,9 @@ export async function registrarAuditoria(
     action: entrada.action,
     entity_type: entrada.entityType,
     entity_id: entrada.entityId ?? null,
-    details: sanitizarDetalhes(entrada.details) as never,
+    details: detalhes as never,
   });
-  if (error) console.error("[audit] falha ao registrar", error.message);
+  if (error) throw new Error(`Falha ao registrar auditoria: ${error.message}`);
 }
 
 export type TipoNotificacao =
@@ -103,5 +122,5 @@ export async function criarNotificacao(
     post_id: entrada.postId ?? null,
     campaign_id: entrada.campaignId ?? null,
   });
-  if (error) console.error("[notification] falha ao criar", error.message);
+  if (error) throw new Error(`Falha ao criar notificação: ${error.message}`);
 }
