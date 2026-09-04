@@ -27,6 +27,8 @@ import {
 
 /** Hooks das áreas editorial, publicações e monetização. */
 
+type Opcional<T> = { [K in keyof T]?: T[K] | undefined };
+
 export function useFilaEditorial(projectId?: string) {
   return useQuery({
     queryKey: ["fila-editorial", projectId],
@@ -114,7 +116,7 @@ export function useDecisaoEditorial(projectId?: string) {
     mutationFn: (entrada: {
       news_id: string;
       decision: "approved" | "rejected" | "review_required" | "archived";
-      note?: string;
+      note?: string | undefined;
     }) => salvarDecisaoEditorial({ data: { project_id: projectId!, ...entrada } }),
     onSuccess: () => {
       invalidar();
@@ -143,7 +145,7 @@ export function useOverrideGeografico(projectId?: string) {
 export function useSalvarPost(projectId?: string) {
   const invalidar = useInvalidar(["posts-projeto", "metricas-internas"], projectId);
   return useMutation({
-    mutationFn: (entrada: EntradaPost & { id?: string }) => salvarPost(entrada),
+    mutationFn: (entrada: EntradaPost & { id?: string | undefined }) => salvarPost(entrada),
     onSuccess: () => {
       invalidar();
       toast.success("Publicação salva.");
@@ -155,7 +157,7 @@ export function useSalvarPost(projectId?: string) {
 export function useAlterarStatusPost(projectId?: string) {
   const invalidar = useInvalidar(["posts-projeto", "metricas-internas"], projectId);
   return useMutation({
-    mutationFn: (entrada: { id: string; status: string; scheduled_at?: string | null }) =>
+    mutationFn: (entrada: { id: string; status: string; scheduled_at?: string | null | undefined }) =>
       alterarStatusPost(entrada.id, entrada.status, entrada.scheduled_at),
     onSuccess: () => {
       invalidar();
@@ -168,7 +170,7 @@ export function useAlterarStatusPost(projectId?: string) {
 export function useSalvarPatrocinador(projectId?: string) {
   const invalidar = useInvalidar(["patrocinadores"], projectId);
   return useMutation({
-    mutationFn: (entrada: Partial<Sponsor> & { name: string }) =>
+    mutationFn: (entrada: Opcional<Sponsor> & { name: string }) =>
       salvarPatrocinador({ ...entrada, project_id: projectId! }),
     onSuccess: () => {
       invalidar();
@@ -181,7 +183,7 @@ export function useSalvarPatrocinador(projectId?: string) {
 export function useSalvarCampanha(projectId?: string) {
   const invalidar = useInvalidar(["campanhas", "metricas-internas"], projectId);
   return useMutation({
-    mutationFn: (entrada: Partial<Campanha> & { sponsor_id: string; name: string }) =>
+    mutationFn: (entrada: Opcional<Campanha> & { sponsor_id: string; name: string }) =>
       salvarCampanha({ ...entrada, project_id: projectId! }),
     onSuccess: () => {
       invalidar();
@@ -195,12 +197,12 @@ export function useSalvarEntrega(projectId?: string) {
   const invalidar = useInvalidar(["entregas", "metricas-internas"], projectId);
   return useMutation({
     mutationFn: (entrada: {
-      id?: string;
+      id?: string | undefined;
       campaign_id: string;
-      post_id?: string | null;
-      scheduled_at?: string | null;
+      post_id?: string | null | undefined;
+      scheduled_at?: string | null | undefined;
       status: string;
-      notes?: string | null;
+      notes?: string | null | undefined;
     }) => salvarEntrega(entrada),
     onSuccess: () => {
       invalidar();
