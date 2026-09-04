@@ -25,21 +25,30 @@ export function Sidebar({ onNavegar }: { onNavegar?: () => void }) {
         <p className="mt-1 text-xs text-sidebar-foreground/70">{CIDADE_COMPLETA}</p>
       </div>
 
-      <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
-        {navItems.map((item) => (
-          <Link
-            key={item.to}
-            to={item.to}
-            onClick={onNavegar}
-            className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-sidebar-foreground/85 transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-            activeProps={{
-              className:
-                "bg-sidebar-accent text-sidebar-accent-foreground shadow-[inset_2px_0_0_0_var(--sidebar-primary)]",
-            }}
-          >
-            <item.icone className="size-4.5 shrink-0" />
-            {item.label}
-          </Link>
+      <nav className="flex-1 overflow-y-auto px-3 py-4">
+        {navGroups.map((grupo, indice) => (
+          <div key={grupo.titulo ?? `grupo-${indice}`} className="mb-3 space-y-1 last:mb-0">
+            {grupo.titulo ? (
+              <p className="px-3 pb-1 text-[0.68rem] font-semibold uppercase tracking-wider text-sidebar-foreground/50">
+                {grupo.titulo}
+              </p>
+            ) : null}
+            {grupo.itens.map((item) => (
+              <Link
+                key={item.to}
+                to={item.to}
+                onClick={onNavegar}
+                className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-sidebar-foreground/85 transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                activeProps={{
+                  className:
+                    "bg-sidebar-accent text-sidebar-accent-foreground shadow-[inset_2px_0_0_0_var(--sidebar-primary)]",
+                }}
+              >
+                <item.icone className="size-4.5 shrink-0" />
+                {item.label}
+              </Link>
+            ))}
+          </div>
         ))}
       </nav>
 
