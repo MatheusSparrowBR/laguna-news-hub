@@ -134,14 +134,17 @@ export const salvarDecisaoEditorial = createServerFn({ method: "POST" })
       throw new Error("Notícia não encontrada neste projeto.");
     }
 
-    // Idempotente: repetir a mesma decisão não gera efeito adicional.
-    if (noticia.status !== data.decision) {
-      const { error } = await supabase
-        .from("news")
-        .update({ status: data.decision })
-        .eq("id", data.news_id);
-      if (error) throw new Error("Não foi possível salvar a decisão editorial.");
-    }
+    // Idempotente: repetir a mesma decisão não grava e não audita.
+    const { houveMudancaStatus } = await import("@/lib/rules/editorialAudit");
+    const mudou = houveMudancaStatus(noticia.status, data.decision);
+
+    if (!mudou) return { ok: true, mudou: false, status: data.decision };
+
+    const { error } = await supabase
+      .from("news")
+      .update({ status: data.decision })
+      .eq("id", data.news_id);
+    if (error) throw new Error("Não foi possível salvar a decisão editorial.");
 
     const acao =
       data.decision === "approved"
@@ -160,7 +163,8 @@ export const salvarDecisaoEditorial = createServerFn({ method: "POST" })
       details: { de: noticia.status, para: data.decision, nota: data.note ?? null },
     });
 
-    return { ok: true, status: data.decision };
+    return { ok: true, mudou: true, status: data.decision };
+
   });
 
 export const obterEstadoInstagram = createServerFn({ method: "POST" })
