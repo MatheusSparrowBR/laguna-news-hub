@@ -72,7 +72,7 @@ function FilaPublicacaoPage() {
       }
       acoes={
         <Button asChild size="sm" variant="outline">
-          <Link to="/settings/integrations/instagram">Integração do Instagram</Link>
+          <Link to="/instagram">Integração do Instagram</Link>
         </Button>
       }
     >
