@@ -1,0 +1,1 @@
+Official feed art: fixed HORA NEWS LAGUNA composition, 1080x1350, dynamic photo/category/date/title/summary/credit, fixed logo signature.
