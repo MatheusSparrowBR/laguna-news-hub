@@ -1,0 +1,5 @@
+- Fixed feed size: 1080x1350
+- Fixed HORA NEWS LAGUNA branding
+- Dynamic photo and editorial fields
+- Fixed lower-right logo signature
+- Same SVG used by preview and PNG export

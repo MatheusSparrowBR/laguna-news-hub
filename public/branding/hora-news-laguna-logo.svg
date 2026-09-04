@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800">
+<defs>
+ <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#062454"/><stop offset="1" stop-color="#0B3D91"/></linearGradient>
+ <linearGradient id="sea" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#0B3D91"/><stop offset=".5" stop-color="#1E6BB8"/><stop offset="1" stop-color="#0B3D91"/></linearGradient>
+</defs>
+<circle cx="400" cy="400" r="382" fill="#071d3c" stroke="#1E9BFF" stroke-width="18"/>
+<circle cx="400" cy="400" r="360" fill="url(#bg)" stroke="#fff" stroke-width="8"/>
+<circle cx="500" cy="275" r="92" fill="#FFC107"/>
+<path d="M505 188 L710 150 L710 220 Z" fill="#fff" opacity=".72"/>
+<path d="M65 385 Q190 315 310 340 Q430 360 545 330 Q640 305 735 335 L735 430 L65 430Z" fill="#071d3c"/>
+<g fill="#fff" stroke="#071d3c" stroke-width="5">
+ <path d="M345 405 L382 155 L418 155 L455 405 Z"/>
+ <ellipse cx="400" cy="150" rx="48" ry="15"/>
+ <path d="M357 145 Q400 108 443 145 L438 105 Q400 76 362 105Z"/>
+ <rect x="370" y="174" width="60" height="22" rx="6"/>
+ <rect x="366" y="230" width="68" height="20" rx="6"/>
+ <rect x="360" y="292" width="80" height="20" rx="6"/>
+</g>
+<path d="M95 430 Q250 360 400 425 Q555 485 705 410 Q610 500 400 510 Q205 500 95 430Z" fill="#fff"/>
+<path d="M85 470 Q230 420 400 470 Q560 515 720 455 Q580 550 400 535 Q220 530 85 470Z" fill="url(#sea)"/>
+<g fill="#fff" font-family="Arial, Helvetica, sans-serif" font-weight="900" text-anchor="middle">
+ <text x="270" y="595" font-size="88" letter-spacing="-3">HORA</text>
+ <text x="535" y="595" font-size="88" letter-spacing="-3" fill="#FFC107">NEWS</text>
+ <text x="400" y="660" font-size="48" letter-spacing="15">LAGUNA</text>
+</g>
+<path d="M165 685 H300 M500 685 H635" stroke="#19A8FF" stroke-width="8"/>
+<text x="400" y="715" fill="#fff" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="700" text-anchor="middle" letter-spacing="4">INFORMAÇÃO QUE</text>
+<text x="400" y="742" fill="#fff" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="700" text-anchor="middle" letter-spacing="4">CONECTA NOSSA CIDADE</text>
+</svg>

@@ -1,13 +1,10 @@
 import { renderizarArteSvg, svgParaDataUrl, type EntradaArte } from "@/lib/art/renderArt";
 import { DIMENSOES, ROTULO_FORMATO, type ArtFormat } from "@/lib/art/artTemplates";
 
-/**
- * Preview real da arte: renderiza o mesmo SVG que será exportado.
- * Não usa imagem falsa nem mock.
- */
+/** Preview da mesma arte oficial usada no PNG final do feed do Instagram. */
 export function ArtPreview({
   entrada,
-  formatos = ["feed", "square", "story"],
+  formatos = ["feed"],
 }: {
   entrada: Omit<EntradaArte, "format">;
   formatos?: readonly ArtFormat[];
@@ -17,7 +14,7 @@ export function ArtPreview({
       {formatos.map((formato) => {
         const svg = renderizarArteSvg({ ...entrada, format: formato });
         const { width, height } = DIMENSOES[formato];
-        const largura = formato === "story" ? 150 : 200;
+        const largura = formato === "story" ? 150 : 360;
         return (
           <figure key={formato} className="space-y-2">
             <img
@@ -25,7 +22,7 @@ export function ArtPreview({
               alt={`Arte ${ROTULO_FORMATO[formato]}: ${entrada.title}`}
               width={largura}
               height={Math.round((largura * height) / width)}
-              className="rounded-lg border border-border shadow-sm"
+              className="w-full max-w-[360px] rounded-lg border border-border shadow-sm"
             />
             <figcaption className="text-xs text-muted-foreground">
               {ROTULO_FORMATO[formato]} · {width}×{height}

@@ -1,0 +1,1 @@
+The official Instagram feed template is fixed at 1080x1350 with the HORA NEWS LAGUNA branding, dynamic news photo/text fields, and a fixed lower-right logo signature.
