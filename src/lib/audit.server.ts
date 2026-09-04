@@ -122,5 +122,5 @@ export async function criarNotificacao(
     post_id: entrada.postId ?? null,
     campaign_id: entrada.campaignId ?? null,
   });
-  if (error) throw new Error(`Falha ao criar notificação: ${error.message}`);
+  if (error) console.error("[notification] falha ao criar", error.message);
 }
