@@ -1,8 +1,11 @@
 /**
  * Templates de arte — definição declarativa, sem IA e sem serviço externo.
  *
- * Cores em HEX porque a arte é exportada como imagem (SVG/Canvas) e não
- * participa do tema da interface. Puro: sem DOM, sem rede.
+ * PALETA OFICIAL HORA NEWS LAGUNA (única fonte de cor das artes):
+ *   #0B3D91 azul principal · #1E6BB8 azul secundário · #FFC107 amarelo
+ *   #F4F7FB fundo · #1F2937 texto · #FFFFFF branco (apenas contraste)
+ *
+ * Puro: sem DOM, sem rede, sem secrets.
  */
 
 import type { TemplateKey } from "@/lib/templates/postTemplates";
@@ -26,67 +29,74 @@ export const ROTULO_FORMATO: Record<ArtFormat, string> = {
   story: "Story 1080×1920",
 };
 
+/* --------------------------------------------------------- paleta oficial */
+
+export const MARCA = {
+  primary: "#0B3D91",
+  secondary: "#1E6BB8",
+  accent: "#FFC107",
+  background: "#F4F7FB",
+  text: "#1F2937",
+  white: "#FFFFFF",
+} as const;
+
 export interface ArtTheme {
-  /** Rótulo da faixa de categoria. */
+  /** Rótulo do selo de categoria. */
   label: string;
-  /** Cor de fundo principal. */
-  bg: string;
-  /** Cor do bloco de texto. */
-  panel: string;
-  /** Cor de destaque (faixa da categoria). */
-  accent: string;
-  /** Cor do texto sobre o destaque. */
-  accentText: string;
-  /** Cor do título. */
-  title: string;
-  /** Cor dos textos auxiliares. */
-  muted: string;
-  /** Selo de urgência visível. */
+  /** Cor do selo de categoria. */
+  badge: string;
+  /** Cor do texto do selo. */
+  badgeText: string;
+  /** Selo de urgência visível ("AGORA"). */
   urgent: boolean;
+  /** Composição de foto máxima, com pouquíssimo texto. */
+  minimal: boolean;
 }
 
-const AZUL = "#0B2545";
-const AZUL_CLARO = "#123A6B";
-const BRANCO = "#FFFFFF";
-const CINZA = "#D6DEE9";
-
-function tema(parcial: Partial<ArtTheme> & { label: string; accent: string }): ArtTheme {
+function tema(parcial: Partial<ArtTheme> & { label: string }): ArtTheme {
   return {
-    bg: AZUL,
-    panel: BRANCO,
-    accentText: BRANCO,
-    title: AZUL,
-    muted: "#5A6B82",
+    badge: MARCA.primary,
+    badgeText: MARCA.white,
     urgent: false,
+    minimal: false,
     ...parcial,
-  } as ArtTheme;
+  };
 }
 
 export const ART_TEMPLATES: Record<TemplateKey, ArtTheme> = {
-  urgente: tema({ label: "URGENTE", accent: "#C62828", bg: "#7F1D1D", urgent: true }),
-  seguranca: tema({ label: "SEGURANÇA", accent: "#1F3A93" }),
-  transito: tema({ label: "TRÂNSITO", accent: "#E07B00", accentText: "#1B1B1B" }),
-  clima: tema({ label: "CLIMA", accent: "#0277BD" }),
-  prefeitura: tema({ label: "PREFEITURA", accent: AZUL_CLARO }),
-  cidade: tema({ label: "CIDADE", accent: "#15616D" }),
-  eventos: tema({ label: "EVENTOS", accent: "#7B1FA2" }),
-  turismo: tema({ label: "TURISMO", accent: "#00897B" }),
-  esportes: tema({ label: "ESPORTES", accent: "#2E7D32" }),
-  saude: tema({ label: "SAÚDE", accent: "#00838F" }),
-  educacao: tema({ label: "EDUCAÇÃO", accent: "#3949AB" }),
-  economia: tema({ label: "ECONOMIA", accent: "#4E342E" }),
-  patrocinado: tema({
-    label: "PUBLICIDADE",
-    accent: "#37474F",
-    bg: "#263238",
-    muted: "#546E7A",
+  urgente: tema({
+    label: "ALERTA",
+    badge: MARCA.accent,
+    badgeText: MARCA.text,
+    urgent: true,
   }),
+  seguranca: tema({ label: "SEGURANÇA" }),
+  transito: tema({ label: "TRÂNSITO" }),
+  clima: tema({ label: "CLIMA", badge: MARCA.secondary }),
+  prefeitura: tema({ label: "SERVIÇO" }),
+  cidade: tema({ label: "CIDADE" }),
+  eventos: tema({ label: "EVENTOS", badge: MARCA.secondary }),
+  turismo: tema({ label: "TURISMO", badge: MARCA.secondary }),
+  esportes: tema({ label: "ESPORTES", badge: MARCA.secondary }),
+  saude: tema({ label: "SAÚDE" }),
+  educacao: tema({ label: "EDUCAÇÃO" }),
+  economia: tema({ label: "ECONOMIA" }),
+  comunidade: tema({ label: "COMUNIDADE", badge: MARCA.secondary }),
+  foto_especial: tema({ label: "FOTO ESPECIAL", badge: MARCA.primary, minimal: true }),
+  patrocinado: tema({ label: "PUBLICIDADE", badge: MARCA.accent, badgeText: MARCA.text }),
 };
 
 /** Área segura (px) das artes; nada de texto encosta na borda. */
-export const SAFE_AREA = 64;
+export const SAFE_AREA = 60;
 
-export const CORES_APOIO = { cinza: CINZA, branco: BRANCO, azul: AZUL } as const;
+export const CORES_APOIO = {
+  branco: MARCA.white,
+  azul: MARCA.primary,
+  azulClaro: MARCA.secondary,
+  amarelo: MARCA.accent,
+  texto: MARCA.text,
+  fundo: MARCA.background,
+} as const;
 
 export function temaDoTemplate(key: TemplateKey): ArtTheme {
   return ART_TEMPLATES[key];
