@@ -13,12 +13,17 @@ export interface OfficialInstagramArtInput {
   sponsorName?: string | null;
 }
 
-/** Asset oficial enviado pelo HORA NEWS LAGUNA. Mantido fixo no layout. */
+/** Asset oficial do HORA NEWS LAGUNA. A logo não é redesenhada pelo Art Engine. */
 export const OFFICIAL_LOGO_PATH = "/branding/hora-news-laguna-logo.png";
 const FONT = "Inter, Arial, Helvetica, sans-serif";
 
 function esc(value: string): string {
-  return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;").replace(/'/g, "&apos;");
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/\"/g, "&quot;")
+    .replace(/'/g, "&apos;");
 }
 
 function wavePath(width: number, height: number, y: number, amplitude: number, phase: number): string {
@@ -33,10 +38,7 @@ function wavePath(width: number, height: number, y: number, amplitude: number, p
   return points.join(" ");
 }
 
-/**
- * Template oficial do Instagram HORA NEWS LAGUNA.
- * A geometria é fixa; somente conteúdo jornalístico e metadados variam.
- */
+/** Template oficial para o Feed 4:5. Geometria e branding são fixos. */
 export function renderOfficialInstagramSvg(
   input: OfficialInstagramArtInput,
   format: ArtFormat = "feed",
@@ -110,7 +112,6 @@ export function renderOfficialInstagramSvg(
     );
   }
 
-  // Cabeçalho fixo: categoria e data são os únicos dados variáveis.
   const pillY = 32 * scale;
   const pillH = 54 * scale;
   const pillX = safe * 0.65;
@@ -134,7 +135,6 @@ export function renderOfficialInstagramSvg(
     `<text x="${dateX + 22 * scale}" y="${pillY + 36 * scale}" font-family="${FONT}" font-size="${22 * scale}" font-weight="900" fill="${MARCA.text}">${metaDate}</text>`,
   );
 
-  // Painel editorial fixo com acabamento ondulado semelhante à referência.
   parts.push(
     `<path d="M0 ${photoBottom} C ${width * 0.24} ${photoBottom - 22 * scale}, ${width * 0.48} ${photoBottom + 18 * scale}, ${width * 0.72} ${photoBottom - 10 * scale} C ${width * 0.86} ${photoBottom - 26 * scale}, ${width * 0.94} ${photoBottom - 4 * scale}, ${width} ${photoBottom - 12 * scale} L${width} ${height} L0 ${height}Z" fill="${MARCA.primary}"/>`,
   );
@@ -167,7 +167,6 @@ export function renderOfficialInstagramSvg(
     }
   }
 
-  // Rodapé editorial + logo oficial fixa.
   const footerY = height - 164 * scale;
   parts.push(
     `<line x1="${safe}" y1="${footerY - 28 * scale}" x2="${width - safe}" y2="${footerY - 28 * scale}" stroke="${MARCA.secondary}" stroke-opacity="0.55"/>`,
@@ -186,7 +185,6 @@ export function renderOfficialInstagramSvg(
     `<image href="${OFFICIAL_LOGO_PATH}" x="${logoX}" y="${logoY}" width="${logoSize}" height="${logoSize}" preserveAspectRatio="xMidYMid meet"/>`,
   );
 
-  // Faixas decorativas inferiores, parte fixa da identidade.
   parts.push(
     `<path d="${wavePath(width, height, height - 64 * scale, 18 * scale, 0)}" fill="${MARCA.secondary}" opacity="0.92"/>`,
   );
