@@ -1,43 +1,176 @@
 {
   "communities": {
     "0": [
+      "src_components_common_confirmationdialog_confirmationdialog",
+      "src_components_layout_navigation",
+      "src_components_layout_navigation_navitems",
+      "src_components_layout_sidebar",
+      "src_components_layout_sidebar_sidebar",
+      "src_components_posts_artpreview",
+      "src_components_posts_artpreview_artpreview",
+      "src_components_posts_postcomposerdialog",
+      "src_components_posts_postcomposerdialog_postcomposerdialog",
+      "src_components_posts_postcomposerdialog_tipopost",
+      "src_components_posts_postinstagrampreview",
+      "src_components_posts_postinstagrampreview_postinstagrampreview",
+      "src_config_app",
+      "src_config_app_app_name",
+      "src_config_app_cidade",
+      "src_config_app_cidade_completa",
+      "src_config_app_estado",
+      "src_config_app_nome_do_perfil",
+      "src_hooks_useauth_useauth",
+      "src_lib_art_art_test",
+      "src_lib_art_arttemplates",
+      "src_lib_art_arttemplates_art_templates",
+      "src_lib_art_arttemplates_artformat",
+      "src_lib_art_arttemplates_arttheme",
+      "src_lib_art_arttemplates_cores_apoio",
+      "src_lib_art_arttemplates_dimensao",
+      "src_lib_art_arttemplates_dimensoes",
+      "src_lib_art_arttemplates_rotulo_formato",
+      "src_lib_art_arttemplates_safe_area",
+      "src_lib_art_arttemplates_tema",
+      "src_lib_art_arttemplates_temadotemplate",
+      "src_lib_art_exportart",
+      "src_lib_art_exportart_arquivoarte",
+      "src_lib_art_exportart_artmimetype",
+      "src_lib_art_exportart_baixararquivo",
+      "src_lib_art_exportart_carregarimagem",
+      "src_lib_art_exportart_exportararte",
+      "src_lib_art_renderart",
+      "src_lib_art_renderart_entradaarte",
+      "src_lib_art_renderart_escaparxml",
+      "src_lib_art_renderart_layout",
+      "src_lib_art_renderart_layoutdoformato",
+      "src_lib_art_renderart_renderizarartesvg",
+      "src_lib_art_renderart_svgparadataurl",
+      "src_lib_art_textfit",
+      "src_lib_art_textfit_ajustartexto",
+      "src_lib_art_textfit_calcularcover",
+      "src_lib_art_textfit_larguraestimada",
+      "src_lib_art_textfit_opcoesajuste",
+      "src_lib_art_textfit_quebrarlinhas",
+      "src_lib_art_textfit_retangulo",
+      "src_lib_art_textfit_textoajustado",
+      "src_lib_templates_posttemplates",
+      "src_lib_templates_posttemplates_cortarempalavra",
+      "src_lib_templates_posttemplates_entradalegendapost",
+      "src_lib_templates_posttemplates_entradatitulopost",
+      "src_lib_templates_posttemplates_gerarhashtags",
+      "src_lib_templates_posttemplates_gerarlegendapost",
+      "src_lib_templates_posttemplates_gerartitulopost",
+      "src_lib_templates_posttemplates_hashtags_base",
+      "src_lib_templates_posttemplates_hashtags_categoria",
+      "src_lib_templates_posttemplates_hashtags_max",
+      "src_lib_templates_posttemplates_hashtagscomotexto",
+      "src_lib_templates_posttemplates_legendapost",
+      "src_lib_templates_posttemplates_limpartexto",
+      "src_lib_templates_posttemplates_prefixos",
+      "src_lib_templates_posttemplates_prefixotemplate",
+      "src_lib_templates_posttemplates_primeirasfrases",
+      "src_lib_templates_posttemplates_rotulos",
+      "src_lib_templates_posttemplates_rotulotemplate",
+      "src_lib_templates_posttemplates_template_keys",
+      "src_lib_templates_posttemplates_templatekey",
+      "src_lib_templates_posttemplates_templateparanoticia",
+      "src_lib_templates_posttemplates_test",
+      "src_lib_templates_posttemplates_titulo_post_max",
+      "src_routes_login_loginpage"
+    ],
+    "1": [
+      "src_components_posts_postcomposerdialog_props",
+      "src_lib_audit_server",
+      "src_lib_audit_server_acaoauditavel",
+      "src_lib_audit_server_cliente",
+      "src_lib_audit_server_criarnotificacao",
+      "src_lib_audit_server_registrarauditoria",
+      "src_lib_audit_server_sanitizardetalhes",
+      "src_lib_audit_server_tiponotificacao",
+      "src_lib_editorial_functions",
+      "src_lib_editorial_functions_decisaogeografica",
+      "src_lib_editorial_functions_desconectarinstagram",
+      "src_lib_editorial_functions_obterestadoinstagram",
+      "src_lib_editorial_functions_salvardecisaoeditorial",
+      "src_lib_editorial_functions_salvaroverridegeografico",
+      "src_services_editorialdata",
+      "src_services_editorialdata_alterarstatuspost",
+      "src_services_editorialdata_aviso",
+      "src_services_editorialdata_campanha",
+      "src_services_editorialdata_entradapost",
+      "src_services_editorialdata_entrega",
+      "src_services_editorialdata_georegistro",
+      "src_services_editorialdata_logpublicacao",
+      "src_services_editorialdata_marcaravisolido",
+      "src_services_editorialdata_metricasinternas",
+      "src_services_editorialdata_nomerelacao",
+      "src_services_editorialdata_noticiaeditorial",
+      "src_services_editorialdata_obteravisos",
+      "src_services_editorialdata_obtercampanhas",
+      "src_services_editorialdata_obterentregas",
+      "src_services_editorialdata_obterfilaeditorial",
+      "src_services_editorialdata_obterlogspublicacao",
+      "src_services_editorialdata_obtermetricasinternas",
+      "src_services_editorialdata_obterpatrocinadores",
+      "src_services_editorialdata_obterposts",
+      "src_services_editorialdata_postregistro",
+      "src_services_editorialdata_relacao",
+      "src_services_editorialdata_salvarcampanha",
+      "src_services_editorialdata_salvarentrega",
+      "src_services_editorialdata_salvarpatrocinador",
+      "src_services_editorialdata_salvarpost",
+      "src_services_editorialdata_sponsor",
+      "src_services_editorialqueries",
+      "src_services_editorialqueries_opcional",
+      "src_services_editorialqueries_usealterarstatuspost",
+      "src_services_editorialqueries_useavisos",
+      "src_services_editorialqueries_usedecisaoeditorial",
+      "src_services_editorialqueries_useestadoinstagram",
+      "src_services_editorialqueries_useinvalidar",
+      "src_services_editorialqueries_uselogspublicacao",
+      "src_services_editorialqueries_usemarcaravisolido",
+      "src_services_editorialqueries_usemetricasinternas",
+      "src_services_editorialqueries_useoverridegeografico",
+      "src_services_editorialqueries_usesalvarcampanha",
+      "src_services_editorialqueries_usesalvarentrega",
+      "src_services_editorialqueries_usesalvarpatrocinador",
+      "src_services_editorialqueries_usesalvarpost"
+    ],
+    "2": [
       "server",
+      "src_components_sources_collectresultpanel",
+      "src_components_sources_collectresultpanel_aviso",
+      "src_components_sources_collectresultpanel_collectresultpanel",
+      "src_components_sources_collectresultpanel_collectresultpanelprops",
+      "src_components_sources_collectresultpanel_detailrow",
+      "src_components_sources_collectresultpanel_formatdatetime",
+      "src_components_sources_collectresultpanel_geraravisos",
+      "src_components_sources_collectresultpanel_infoitem",
+      "src_components_sources_collectresultpanel_metricbox",
+      "src_components_ui_accordion",
+      "src_components_ui_accordion_accordioncontent",
+      "src_components_ui_accordion_accordionitem",
+      "src_components_ui_accordion_accordiontrigger",
+      "src_components_ui_alert",
+      "src_components_ui_alert_alert",
+      "src_components_ui_alert_alertdescription",
+      "src_components_ui_alert_alerttitle",
+      "src_components_ui_alert_alertvariants",
+      "src_hooks_useauth",
+      "src_hooks_useauth_authstate",
       "src_integrations_supabase_analyze_auth_middleware",
       "src_integrations_supabase_analyze_auth_middleware_analyzeauthmiddleware",
       "src_integrations_supabase_analyze_auth_middleware_createsupabasefetch",
       "src_integrations_supabase_analyze_auth_middleware_isnewsupabaseapikey",
       "src_integrations_supabase_auth_attacher",
       "src_integrations_supabase_auth_attacher_attachsupabaseauth",
-      "src_integrations_supabase_auth_middleware",
-      "src_integrations_supabase_auth_middleware_createsupabasefetch",
-      "src_integrations_supabase_auth_middleware_isnewsupabaseapikey",
-      "src_integrations_supabase_auth_middleware_requiresupabaseauth",
       "src_integrations_supabase_client",
       "src_integrations_supabase_client_createsupabaseclient",
       "src_integrations_supabase_client_createsupabasefetch",
       "src_integrations_supabase_client_isnewsupabaseapikey",
-      "src_integrations_supabase_client_server",
-      "src_integrations_supabase_client_server_createsupabaseadminclient",
-      "src_integrations_supabase_client_server_createsupabasefetch",
-      "src_integrations_supabase_client_server_isnewsupabaseapikey",
-      "src_integrations_supabase_client_server_supabaseadmin",
       "src_integrations_supabase_client_supabase",
       "src_integrations_supabase_previewauthstorage",
       "src_integrations_supabase_previewauthstorage_brokeredpreviewstorage",
-      "src_integrations_supabase_types",
-      "src_integrations_supabase_types_compositetypes",
-      "src_integrations_supabase_types_constants",
-      "src_integrations_supabase_types_database",
-      "src_integrations_supabase_types_databasewithoutinternals",
-      "src_integrations_supabase_types_defaultschema",
-      "src_integrations_supabase_types_enums",
-      "src_integrations_supabase_types_json",
-      "src_integrations_supabase_types_tables",
-      "src_integrations_supabase_types_tablesinsert",
-      "src_integrations_supabase_types_tablesupdate",
-      "src_lib_adminclient_server",
-      "src_lib_adminclient_server_criarclienteadmin",
-      "src_lib_adminclient_server_ehchavenova",
       "src_lib_analyzenews_functions",
       "src_lib_analyzenews_functions_analyzenewsserver",
       "src_lib_collectnews_functions",
@@ -55,24 +188,16 @@
       "src_services_analyzenews_analisarnoticiacomia",
       "src_services_analyzenews_analyzenewsresult",
       "src_services_collectnews",
+      "src_services_collectnews_collectnewsresult",
       "src_services_collectnews_collectnewssourcelog",
-      "src_services_collectnews_executarcoletadenoticias",
       "src_start",
       "supabase_js"
     ],
-    "1": [
+    "3": [
       "src_components_ui_avatar",
       "src_components_ui_avatar_avatar",
       "src_components_ui_avatar_avatarfallback",
       "src_components_ui_avatar_avatarimage",
-      "src_components_ui_breadcrumb",
-      "src_components_ui_breadcrumb_breadcrumb",
-      "src_components_ui_breadcrumb_breadcrumbellipsis",
-      "src_components_ui_breadcrumb_breadcrumbitem",
-      "src_components_ui_breadcrumb_breadcrumblink",
-      "src_components_ui_breadcrumb_breadcrumblist",
-      "src_components_ui_breadcrumb_breadcrumbpage",
-      "src_components_ui_breadcrumb_breadcrumbseparator",
       "src_components_ui_card_carddescription",
       "src_components_ui_card_cardfooter",
       "src_components_ui_context_menu",
@@ -93,7 +218,22 @@
       "src_components_ui_drawer_drawerheader",
       "src_components_ui_drawer_draweroverlay",
       "src_components_ui_drawer_drawertitle",
-      "src_components_ui_select",
+      "src_components_ui_dropdown_menu",
+      "src_components_ui_dropdown_menu_dropdownmenucheckboxitem",
+      "src_components_ui_dropdown_menu_dropdownmenucontent",
+      "src_components_ui_dropdown_menu_dropdownmenuitem",
+      "src_components_ui_dropdown_menu_dropdownmenulabel",
+      "src_components_ui_dropdown_menu_dropdownmenuradioitem",
+      "src_components_ui_dropdown_menu_dropdownmenuseparator",
+      "src_components_ui_dropdown_menu_dropdownmenushortcut",
+      "src_components_ui_dropdown_menu_dropdownmenusubcontent",
+      "src_components_ui_dropdown_menu_dropdownmenusubtrigger",
+      "src_components_ui_radio_group",
+      "src_components_ui_radio_group_radiogroup",
+      "src_components_ui_radio_group_radiogroupitem",
+      "src_components_ui_resizable",
+      "src_components_ui_resizable_resizablehandle",
+      "src_components_ui_resizable_resizablepanelgroup",
       "src_components_ui_select_selectlabel",
       "src_components_ui_select_selectscrolldownbutton",
       "src_components_ui_select_selectscrollupbutton",
@@ -109,45 +249,7 @@
       "src_components_ui_table_tablerow",
       "src_lib_utils_cn"
     ],
-    "2": [
-      "src_components_common_emptystate",
-      "src_components_common_emptystate_emptystate",
-      "src_components_common_emptystate_emptystateprops",
-      "src_components_common_loadingstate",
-      "src_components_common_loadingstate_loadingstate",
-      "src_components_common_publicationcard",
-      "src_components_common_publicationcard_publicationcard",
-      "src_components_dashboard_overviewchart",
-      "src_components_dashboard_overviewchart_publicationschart",
-      "src_components_dashboard_overviewchart_reachchart",
-      "src_components_layout_pagecontainer_sectioncard",
-      "src_components_ui_tabs",
-      "src_components_ui_tabs_tabscontent",
-      "src_components_ui_tabs_tabslist",
-      "src_components_ui_tabs_tabstrigger",
-      "src_hooks_useproject",
-      "src_hooks_useproject_useproject",
-      "src_lib_format",
-      "src_lib_format_ehhoje",
-      "src_lib_format_formatarhora",
-      "src_lib_format_formatarnumero",
-      "src_routes_admin",
-      "src_routes_admin_adminlayout",
-      "src_routes_admin_analytics",
-      "src_routes_admin_analytics_analyticspage",
-      "src_routes_admin_dashboard",
-      "src_routes_admin_dashboard_dashboardpage",
-      "src_routes_admin_publications",
-      "src_routes_admin_publications_publicationdetailcard",
-      "src_routes_admin_publications_publicationspage",
-      "src_routes_admin_publications_statustabs",
-      "src_services_collectnews_ultimaexecucao",
-      "src_services_queries_useanalytics",
-      "src_services_queries_usenoticias",
-      "src_services_queries_usepublicacoes",
-      "src_services_supabasedata_obterprojetoatual"
-    ],
-    "3": [
+    "4": [
       "src_components_ui_separator",
       "src_components_ui_separator_separator",
       "src_components_ui_sidebar",
@@ -185,77 +287,41 @@
       "src_hooks_use_mobile",
       "src_hooks_use_mobile_useismobile"
     ],
-    "4": [
-      "src_components_common_categorybadge",
-      "src_components_common_categorybadge_categorybadge",
-      "src_components_common_categorybadge_corcategoria",
-      "src_components_common_newscard",
-      "src_components_common_newscard_newscard",
-      "src_components_common_newscard_props",
-      "src_components_common_statusbadge",
-      "src_components_common_statusbadge_statusbadge",
-      "src_components_common_statusbadge_statusconfig",
-      "src_components_news_analysisresultpanel",
-      "src_components_news_analysisresultpanel_analysisresultpanel",
-      "src_components_news_analysisresultpanel_analysisresultpanelprops",
-      "src_components_news_analysisresultpanel_confidenceindicator",
-      "src_components_news_analysisresultpanel_moderationbadge",
-      "src_components_news_analysisresultpanel_relevancebadge",
-      "src_components_news_artepreview_artepreview",
-      "src_components_news_confidencebadge",
-      "src_components_news_confidencebadge_confidencebadge",
-      "src_components_news_instagrampreview_instagrampreview",
-      "src_components_news_newstimeline",
-      "src_components_news_newstimeline_etapasfluxo",
-      "src_components_news_newstimeline_newstimeline",
-      "src_components_news_newstimeline_statusordem",
-      "src_components_ui_badge",
-      "src_components_ui_badge_badge",
-      "src_components_ui_badge_badgeprops",
-      "src_components_ui_badge_badgevariants",
+    "5": [
+      "src_components_news_editablefield",
+      "src_components_news_editablefield_editablefield",
+      "src_components_news_editablefield_editablefieldprops",
+      "src_components_news_newsfilters",
+      "src_components_news_newsfilters_newsfiltersprops",
+      "src_components_ui_button",
+      "src_components_ui_button_button",
+      "src_components_ui_input",
+      "src_components_ui_input_input",
+      "src_components_ui_label",
+      "src_components_ui_label_label",
+      "src_components_ui_label_labelvariants",
+      "src_components_ui_select",
+      "src_components_ui_select_selectcontent",
+      "src_components_ui_select_selectitem",
+      "src_components_ui_select_selecttrigger",
       "src_components_ui_textarea",
       "src_components_ui_textarea_textarea",
-      "src_routes_admin_news_id",
-      "src_routes_admin_news_id_newsdetailpage",
-      "src_services_analyzenews_analysisdata",
-      "src_services_queries_usenoticia",
-      "src_services_queries_usesalvaranalisenoticia"
-    ],
-    "5": [
-      "src_routes_admin_settings_settingspage",
-      "src_routes_admin_sources_addsourcedialog",
-      "src_services_queries",
-      "src_services_queries_useconfiguracoes",
-      "src_services_queries_usecriarfonte",
-      "src_services_queries_useremoverfonte",
-      "src_services_queries_usesalvarconfiguracoes",
-      "src_services_queries_usesalvarprojeto",
-      "src_services_supabasedata",
-      "src_services_supabasedata_alterarfonteativa",
-      "src_services_supabasedata_alterarstatusnoticia",
-      "src_services_supabasedata_categoriabanco",
-      "src_services_supabasedata_categoriavalida",
-      "src_services_supabasedata_configuracoesprojeto",
-      "src_services_supabasedata_criarfonte",
-      "src_services_supabasedata_importanciapornota",
-      "src_services_supabasedata_linhanews",
-      "src_services_supabasedata_linhapost",
-      "src_services_supabasedata_mapearnoticia",
-      "src_services_supabasedata_obteranalytics",
-      "src_services_supabasedata_obtercategorias",
-      "src_services_supabasedata_obterconfiguracoes",
-      "src_services_supabasedata_obterfontes",
-      "src_services_supabasedata_obternoticiaporid",
-      "src_services_supabasedata_obternoticias",
-      "src_services_supabasedata_obterpublicacoes",
-      "src_services_supabasedata_projetoatual",
-      "src_services_supabasedata_removerfonte",
-      "src_services_supabasedata_salvaranalisenoticia",
-      "src_services_supabasedata_salvarconfiguracoes",
-      "src_services_supabasedata_salvarprojeto",
-      "src_services_supabasedata_statusdobanco",
-      "src_services_supabasedata_statusparabanco",
-      "src_services_supabasedata_statuspostdobanco"
+      "src_lib_newsfilter_filtrosnoticia",
+      "src_routes_admin_settings",
+      "src_routes_admin_sponsors_campaigns",
+      "src_routes_admin_sponsors_campaigns_campanhaspage",
+      "src_routes_admin_sponsors_campaigns_moeda",
+      "src_routes_admin_sponsors_campaigns_status",
+      "src_routes_admin_sponsors_campaigns_vazio",
+      "src_routes_admin_sponsors_deliverables",
+      "src_routes_admin_sponsors_deliverables_entregaspage",
+      "src_routes_admin_sponsors_deliverables_status",
+      "src_routes_admin_sponsors_deliverables_vazio",
+      "src_routes_admin_sponsors_index",
+      "src_routes_admin_sponsors_index_patrocinadorespage",
+      "src_routes_admin_sponsors_index_vazio",
+      "src_services_editorialqueries_useentregas",
+      "src_services_editorialqueries_usepatrocinadores"
     ],
     "6": [
       "ref_dom",
@@ -292,6 +358,130 @@
       "tsconfig_include"
     ],
     "7": [
+      "src_components_common_metriccard",
+      "src_components_common_metriccard_metriccardprops",
+      "src_components_debug_debugauthbutton",
+      "src_components_debug_debugauthbutton_debugauthbutton",
+      "src_components_layout_pagecontainer",
+      "src_components_layout_pagecontainer_pagecontainerprops",
+      "src_components_layout_pagecontainer_sectioncardprops",
+      "src_components_news_analysisresultpanel",
+      "src_components_news_analysisresultpanel_analysisresultpanel",
+      "src_components_news_analysisresultpanel_analysisresultpanelprops",
+      "src_components_news_analysisresultpanel_confidenceindicator",
+      "src_components_news_analysisresultpanel_moderationbadge",
+      "src_components_news_analysisresultpanel_relevancebadge",
+      "src_components_news_artepreview",
+      "src_components_news_artepreview_artepreview",
+      "src_components_news_instagrampreview",
+      "src_components_news_instagrampreview_instagrampreview",
+      "src_components_ui_card",
+      "src_components_ui_card_card",
+      "src_components_ui_card_cardcontent",
+      "src_components_ui_card_cardheader",
+      "src_components_ui_card_cardtitle",
+      "src_lib_debugauth_functions",
+      "src_lib_debugauth_functions_debugserverauth",
+      "src_routes_admin_instagram",
+      "src_routes_admin_instagram_instagrampage",
+      "src_routes_admin_news_id",
+      "src_routes_login",
+      "src_services_analyzenews_analysisdata",
+      "src_services_mockservice_obterestatisticasinstagram"
+    ],
+    "8": [
+      "src_routetree_gen",
+      "src_routetree_gen_adminanalyticsroute",
+      "src_routetree_gen_admincalendarroute",
+      "src_routetree_gen_admindashboardroute",
+      "src_routetree_gen_admineditorialgeografiaroute",
+      "src_routetree_gen_admineditorialindexroute",
+      "src_routetree_gen_adminfeedroute",
+      "src_routetree_gen_admininstagramroute",
+      "src_routetree_gen_adminnewsidroute",
+      "src_routetree_gen_adminnewsindexroute",
+      "src_routetree_gen_adminpostsindexroute",
+      "src_routetree_gen_adminpublicationsroute",
+      "src_routetree_gen_adminpublishingroute",
+      "src_routetree_gen_adminroute",
+      "src_routetree_gen_adminroutechildren",
+      "src_routetree_gen_adminroutewithchildren",
+      "src_routetree_gen_adminsettingsroute",
+      "src_routetree_gen_adminsourcesroute",
+      "src_routetree_gen_adminsponsorscampaignsroute",
+      "src_routetree_gen_adminsponsorsdeliverablesroute",
+      "src_routetree_gen_adminsponsorsindexroute",
+      "src_routetree_gen_apipublichookscollectnewsroute",
+      "src_routetree_gen_fileroutesbyfullpath",
+      "src_routetree_gen_fileroutesbyto",
+      "src_routetree_gen_fileroutetypes",
+      "src_routetree_gen_indexroute",
+      "src_routetree_gen_loginroute",
+      "src_routetree_gen_rootroutechildren",
+      "src_routetree_gen_tanstack_react_router",
+      "src_routetree_gen_tanstack_react_start"
+    ],
+    "9": [
+      "promises",
+      "src_components_news_pipelinepreviewdialog_pipelinepreviewdialog",
+      "src_lib_articlecontent_server_mapearcomlimite",
+      "src_lib_articlecontent_server_origemconteudo",
+      "src_lib_pipelinepreview_functions",
+      "src_lib_pipelinepreview_functions_nomerelacao",
+      "src_lib_pipelinepreview_functions_previewpipelineserver",
+      "src_lib_pipelinepreview_functions_relacao",
+      "src_lib_pipelinepreview_server",
+      "src_lib_pipelinepreview_server_avaliacaopreview",
+      "src_lib_pipelinepreview_server_avaliar",
+      "src_lib_pipelinepreview_server_entradapreview",
+      "src_lib_pipelinepreview_server_executarpreviewlote",
+      "src_lib_pipelinepreview_server_executarpreviewnoticia",
+      "src_lib_pipelinepreview_server_opcoespreview",
+      "src_lib_pipelinepreview_server_preview_concorrencia",
+      "src_lib_pipelinepreview_server_preview_max_lote",
+      "src_lib_pipelinepreview_server_resultadopreview",
+      "src_lib_pipelinepreview_server_resultadopreviewlote",
+      "src_lib_pipelinepreview_server_resumopreviewlote",
+      "src_lib_pipelinepreview_server_slugde",
+      "src_lib_pipelinepreview_server_statusfetchpreview",
+      "src_lib_pipelinepreview_test",
+      "src_lib_pipelinepreview_test_base",
+      "src_lib_pipelinepreview_test_pagina",
+      "src_lib_pipelinepreview_test_respostahtml",
+      "src_lib_rules_lagunascope_resultadoescopo",
+      "src_lib_rules_newsclassification_categoriaslug",
+      "src_lib_rules_newsclassification_resultadoclassificacao"
+    ],
+    "10": [
+      "src_components_common_modal",
+      "src_components_common_modal_modal",
+      "src_components_common_modal_modalprops",
+      "src_components_editorial_geobadge",
+      "src_components_editorial_geobadge_classes",
+      "src_components_editorial_geobadge_geobadge",
+      "src_components_editorial_geobadge_rotulogeo",
+      "src_components_editorial_geobadge_rotulos",
+      "src_components_editorial_georeviewdialog",
+      "src_components_editorial_georeviewdialog_opcoes",
+      "src_components_news_pipelinepreviewdialog",
+      "src_components_news_pipelinepreviewdialog_cores_decisao",
+      "src_components_news_pipelinepreviewdialog_decisionbadge",
+      "src_components_news_pipelinepreviewdialog_detalhepreview",
+      "src_components_news_pipelinepreviewdialog_linha",
+      "src_components_news_pipelinepreviewdialog_listar",
+      "src_components_news_pipelinepreviewdialog_pipelinepreviewdialogprops",
+      "src_components_news_pipelinepreviewdialog_resumogeo",
+      "src_components_news_pipelinepreviewdialog_tabelapreview",
+      "src_components_ui_dialog",
+      "src_components_ui_dialog_dialogcontent",
+      "src_components_ui_dialog_dialogdescription",
+      "src_components_ui_dialog_dialogfooter",
+      "src_components_ui_dialog_dialogheader",
+      "src_components_ui_dialog_dialogoverlay",
+      "src_components_ui_dialog_dialogtitle",
+      "src_services_editorialdata_decisaogeo"
+    ],
+    "11": [
       "src_lib_articlecontent_server",
       "src_lib_articlecontent_server_buscarconteudocompleto",
       "src_lib_articlecontent_server_conteudodatag",
@@ -320,7 +510,36 @@
       "src_lib_articlecontent_test_paginasulagora",
       "src_lib_articlecontent_test_resposta"
     ],
-    "8": [
+    "12": [
+      "src_lib_collectnews_server",
+      "src_lib_collectnews_server_buscarfeed",
+      "src_lib_collectnews_server_clientecoleta",
+      "src_lib_collectnews_server_coleta_lock_minutos",
+      "src_lib_collectnews_server_coleta_max_itens_por_fonte",
+      "src_lib_collectnews_server_coleta_max_retries",
+      "src_lib_collectnews_server_coleta_timeout_ms",
+      "src_lib_collectnews_server_coletaemandamento",
+      "src_lib_collectnews_server_collectnewsresult",
+      "src_lib_collectnews_server_collectnewssourcelog",
+      "src_lib_collectnews_server_dataparaiso",
+      "src_lib_collectnews_server_decodeentities",
+      "src_lib_collectnews_server_ehurldeimagem",
+      "src_lib_collectnews_server_errofonte",
+      "src_lib_collectnews_server_errofonte_constructor",
+      "src_lib_collectnews_server_executarcoleta",
+      "src_lib_collectnews_server_extractitems",
+      "src_lib_collectnews_server_extracttag",
+      "src_lib_collectnews_server_extrairimagem",
+      "src_lib_collectnews_server_feeditem",
+      "src_lib_collectnews_server_fetchcomtimeout",
+      "src_lib_collectnews_server_log",
+      "src_lib_collectnews_server_opcoescoleta",
+      "src_lib_collectnews_server_opcoesfeed",
+      "src_lib_collectnews_server_status_sem_retry",
+      "src_lib_geography_server_montarregistrogeografico",
+      "src_lib_geography_server_registrardecisaogeografica"
+    ],
+    "13": [
       "src_lib_rules_newsclassification",
       "src_lib_rules_newsclassification_alta_prioridade",
       "src_lib_rules_newsclassification_base_importancia",
@@ -349,115 +568,89 @@
       "src_lib_rules_newsclassification_test",
       "src_lib_rules_newsclassification_test_casos"
     ],
-    "9": [
-      "src_lib_articlecontent_server_mapearcomlimite",
-      "src_lib_collectnews_server",
-      "src_lib_collectnews_server_buscarfeed",
-      "src_lib_collectnews_server_clientecoleta",
-      "src_lib_collectnews_server_coleta_lock_minutos",
-      "src_lib_collectnews_server_coleta_max_itens_por_fonte",
-      "src_lib_collectnews_server_coleta_max_retries",
-      "src_lib_collectnews_server_coleta_timeout_ms",
-      "src_lib_collectnews_server_coletaemandamento",
-      "src_lib_collectnews_server_collectnewsresult",
-      "src_lib_collectnews_server_collectnewssourcelog",
-      "src_lib_collectnews_server_dataparaiso",
-      "src_lib_collectnews_server_decodeentities",
-      "src_lib_collectnews_server_ehurldeimagem",
-      "src_lib_collectnews_server_errofonte",
-      "src_lib_collectnews_server_errofonte_constructor",
-      "src_lib_collectnews_server_executarcoleta",
-      "src_lib_collectnews_server_extractitems",
-      "src_lib_collectnews_server_extracttag",
-      "src_lib_collectnews_server_extrairimagem",
-      "src_lib_collectnews_server_feeditem",
-      "src_lib_collectnews_server_fetchcomtimeout",
-      "src_lib_collectnews_server_log",
-      "src_lib_collectnews_server_opcoescoleta",
-      "src_lib_collectnews_server_opcoesfeed",
-      "src_lib_collectnews_server_status_sem_retry"
-    ],
-    "10": [
-      "src_components_news_newsactions",
-      "src_components_news_newsactions_newsactionhandlers",
-      "src_components_news_newsfilters",
+    "14": [
       "src_components_news_newsfilters_newsfilters",
-      "src_components_news_newsfilters_newsfiltersprops",
-      "src_components_news_newslist",
-      "src_components_news_newslist_newslist",
-      "src_components_news_newslist_newslistprops",
       "src_lib_newsfilter",
       "src_lib_newsfilter_filtrarnoticias",
       "src_lib_newsfilter_filtrosiniciais",
-      "src_lib_newsfilter_filtrosnoticia",
-      "src_lib_types",
-      "src_lib_types_categoria",
-      "src_lib_types_categorias",
-      "src_lib_types_importancia",
-      "src_lib_types_importancias",
-      "src_lib_types_news_status",
-      "src_lib_types_newsitem",
-      "src_lib_types_publicationstatus",
+      "src_routes_admin_news_id_newsdetailpage",
       "src_routes_admin_news_index",
       "src_routes_admin_news_index_demobadge",
       "src_routes_admin_news_index_newslistwithdemobadge",
       "src_routes_admin_news_index_newspage",
+      "src_routes_admin_sources",
+      "src_routes_admin_sources_sourcecard",
+      "src_routes_admin_sources_sourcespage",
+      "src_routes_admin_sources_tipoicone",
+      "src_routes_admin_sources_tipolabel",
+      "src_services_collectnews_executarcoletadenoticias",
+      "src_services_collectnews_obterultimaexecucao",
+      "src_services_collectnews_ultimaexecucao",
+      "src_services_datamode",
+      "src_services_datamode_carregar",
+      "src_services_datamode_definirmododados",
+      "src_services_datamode_inscrever",
+      "src_services_datamode_mododados",
+      "src_services_datamode_ouvintes",
+      "src_services_datamode_usemododados",
+      "src_services_queries_usealterarstatusnoticia",
       "src_services_queries_usefontes"
     ],
-    "11": [
-      "src_components_ui_checkbox",
-      "src_components_ui_checkbox_checkbox",
-      "src_components_ui_hover_card",
-      "src_components_ui_hover_card_hovercardcontent",
-      "src_components_ui_input_otp",
-      "src_components_ui_input_otp_inputotp",
-      "src_components_ui_input_otp_inputotpgroup",
-      "src_components_ui_input_otp_inputotpseparator",
-      "src_components_ui_input_otp_inputotpslot",
-      "src_components_ui_popover",
-      "src_components_ui_popover_popovercontent",
-      "src_components_ui_progress",
-      "src_components_ui_progress_progress",
-      "src_components_ui_radio_group",
-      "src_components_ui_radio_group_radiogroup",
-      "src_components_ui_radio_group_radiogroupitem",
-      "src_components_ui_resizable",
-      "src_components_ui_resizable_resizablehandle",
-      "src_components_ui_resizable_resizablepanelgroup",
-      "src_components_ui_scroll_area",
-      "src_components_ui_scroll_area_scrollarea",
-      "src_components_ui_scroll_area_scrollbar",
-      "src_components_ui_slider",
-      "src_components_ui_slider_slider",
-      "src_lib_utils"
+    "15": [
+      "src_components_editorial_georeviewdialog_georeviewdialog",
+      "src_components_news_newstimeline_newstimeline",
+      "src_hooks_useproject",
+      "src_hooks_useproject_useproject",
+      "src_lib_format_formatardatahora",
+      "src_routes_admin",
+      "src_routes_admin_adminlayout",
+      "src_routes_admin_editorial_geografia",
+      "src_routes_admin_editorial_geografia_decisaovigente",
+      "src_routes_admin_editorial_geografia_modo_rotulo",
+      "src_routes_admin_editorial_geografia_revisaogeograficapage",
+      "src_routes_admin_editorial_index",
+      "src_routes_admin_editorial_index_decisaovigente",
+      "src_routes_admin_editorial_index_editorialinboxpage",
+      "src_routes_admin_editorial_index_status_rotulo",
+      "src_routes_admin_posts_index",
+      "src_routes_admin_posts_index_postspage",
+      "src_routes_admin_posts_index_status_post_rotulo",
+      "src_routes_admin_publishing",
+      "src_routes_admin_publishing_abas",
+      "src_routes_admin_publishing_filapublicacaopage",
+      "src_services_editorialqueries_usecampanhas",
+      "src_services_editorialqueries_usefilaeditorial",
+      "src_services_editorialqueries_usepostsprojeto",
+      "src_services_supabasedata_obterprojetoatual"
     ],
-    "12": [
-      "src_components_common_metriccard",
-      "src_components_common_metriccard_metriccard",
-      "src_components_common_metriccard_metriccardprops",
-      "src_components_debug_debugauthbutton",
-      "src_components_debug_debugauthbutton_debugauthbutton",
-      "src_components_layout_header_header",
-      "src_components_layout_pagecontainer",
-      "src_components_layout_pagecontainer_pagecontainer",
-      "src_components_layout_pagecontainer_pagecontainerprops",
-      "src_components_layout_pagecontainer_sectioncardprops",
-      "src_components_news_artepreview",
-      "src_components_news_instagrampreview",
-      "src_components_ui_card",
-      "src_components_ui_card_card",
-      "src_components_ui_card_cardcontent",
-      "src_components_ui_card_cardheader",
-      "src_components_ui_card_cardtitle",
-      "src_config_app_nome_do_perfil",
-      "src_lib_debugauth_functions",
-      "src_lib_debugauth_functions_debugserverauth",
-      "src_routes_admin_instagram",
-      "src_routes_admin_instagram_instagrampage",
-      "src_routes_login",
-      "src_services_mockservice_obterestatisticasinstagram"
+    "16": [
+      "src_lib_types",
+      "src_lib_types_categoria",
+      "src_lib_types_categorias",
+      "src_lib_types_dailymetric",
+      "src_lib_types_importancia",
+      "src_lib_types_importancias",
+      "src_lib_types_news_status",
+      "src_lib_types_publicationstatus",
+      "src_lib_types_source",
+      "src_services_queries_usenoticia",
+      "src_services_supabasedata",
+      "src_services_supabasedata_categoriabanco",
+      "src_services_supabasedata_categoriavalida",
+      "src_services_supabasedata_fontebanco",
+      "src_services_supabasedata_importanciapornota",
+      "src_services_supabasedata_linhanews",
+      "src_services_supabasedata_linhapost",
+      "src_services_supabasedata_mapearnoticia",
+      "src_services_supabasedata_obtercategorias",
+      "src_services_supabasedata_obternoticiaporid",
+      "src_services_supabasedata_obternoticias",
+      "src_services_supabasedata_obterpublicacoes",
+      "src_services_supabasedata_resumoanalytics",
+      "src_services_supabasedata_statusdobanco",
+      "src_services_supabasedata_statuspostdobanco"
     ],
-    "13": [
+    "17": [
       "src_lib_rules_lagunalocalities",
       "src_lib_rules_lagunalocalities_aliases_para_revisao",
       "src_lib_rules_lagunalocalities_bairros_ambiguos_laguna",
@@ -483,80 +676,129 @@
       "src_lib_rules_lagunascope_padroes_muito_fortes",
       "src_lib_rules_lagunascope_padroes_pessoa_de_laguna"
     ],
-    "14": [
-      "src_routes_index",
-      "src_routes_index_route",
-      "src_routetree_gen",
-      "src_routetree_gen_adminanalyticsroute",
-      "src_routetree_gen_admindashboardroute",
-      "src_routetree_gen_adminfeedroute",
-      "src_routetree_gen_admininstagramroute",
-      "src_routetree_gen_adminnewsidroute",
-      "src_routetree_gen_adminnewsindexroute",
-      "src_routetree_gen_adminpublicationsroute",
-      "src_routetree_gen_adminroute",
-      "src_routetree_gen_adminroutechildren",
-      "src_routetree_gen_adminroutewithchildren",
-      "src_routetree_gen_adminsettingsroute",
-      "src_routetree_gen_adminsourcesroute",
-      "src_routetree_gen_apipublichookscollectnewsroute",
-      "src_routetree_gen_fileroutesbyfullpath",
-      "src_routetree_gen_fileroutesbyto",
-      "src_routetree_gen_fileroutetypes",
-      "src_routetree_gen_indexroute",
-      "src_routetree_gen_loginroute",
-      "src_routetree_gen_rootroutechildren",
-      "src_routetree_gen_tanstack_react_router",
-      "src_routetree_gen_tanstack_react_start"
+    "18": [
+      "src_routes_admin_settings_settingspage",
+      "src_routes_admin_sources_addsourcedialog",
+      "src_services_queries",
+      "src_services_queries_usealterarfonteativa",
+      "src_services_queries_useanalytics",
+      "src_services_queries_useconfiguracoes",
+      "src_services_queries_usecriarfonte",
+      "src_services_queries_useremoverfonte",
+      "src_services_queries_usesalvaranalisenoticia",
+      "src_services_queries_usesalvarconfiguracoes",
+      "src_services_queries_usesalvarprojeto",
+      "src_services_supabasedata_alterarfonteativa",
+      "src_services_supabasedata_alterarstatusnoticia",
+      "src_services_supabasedata_configuracoesprojeto",
+      "src_services_supabasedata_criarfonte",
+      "src_services_supabasedata_obteranalytics",
+      "src_services_supabasedata_obterconfiguracoes",
+      "src_services_supabasedata_obterfontes",
+      "src_services_supabasedata_projetoatual",
+      "src_services_supabasedata_removerfonte",
+      "src_services_supabasedata_salvaranalisenoticia",
+      "src_services_supabasedata_salvarconfiguracoes",
+      "src_services_supabasedata_salvarprojeto",
+      "src_services_supabasedata_statusparabanco"
     ],
-    "15": [
-      "src_data_mock",
-      "src_data_mock_analisesimulada",
-      "src_data_mock_hoje",
-      "src_data_mock_hora",
-      "src_data_mock_mockdailymetrics",
-      "src_data_mock_mockinstagramstats",
-      "src_data_mock_mocknews",
-      "src_data_mock_mockpublications",
-      "src_data_mock_mocksources",
-      "src_data_mock_noticiabruta",
-      "src_data_mock_noticiasbrutas",
-      "src_lib_types_dailymetric",
-      "src_lib_types_publication",
-      "src_lib_types_source",
-      "src_services_mockservice",
-      "src_services_mockservice_listarfontes",
-      "src_services_mockservice_listarnoticias",
-      "src_services_mockservice_listarpublicacoes",
-      "src_services_mockservice_obtermetricasdiarias",
-      "src_services_mockservice_obternoticia",
-      "src_services_supabasedata_fontebanco",
-      "src_services_supabasedata_resumoanalytics"
+    "19": [
+      "src_components_common_categorybadge",
+      "src_components_common_categorybadge_categorybadge",
+      "src_components_common_categorybadge_corcategoria",
+      "src_components_common_newscard",
+      "src_components_common_newscard_newscard",
+      "src_components_common_statusbadge",
+      "src_components_common_statusbadge_statusbadge",
+      "src_components_common_statusbadge_statusconfig",
+      "src_components_news_confidencebadge",
+      "src_components_news_confidencebadge_confidencebadge",
+      "src_components_ui_badge",
+      "src_components_ui_badge_badge",
+      "src_components_ui_badge_badgeprops",
+      "src_components_ui_badge_badgevariants",
+      "src_routes_admin_feed",
+      "src_routes_admin_feed_copybox",
+      "src_routes_admin_feed_copytoclipboard",
+      "src_routes_admin_feed_feednewscard",
+      "src_routes_admin_feed_feedpage",
+      "src_routes_admin_feed_filtrostatus",
+      "src_routes_admin_feed_mapstatustofilter",
+      "src_routes_admin_feed_ordenacao",
+      "src_routes_admin_feed_urgencybadge"
     ],
-    "16": [
-      "promises",
-      "src_lib_articlecontent_server_origemconteudo",
-      "src_lib_pipelinepreview_server",
-      "src_lib_pipelinepreview_server_avaliacaopreview",
-      "src_lib_pipelinepreview_server_avaliar",
-      "src_lib_pipelinepreview_server_executarpreviewlote",
-      "src_lib_pipelinepreview_server_executarpreviewnoticia",
-      "src_lib_pipelinepreview_server_opcoespreview",
-      "src_lib_pipelinepreview_server_preview_concorrencia",
-      "src_lib_pipelinepreview_server_preview_max_lote",
-      "src_lib_pipelinepreview_server_resultadopreview",
-      "src_lib_pipelinepreview_server_resumopreviewlote",
-      "src_lib_pipelinepreview_server_slugde",
-      "src_lib_pipelinepreview_server_statusfetchpreview",
-      "src_lib_pipelinepreview_test",
-      "src_lib_pipelinepreview_test_base",
-      "src_lib_pipelinepreview_test_pagina",
-      "src_lib_pipelinepreview_test_respostahtml",
-      "src_lib_rules_lagunascope_resultadoescopo",
-      "src_lib_rules_newsclassification_categoriaslug",
-      "src_lib_rules_newsclassification_resultadoclassificacao"
+    "20": [
+      "src_components_ui_checkbox",
+      "src_components_ui_checkbox_checkbox",
+      "src_components_ui_hover_card",
+      "src_components_ui_hover_card_hovercardcontent",
+      "src_components_ui_popover",
+      "src_components_ui_popover_popovercontent",
+      "src_components_ui_progress",
+      "src_components_ui_progress_progress",
+      "src_components_ui_scroll_area",
+      "src_components_ui_scroll_area_scrollarea",
+      "src_components_ui_scroll_area_scrollbar",
+      "src_components_ui_slider",
+      "src_components_ui_slider_slider",
+      "src_components_ui_switch",
+      "src_components_ui_switch_switch",
+      "src_components_ui_toggle",
+      "src_components_ui_toggle_group",
+      "src_components_ui_toggle_group_togglegroup",
+      "src_components_ui_toggle_group_togglegroupcontext",
+      "src_components_ui_toggle_group_togglegroupitem",
+      "src_components_ui_toggle_toggle",
+      "src_components_ui_toggle_togglevariants",
+      "src_lib_utils"
     ],
-    "17": [
+    "21": [
+      "src_components_common_loadingstate",
+      "src_components_common_loadingstate_loadingstate",
+      "src_components_common_metriccard_metriccard",
+      "src_components_common_publicationcard",
+      "src_components_common_publicationcard_publicationcard",
+      "src_components_dashboard_overviewchart",
+      "src_components_dashboard_overviewchart_publicationschart",
+      "src_components_dashboard_overviewchart_reachchart",
+      "src_components_layout_pagecontainer_pagecontainer",
+      "src_components_layout_pagecontainer_sectioncard",
+      "src_lib_format",
+      "src_lib_format_ehhoje",
+      "src_lib_format_formatarhora",
+      "src_lib_format_formatarnumero",
+      "src_routes_admin_analytics",
+      "src_routes_admin_analytics_analyticspage",
+      "src_routes_admin_dashboard",
+      "src_routes_admin_dashboard_dashboardpage",
+      "src_routes_admin_publications_publicationdetailcard",
+      "src_routes_admin_publications_publicationspage",
+      "src_services_queries_usenoticias",
+      "src_services_queries_usepublicacoes"
+    ],
+    "22": [
+      "src_routes_admin_analytics_route",
+      "src_routes_admin_calendar_route",
+      "src_routes_admin_dashboard_route",
+      "src_routes_admin_editorial_geografia_route",
+      "src_routes_admin_editorial_index_route",
+      "src_routes_admin_feed_route",
+      "src_routes_admin_instagram_route",
+      "src_routes_admin_news_id_route",
+      "src_routes_admin_news_index_route",
+      "src_routes_admin_posts_index_route",
+      "src_routes_admin_publications_route",
+      "src_routes_admin_publishing_route",
+      "src_routes_admin_route",
+      "src_routes_admin_settings_route",
+      "src_routes_admin_sources_route",
+      "src_routes_admin_sponsors_campaigns_route",
+      "src_routes_admin_sponsors_deliverables_route",
+      "src_routes_admin_sponsors_index_route",
+      "src_routes_login_route",
+      "src_routetree_gen_fileroutesbypath"
+    ],
+    "23": [
       "components",
       "components_aliases",
       "components_aliases_components",
@@ -577,70 +819,27 @@
       "components_tailwind_prefix",
       "components_tsx"
     ],
-    "18": [
-      "src_components_common_modal",
-      "src_components_common_modal_modal",
-      "src_components_common_modal_modalprops",
-      "src_components_news_pipelinepreviewdialog",
-      "src_components_news_pipelinepreviewdialog_cores_decisao",
-      "src_components_news_pipelinepreviewdialog_decisionbadge",
-      "src_components_news_pipelinepreviewdialog_detalhepreview",
-      "src_components_news_pipelinepreviewdialog_linha",
-      "src_components_news_pipelinepreviewdialog_listar",
-      "src_components_news_pipelinepreviewdialog_pipelinepreviewdialogprops",
-      "src_components_news_pipelinepreviewdialog_resumogeo",
-      "src_components_news_pipelinepreviewdialog_tabelapreview",
-      "src_components_ui_dialog",
-      "src_components_ui_dialog_dialogcontent",
-      "src_components_ui_dialog_dialogdescription",
-      "src_components_ui_dialog_dialogfooter",
-      "src_components_ui_dialog_dialogheader",
-      "src_components_ui_dialog_dialogoverlay",
-      "src_components_ui_dialog_dialogtitle"
+    "24": [
+      "src_integrations_supabase_auth_middleware",
+      "src_integrations_supabase_auth_middleware_createsupabasefetch",
+      "src_integrations_supabase_auth_middleware_isnewsupabaseapikey",
+      "src_integrations_supabase_auth_middleware_requiresupabaseauth",
+      "src_integrations_supabase_types",
+      "src_integrations_supabase_types_compositetypes",
+      "src_integrations_supabase_types_constants",
+      "src_integrations_supabase_types_database",
+      "src_integrations_supabase_types_databasewithoutinternals",
+      "src_integrations_supabase_types_defaultschema",
+      "src_integrations_supabase_types_enums",
+      "src_integrations_supabase_types_json",
+      "src_integrations_supabase_types_tables",
+      "src_integrations_supabase_types_tablesinsert",
+      "src_integrations_supabase_types_tablesupdate",
+      "src_lib_adminclient_server",
+      "src_lib_adminclient_server_criarclienteadmin",
+      "src_lib_adminclient_server_ehchavenova"
     ],
-    "19": [
-      "src_components_layout_header",
-      "src_components_layout_navigation",
-      "src_components_layout_navigation_navitems",
-      "src_components_layout_sidebar",
-      "src_components_layout_sidebar_sidebar",
-      "src_components_news_editablefield",
-      "src_components_news_editablefield_editablefield",
-      "src_components_news_editablefield_editablefieldprops",
-      "src_components_ui_button",
-      "src_components_ui_button_button",
-      "src_config_app",
-      "src_config_app_app_name",
-      "src_config_app_cidade",
-      "src_config_app_cidade_completa",
-      "src_config_app_estado",
-      "src_hooks_useauth",
-      "src_hooks_useauth_authstate",
-      "src_hooks_useauth_useauth",
-      "src_routes_login_loginpage"
-    ],
-    "20": [
-      "src_components_sources_collectresultpanel",
-      "src_components_sources_collectresultpanel_aviso",
-      "src_components_sources_collectresultpanel_collectresultpanel",
-      "src_components_sources_collectresultpanel_collectresultpanelprops",
-      "src_components_sources_collectresultpanel_detailrow",
-      "src_components_sources_collectresultpanel_formatdatetime",
-      "src_components_sources_collectresultpanel_geraravisos",
-      "src_components_sources_collectresultpanel_infoitem",
-      "src_components_sources_collectresultpanel_metricbox",
-      "src_components_ui_accordion",
-      "src_components_ui_accordion_accordioncontent",
-      "src_components_ui_accordion_accordionitem",
-      "src_components_ui_accordion_accordiontrigger",
-      "src_components_ui_alert",
-      "src_components_ui_alert_alert",
-      "src_components_ui_alert_alertdescription",
-      "src_components_ui_alert_alerttitle",
-      "src_components_ui_alert_alertvariants",
-      "src_services_collectnews_collectnewsresult"
-    ],
-    "21": [
+    "25": [
       "server_entry",
       "src_lib_error_capture",
       "src_lib_error_capture_consumelastcapturederror",
@@ -659,7 +858,7 @@
       "src_server_normalizecatastrophicssrresponse",
       "src_server_serverentry"
     ],
-    "22": [
+    "26": [
       "src_components_ui_menubar",
       "src_components_ui_menubar_menubar",
       "src_components_ui_menubar_menubarcheckboxitem",
@@ -678,9 +877,46 @@
       "src_components_ui_menubar_menubarsubtrigger",
       "src_components_ui_menubar_menubartrigger"
     ],
-    "23": [
+    "27": [
+      "src_data_mock",
+      "src_data_mock_analisesimulada",
+      "src_data_mock_hoje",
+      "src_data_mock_hora",
+      "src_data_mock_mockdailymetrics",
+      "src_data_mock_mockinstagramstats",
+      "src_data_mock_mockpublications",
+      "src_data_mock_mocksources",
+      "src_data_mock_noticiabruta",
+      "src_data_mock_noticiasbrutas",
+      "src_lib_types_publication",
+      "src_services_mockservice",
+      "src_services_mockservice_listarfontes",
+      "src_services_mockservice_listarnoticias",
+      "src_services_mockservice_listarpublicacoes",
+      "src_services_mockservice_obtermetricasdiarias",
+      "src_services_mockservice_obternoticia"
+    ],
+    "28": [
+      "src_lib_instagram_instagrampublisher_server",
+      "src_lib_instagram_instagrampublisher_server_checkmediastatus",
+      "src_lib_instagram_instagrampublisher_server_cliente",
+      "src_lib_instagram_instagrampublisher_server_configmeta",
+      "src_lib_instagram_instagrampublisher_server_containstagram",
+      "src_lib_instagram_instagrampublisher_server_createmediacontainer",
+      "src_lib_instagram_instagrampublisher_server_estadoconexao",
+      "src_lib_instagram_instagrampublisher_server_getaccount",
+      "src_lib_instagram_instagrampublisher_server_getpublishedmedia",
+      "src_lib_instagram_instagrampublisher_server_graph_base",
+      "src_lib_instagram_instagrampublisher_server_graph_version",
+      "src_lib_instagram_instagrampublisher_server_naoconectado",
+      "src_lib_instagram_instagrampublisher_server_publishmedia",
+      "src_lib_instagram_instagrampublisher_server_resultadopublicacao",
+      "src_lib_instagram_instagrampublisher_server_scheduleorqueuepublish",
+      "src_lib_instagram_instagrampublisher_server_validateconnection",
+      "src_lib_instagram_publishstate_publishstate"
+    ],
+    "29": [
       "src_components_common_confirmationdialog",
-      "src_components_common_confirmationdialog_confirmationdialog",
       "src_components_common_confirmationdialog_confirmationdialogprops",
       "src_components_ui_alert_dialog",
       "src_components_ui_alert_dialog_alertdialogaction",
@@ -694,44 +930,28 @@
       "src_components_ui_button_buttonvariants",
       "src_components_ui_calendar",
       "src_components_ui_calendar_calendar",
-      "src_components_ui_calendar_calendardaybutton"
+      "src_components_ui_calendar_calendardaybutton",
+      "src_components_ui_pagination_paginationlink"
     ],
-    "24": [
-      "src_components_ui_input",
-      "src_components_ui_input_input",
-      "src_components_ui_select_selectcontent",
-      "src_components_ui_select_selectitem",
-      "src_components_ui_select_selecttrigger",
-      "src_components_ui_switch",
-      "src_components_ui_switch_switch",
-      "src_lib_format_formatardatahora",
-      "src_routes_admin_settings",
-      "src_routes_admin_sources",
-      "src_routes_admin_sources_sourcecard",
-      "src_routes_admin_sources_sourcespage",
-      "src_routes_admin_sources_tipoicone",
-      "src_routes_admin_sources_tipolabel",
-      "src_services_collectnews_obterultimaexecucao",
-      "src_services_queries_usealterarfonteativa"
+    "30": [
+      "src_components_common_emptystate",
+      "src_components_common_emptystate_emptystate",
+      "src_components_common_emptystate_emptystateprops",
+      "src_components_ui_tabs",
+      "src_components_ui_tabs_tabscontent",
+      "src_components_ui_tabs_tabslist",
+      "src_components_ui_tabs_tabstrigger",
+      "src_routes_admin_calendar",
+      "src_routes_admin_calendar_calendariopage",
+      "src_routes_admin_calendar_cor_status",
+      "src_routes_admin_calendar_datadopost",
+      "src_routes_admin_calendar_iniciododia",
+      "src_routes_admin_calendar_intervalo",
+      "src_routes_admin_calendar_visao",
+      "src_routes_admin_publications",
+      "src_routes_admin_publications_statustabs"
     ],
-    "25": [
-      "src_components_ui_form",
-      "src_components_ui_form_formcontrol",
-      "src_components_ui_form_formdescription",
-      "src_components_ui_form_formfield",
-      "src_components_ui_form_formfieldcontext",
-      "src_components_ui_form_formfieldcontextvalue",
-      "src_components_ui_form_formitem",
-      "src_components_ui_form_formitemcontext",
-      "src_components_ui_form_formitemcontextvalue",
-      "src_components_ui_form_formlabel",
-      "src_components_ui_form_formmessage",
-      "src_components_ui_form_useformfield",
-      "src_components_ui_label",
-      "src_components_ui_label_label",
-      "src_components_ui_label_labelvariants"
-    ],
-    "26": [
+    "31": [
       "src_components_ui_sonner",
       "src_components_ui_sonner_toaster",
       "src_components_ui_sonner_toasterprops",
@@ -748,7 +968,7 @@
       "src_routes_root_route",
       "src_routetree_gen_fileroutesbyid"
     ],
-    "27": [
+    "32": [
       "src_components_ui_carousel",
       "src_components_ui_carousel_carousel",
       "src_components_ui_carousel_carouselapi",
@@ -764,7 +984,23 @@
       "src_components_ui_carousel_usecarousel",
       "src_components_ui_carousel_usecarouselparameters"
     ],
-    "28": [
+    "33": [
+      "src_lib_geography_server",
+      "src_lib_geography_server_cliente",
+      "src_lib_geography_server_registrogeografico",
+      "src_lib_rules_geofiltermode",
+      "src_lib_rules_geofiltermode_geo_filter_modes",
+      "src_lib_rules_geofiltermode_geofiltermode",
+      "src_lib_rules_geofiltermode_geographic_filter_mode",
+      "src_lib_rules_geofiltermode_georeviewstatus",
+      "src_lib_rules_geofiltermode_motivobloqueio",
+      "src_lib_rules_geofiltermode_permitefluxoautomatico",
+      "src_lib_rules_geofiltermode_permiteinsercao",
+      "src_lib_rules_geofiltermode_situacaorevisaoinicial",
+      "src_lib_rules_geofiltermode_test",
+      "src_lib_rules_lagunascope_scopedecision"
+    ],
+    "34": [
       "cmdk",
       "lucide_react",
       "package_dependencies",
@@ -779,21 +1015,80 @@
       "radix_ui_react_slot",
       "react_hook_form"
     ],
-    "29": [
-      "src_routes_admin_analytics_route",
-      "src_routes_admin_dashboard_route",
-      "src_routes_admin_feed_route",
-      "src_routes_admin_instagram_route",
-      "src_routes_admin_news_id_route",
-      "src_routes_admin_news_index_route",
-      "src_routes_admin_publications_route",
-      "src_routes_admin_route",
-      "src_routes_admin_settings_route",
-      "src_routes_admin_sources_route",
-      "src_routes_login_route",
-      "src_routetree_gen_fileroutesbypath"
+    "35": [
+      "src_lib_instagram_assetvalidation",
+      "src_lib_instagram_assetvalidation_assetparapublicacao",
+      "src_lib_instagram_assetvalidation_lado_max",
+      "src_lib_instagram_assetvalidation_lado_min",
+      "src_lib_instagram_assetvalidation_media_kinds",
+      "src_lib_instagram_assetvalidation_mediakind",
+      "src_lib_instagram_assetvalidation_mime_aceitos",
+      "src_lib_instagram_assetvalidation_proporcao_max",
+      "src_lib_instagram_assetvalidation_proporcao_min",
+      "src_lib_instagram_assetvalidation_resultadovalidacaoasset",
+      "src_lib_instagram_assetvalidation_tamanho_max_bytes",
+      "src_lib_instagram_assetvalidation_urlpublicavalida",
+      "src_lib_instagram_assetvalidation_validarasset"
     ],
-    "30": [
+    "36": [
+      "src_lib_instagram_instagramoauth_server",
+      "src_lib_instagram_instagramoauth_server_cliente",
+      "src_lib_instagram_instagramoauth_server_desconectar",
+      "src_lib_instagram_instagramoauth_server_erroconfiguracaometa",
+      "src_lib_instagram_instagramoauth_server_erroconfiguracaometa_constructor",
+      "src_lib_instagram_instagramoauth_server_iniciaroauth",
+      "src_lib_instagram_instagramoauth_server_salvarconexao",
+      "src_lib_instagram_instagramoauth_server_tokentrocado",
+      "src_lib_instagram_instagramoauth_server_trocarcodeportoken",
+      "src_lib_instagram_instagrampublisher_server_instagram_scopes",
+      "src_lib_instagram_instagrampublisher_server_oauth_authorize_url",
+      "src_lib_instagram_instagrampublisher_server_oauth_token_url",
+      "src_lib_instagram_instagrampublisher_server_obterconfigmeta"
+    ],
+    "37": [
+      "src_lib_instagram_publishstate",
+      "src_lib_instagram_publishstate_chaveidempotencia",
+      "src_lib_instagram_publishstate_decidirretry",
+      "src_lib_instagram_publishstate_decisaoretry",
+      "src_lib_instagram_publishstate_erropermanente",
+      "src_lib_instagram_publishstate_erros_permanentes",
+      "src_lib_instagram_publishstate_estadofinal",
+      "src_lib_instagram_publishstate_proximosestados",
+      "src_lib_instagram_publishstate_publish_states",
+      "src_lib_instagram_publishstate_retry_max_tentativas",
+      "src_lib_instagram_publishstate_test",
+      "src_lib_instagram_publishstate_transicaopermitida",
+      "src_lib_instagram_publishstate_transicoes"
+    ],
+    "38": [
+      "src_components_ui_form",
+      "src_components_ui_form_formcontrol",
+      "src_components_ui_form_formdescription",
+      "src_components_ui_form_formfield",
+      "src_components_ui_form_formfieldcontext",
+      "src_components_ui_form_formfieldcontextvalue",
+      "src_components_ui_form_formitem",
+      "src_components_ui_form_formitemcontext",
+      "src_components_ui_form_formitemcontextvalue",
+      "src_components_ui_form_formlabel",
+      "src_components_ui_form_formmessage",
+      "src_components_ui_form_useformfield"
+    ],
+    "39": [
+      "src_data_mock_mocknews",
+      "src_lib_types_conteudogerado",
+      "src_services_newsstore",
+      "src_services_newsstore_alterarstatus",
+      "src_services_newsstore_inscrever",
+      "src_services_newsstore_noticias",
+      "src_services_newsstore_notificar",
+      "src_services_newsstore_ouvintes",
+      "src_services_newsstore_recarregarnoticias",
+      "src_services_newsstore_salvarconteudo",
+      "src_services_newsstore_usenoticialocal",
+      "src_services_newsstore_usenoticiaslocal"
+    ],
+    "40": [
       "supabase_functions_collect_news_index",
       "supabase_functions_collect_news_index_allowed_origins",
       "supabase_functions_collect_news_index_authenticate",
@@ -807,7 +1102,7 @@
       "supabase_functions_collect_news_index_getcorsheaders",
       "supabase_functions_collect_news_index_sourcerow"
     ],
-    "31": [
+    "41": [
       "eslint",
       "globals",
       "nitro",
@@ -820,7 +1115,20 @@
       "types_node",
       "vitest"
     ],
-    "32": [
+    "42": [
+      "src_components_layout_header",
+      "src_components_layout_header_header",
+      "src_components_ui_sheet",
+      "src_components_ui_sheet_sheetcontent",
+      "src_components_ui_sheet_sheetcontentprops",
+      "src_components_ui_sheet_sheetdescription",
+      "src_components_ui_sheet_sheetfooter",
+      "src_components_ui_sheet_sheetheader",
+      "src_components_ui_sheet_sheetoverlay",
+      "src_components_ui_sheet_sheettitle",
+      "src_components_ui_sheet_sheetvariants"
+    ],
+    "43": [
       "src_components_ui_chart",
       "src_components_ui_chart_chartconfig",
       "src_components_ui_chart_chartcontainer",
@@ -833,32 +1141,19 @@
       "src_components_ui_chart_themes",
       "src_components_ui_chart_usechart"
     ],
-    "33": [
-      "src_lib_types_conteudogerado",
-      "src_services_newsstore",
-      "src_services_newsstore_alterarstatus",
-      "src_services_newsstore_inscrever",
-      "src_services_newsstore_noticias",
-      "src_services_newsstore_notificar",
-      "src_services_newsstore_ouvintes",
-      "src_services_newsstore_recarregarnoticias",
-      "src_services_newsstore_salvarconteudo",
-      "src_services_newsstore_usenoticialocal",
-      "src_services_newsstore_usenoticiaslocal"
+    "44": [
+      "src_components_common_newscard_props",
+      "src_components_news_newsactions",
+      "src_components_news_newsactions_newsactionhandlers",
+      "src_components_news_newslist",
+      "src_components_news_newslist_newslist",
+      "src_components_news_newslist_newslistprops",
+      "src_components_news_newstimeline",
+      "src_components_news_newstimeline_etapasfluxo",
+      "src_components_news_newstimeline_statusordem",
+      "src_lib_types_newsitem"
     ],
-    "34": [
-      "src_components_ui_button_buttonprops",
-      "src_components_ui_pagination",
-      "src_components_ui_pagination_pagination",
-      "src_components_ui_pagination_paginationcontent",
-      "src_components_ui_pagination_paginationellipsis",
-      "src_components_ui_pagination_paginationitem",
-      "src_components_ui_pagination_paginationlink",
-      "src_components_ui_pagination_paginationlinkprops",
-      "src_components_ui_pagination_paginationnext",
-      "src_components_ui_pagination_paginationprevious"
-    ],
-    "35": [
+    "45": [
       "src_components_ui_command",
       "src_components_ui_command_command",
       "src_components_ui_command_commanddialog",
@@ -870,42 +1165,28 @@
       "src_components_ui_command_commandseparator",
       "src_components_ui_command_commandshortcut"
     ],
-    "36": [
-      "src_components_ui_dropdown_menu",
-      "src_components_ui_dropdown_menu_dropdownmenucheckboxitem",
-      "src_components_ui_dropdown_menu_dropdownmenucontent",
-      "src_components_ui_dropdown_menu_dropdownmenuitem",
-      "src_components_ui_dropdown_menu_dropdownmenulabel",
-      "src_components_ui_dropdown_menu_dropdownmenuradioitem",
-      "src_components_ui_dropdown_menu_dropdownmenuseparator",
-      "src_components_ui_dropdown_menu_dropdownmenushortcut",
-      "src_components_ui_dropdown_menu_dropdownmenusubcontent",
-      "src_components_ui_dropdown_menu_dropdownmenusubtrigger"
+    "46": [
+      "src_components_ui_button_buttonprops",
+      "src_components_ui_pagination",
+      "src_components_ui_pagination_pagination",
+      "src_components_ui_pagination_paginationcontent",
+      "src_components_ui_pagination_paginationellipsis",
+      "src_components_ui_pagination_paginationitem",
+      "src_components_ui_pagination_paginationlinkprops",
+      "src_components_ui_pagination_paginationnext",
+      "src_components_ui_pagination_paginationprevious"
     ],
-    "37": [
-      "src_routes_admin_feed",
-      "src_routes_admin_feed_copybox",
-      "src_routes_admin_feed_copytoclipboard",
-      "src_routes_admin_feed_feednewscard",
-      "src_routes_admin_feed_feedpage",
-      "src_routes_admin_feed_filtrostatus",
-      "src_routes_admin_feed_mapstatustofilter",
-      "src_routes_admin_feed_ordenacao",
-      "src_routes_admin_feed_urgencybadge",
-      "src_services_queries_usealterarstatusnoticia"
+    "47": [
+      "src_components_ui_breadcrumb",
+      "src_components_ui_breadcrumb_breadcrumb",
+      "src_components_ui_breadcrumb_breadcrumbellipsis",
+      "src_components_ui_breadcrumb_breadcrumbitem",
+      "src_components_ui_breadcrumb_breadcrumblink",
+      "src_components_ui_breadcrumb_breadcrumblist",
+      "src_components_ui_breadcrumb_breadcrumbpage",
+      "src_components_ui_breadcrumb_breadcrumbseparator"
     ],
-    "38": [
-      "src_components_ui_sheet",
-      "src_components_ui_sheet_sheetcontent",
-      "src_components_ui_sheet_sheetcontentprops",
-      "src_components_ui_sheet_sheetdescription",
-      "src_components_ui_sheet_sheetfooter",
-      "src_components_ui_sheet_sheetheader",
-      "src_components_ui_sheet_sheetoverlay",
-      "src_components_ui_sheet_sheettitle",
-      "src_components_ui_sheet_sheetvariants"
-    ],
-    "39": [
+    "48": [
       "src_components_ui_navigation_menu",
       "src_components_ui_navigation_menu_navigationmenu",
       "src_components_ui_navigation_menu_navigationmenucontent",
@@ -915,7 +1196,7 @@
       "src_components_ui_navigation_menu_navigationmenutriggerstyle",
       "src_components_ui_navigation_menu_navigationmenuviewport"
     ],
-    "40": [
+    "49": [
       "src_lib_rules_lagunascope_avaliarescopolaguna",
       "src_lib_rules_lagunascope_contem",
       "src_lib_rules_lagunascope_gatilhos_entidade",
@@ -925,7 +1206,7 @@
       "src_lib_rules_lagunascope_test",
       "src_lib_rules_lagunascope_test_d"
     ],
-    "41": [
+    "50": [
       "package",
       "package_name",
       "package_overrides",
@@ -934,7 +1215,7 @@
       "package_sideeffects",
       "package_type"
     ],
-    "42": [
+    "51": [
       "package_scripts",
       "package_scripts_build",
       "package_scripts_build_dev",
@@ -943,34 +1224,7 @@
       "package_scripts_lint",
       "package_scripts_preview"
     ],
-    "43": [
-      "src_components_news_pipelinepreviewdialog_pipelinepreviewdialog",
-      "src_lib_pipelinepreview_functions",
-      "src_lib_pipelinepreview_functions_nomerelacao",
-      "src_lib_pipelinepreview_functions_previewpipelineserver",
-      "src_lib_pipelinepreview_functions_relacao",
-      "src_lib_pipelinepreview_server_entradapreview",
-      "src_lib_pipelinepreview_server_resultadopreviewlote"
-    ],
-    "44": [
-      "src_components_ui_toggle",
-      "src_components_ui_toggle_group",
-      "src_components_ui_toggle_group_togglegroup",
-      "src_components_ui_toggle_group_togglegroupcontext",
-      "src_components_ui_toggle_group_togglegroupitem",
-      "src_components_ui_toggle_toggle",
-      "src_components_ui_toggle_togglevariants"
-    ],
-    "45": [
-      "src_services_datamode",
-      "src_services_datamode_carregar",
-      "src_services_datamode_definirmododados",
-      "src_services_datamode_inscrever",
-      "src_services_datamode_mododados",
-      "src_services_datamode_ouvintes",
-      "src_services_datamode_usemododados"
-    ],
-    "46": [
+    "52": [
       "supabase_functions_analyze_news_index",
       "supabase_functions_analyze_news_index_allowed_origins",
       "supabase_functions_analyze_news_index_analysisresult",
@@ -979,7 +1233,7 @@
       "supabase_functions_analyze_news_index_isoriginallowed",
       "supabase_functions_analyze_news_index_jsonresponse"
     ],
-    "47": [
+    "53": [
       "src_lib_newsflow",
       "src_lib_newsflow_etapahistorico",
       "src_lib_newsflow_montarhistorico",
@@ -987,340 +1241,350 @@
       "src_lib_newsflow_somarminutos",
       "src_lib_types_newsstatus"
     ],
-    "48": [
-      "src_lib_rules_geofiltermode",
-      "src_lib_rules_geofiltermode_geofiltermode",
-      "src_lib_rules_geofiltermode_geographic_filter_mode",
-      "src_lib_rules_geofiltermode_permiteinsercao",
-      "src_lib_rules_geofiltermode_test",
-      "src_lib_rules_lagunascope_scopedecision"
-    ],
-    "49": [
+    "54": [
       "node_crypto",
       "src_integrations_supabase_cron_auth",
       "src_integrations_supabase_cron_auth_authenticatecronrequest",
       "src_routes_api_public_hooks_collect_news",
       "src_routes_api_public_hooks_collect_news_route"
     ],
-    "50": [
+    "55": [
+      "src_components_ui_input_otp",
+      "src_components_ui_input_otp_inputotp",
+      "src_components_ui_input_otp_inputotpgroup",
+      "src_components_ui_input_otp_inputotpseparator",
+      "src_components_ui_input_otp_inputotpslot"
+    ],
+    "56": [
+      "src_integrations_supabase_client_server",
+      "src_integrations_supabase_client_server_createsupabaseadminclient",
+      "src_integrations_supabase_client_server_createsupabasefetch",
+      "src_integrations_supabase_client_server_isnewsupabaseapikey",
+      "src_integrations_supabase_client_server_supabaseadmin"
+    ],
+    "57": [
       "src_router",
       "src_router_getrouter",
       "src_routetree_gen_register",
       "src_routetree_gen_routetree",
       "src_start_startinstance"
     ],
-    "51": [
+    "58": [
       "class_variance_authority",
       "package_dependencies_class_variance_authority"
     ],
-    "52": [
+    "59": [
       "clsx",
       "package_dependencies_clsx"
     ],
-    "53": [
+    "60": [
       "date_fns",
       "package_dependencies_date_fns"
     ],
-    "54": [
+    "61": [
       "embla_carousel_react",
       "package_dependencies_embla_carousel_react"
     ],
-    "55": [
+    "62": [
       "eslint_config_prettier",
       "package_devdependencies_eslint_config_prettier"
     ],
-    "56": [
+    "63": [
       "eslint_js",
       "package_devdependencies_eslint_js"
     ],
-    "57": [
+    "64": [
       "eslint_plugin_prettier",
       "package_devdependencies_eslint_plugin_prettier"
     ],
-    "58": [
+    "65": [
       "eslint_plugin_react_hooks",
       "package_devdependencies_eslint_plugin_react_hooks"
     ],
-    "59": [
+    "66": [
       "eslint_plugin_react_refresh",
       "package_devdependencies_eslint_plugin_react_refresh"
     ],
-    "60": [
+    "67": [
       "hookform_resolvers",
       "package_dependencies_hookform_resolvers"
     ],
-    "61": [
+    "68": [
       "input_otp",
       "package_dependencies_input_otp"
     ],
-    "62": [
+    "69": [
       "lovable_dev_vite_tanstack_config",
       "package_devdependencies_lovable_dev_vite_tanstack_config"
     ],
-    "63": [
+    "70": [
       "package_dependencies_radix_ui_react_accordion",
       "radix_ui_react_accordion"
     ],
-    "64": [
+    "71": [
       "package_dependencies_radix_ui_react_alert_dialog",
       "radix_ui_react_alert_dialog"
     ],
-    "65": [
+    "72": [
       "package_dependencies_radix_ui_react_aspect_ratio",
       "radix_ui_react_aspect_ratio"
     ],
-    "66": [
+    "73": [
       "package_dependencies_radix_ui_react_avatar",
       "radix_ui_react_avatar"
     ],
-    "67": [
+    "74": [
       "package_dependencies_radix_ui_react_collapsible",
       "radix_ui_react_collapsible"
     ],
-    "68": [
+    "75": [
       "package_dependencies_radix_ui_react_context_menu",
       "radix_ui_react_context_menu"
     ],
-    "69": [
+    "76": [
       "package_dependencies_radix_ui_react_dialog",
       "radix_ui_react_dialog"
     ],
-    "70": [
+    "77": [
       "package_dependencies_radix_ui_react_dropdown_menu",
       "radix_ui_react_dropdown_menu"
     ],
-    "71": [
+    "78": [
       "package_dependencies_radix_ui_react_hover_card",
       "radix_ui_react_hover_card"
     ],
-    "72": [
+    "79": [
       "package_dependencies_radix_ui_react_label",
       "radix_ui_react_label"
     ],
-    "73": [
+    "80": [
       "package_dependencies_radix_ui_react_menubar",
       "radix_ui_react_menubar"
     ],
-    "74": [
+    "81": [
       "package_dependencies_radix_ui_react_navigation_menu",
       "radix_ui_react_navigation_menu"
     ],
-    "75": [
+    "82": [
       "package_dependencies_radix_ui_react_popover",
       "radix_ui_react_popover"
     ],
-    "76": [
+    "83": [
       "package_dependencies_radix_ui_react_radio_group",
       "radix_ui_react_radio_group"
     ],
-    "77": [
+    "84": [
       "package_dependencies_radix_ui_react_scroll_area",
       "radix_ui_react_scroll_area"
     ],
-    "78": [
+    "85": [
       "package_dependencies_radix_ui_react_select",
       "radix_ui_react_select"
     ],
-    "79": [
+    "86": [
       "package_dependencies_radix_ui_react_separator",
       "radix_ui_react_separator"
     ],
-    "80": [
+    "87": [
       "package_dependencies_radix_ui_react_slider",
       "radix_ui_react_slider"
     ],
-    "81": [
+    "88": [
       "package_dependencies_radix_ui_react_switch",
       "radix_ui_react_switch"
     ],
-    "82": [
+    "89": [
       "package_dependencies_radix_ui_react_tabs",
       "radix_ui_react_tabs"
     ],
-    "83": [
+    "90": [
       "package_dependencies_radix_ui_react_toggle",
       "radix_ui_react_toggle"
     ],
-    "84": [
+    "91": [
       "package_dependencies_radix_ui_react_toggle_group",
       "radix_ui_react_toggle_group"
     ],
-    "85": [
+    "92": [
       "package_dependencies_radix_ui_react_tooltip",
       "radix_ui_react_tooltip"
     ],
-    "86": [
+    "93": [
       "package_dependencies_react",
       "react"
     ],
-    "87": [
+    "94": [
       "package_dependencies_react_day_picker",
       "react_day_picker"
     ],
-    "88": [
+    "95": [
       "package_dependencies_react_dom",
       "react_dom"
     ],
-    "89": [
+    "96": [
       "package_dependencies_react_resizable_panels",
       "react_resizable_panels"
     ],
-    "90": [
+    "97": [
       "package_dependencies_recharts",
       "recharts"
     ],
-    "91": [
+    "98": [
       "package_dependencies_sonner",
       "sonner"
     ],
-    "92": [
+    "99": [
       "package_dependencies_supabase_supabase_js",
       "supabase_supabase_js"
     ],
-    "93": [
+    "100": [
       "package_dependencies_tailwind_merge",
       "tailwind_merge"
     ],
-    "94": [
+    "101": [
       "package_dependencies_tailwindcss",
       "tailwindcss"
     ],
-    "95": [
+    "102": [
       "package_dependencies_tailwindcss_vite",
       "tailwindcss_vite"
     ],
-    "96": [
+    "103": [
       "package_dependencies_tanstack_react_query",
       "tanstack_react_query"
     ],
-    "97": [
+    "104": [
       "package_dependencies_tanstack_react_router",
       "tanstack_react_router"
     ],
-    "98": [
+    "105": [
       "package_dependencies_tanstack_react_start",
       "tanstack_react_start"
     ],
-    "99": [
+    "106": [
       "package_dependencies_tanstack_router_plugin",
       "tanstack_router_plugin"
     ],
-    "100": [
+    "107": [
       "package_dependencies_tw_animate_css",
       "tw_animate_css"
     ],
-    "101": [
+    "108": [
       "package_dependencies_vaul",
       "vaul"
     ],
-    "102": [
+    "109": [
       "package_dependencies_vite_tsconfig_paths",
       "vite_tsconfig_paths"
     ],
-    "103": [
+    "110": [
       "package_dependencies_zod",
       "zod"
     ],
-    "104": [
+    "111": [
       "package_devdependencies_prettier",
       "prettier"
     ],
-    "105": [
+    "112": [
       "package_devdependencies_types_react",
       "types_react"
     ],
-    "106": [
+    "113": [
       "package_devdependencies_types_react_dom",
       "types_react_dom"
     ],
-    "107": [
+    "114": [
       "package_devdependencies_typescript",
       "typescript"
     ],
-    "108": [
+    "115": [
       "package_devdependencies_typescript_eslint",
       "typescript_eslint"
     ],
-    "109": [
+    "116": [
       "package_devdependencies_vite",
       "vite"
     ],
-    "110": [
+    "117": [
       "package_devdependencies_vitejs_plugin_react",
       "vitejs_plugin_react"
     ],
-    "111": [
+    "118": [
+      "src_routes_index",
+      "src_routes_index_route"
+    ],
+    "119": [
       "eslint_config"
     ],
-    "112": [
+    "120": [
       "src_components_ui_aspect_ratio"
     ],
-    "113": [
+    "121": [
       "src_components_ui_collapsible"
     ],
-    "114": [
+    "122": [
       "vite_config"
     ]
   },
   "cohesion": {
-    "0": 0.0544464609800363,
-    "1": 0.07585568917668825,
-    "2": 0.14444444444444443,
-    "3": 0.07142857142857142,
-    "4": 0.10338680926916222,
-    "5": 0.10873440285204991,
+    "0": 0.06456140350877193,
+    "1": 0.07142857142857142,
+    "2": 0.05858585858585859,
+    "3": 0.06429070580013976,
+    "4": 0.07142857142857142,
+    "5": 0.1532976827094474,
     "6": 0.0625,
-    "7": 0.11965811965811966,
-    "8": 0.09971509971509972,
-    "9": 0.11384615384615385,
-    "10": 0.16666666666666666,
-    "11": 0.08,
-    "12": 0.20652173913043478,
-    "13": 0.12318840579710146,
-    "14": 0.08695652173913043,
-    "15": 0.12554112554112554,
-    "16": 0.14285714285714285,
-    "17": 0.10526315789473684,
-    "18": 0.1695906432748538,
-    "19": 0.15789473684210525,
-    "20": 0.16374269005847952,
-    "21": 0.19117647058823528,
-    "22": 0.11764705882352941,
-    "23": 0.21666666666666667,
-    "24": 0.225,
-    "25": 0.19047619047619047,
-    "26": 0.1619047619047619,
-    "27": 0.18681318681318682,
-    "28": 0.15384615384615385,
-    "29": 0.16666666666666666,
-    "30": 0.21212121212121213,
-    "31": 0.18181818181818182,
-    "32": 0.2545454545454545,
-    "33": 0.2727272727272727,
-    "34": 0.2,
-    "35": 0.2,
-    "36": 0.2,
-    "37": 0.3111111111111111,
-    "38": 0.25,
-    "39": 0.2857142857142857,
-    "40": 0.32142857142857145,
-    "41": 0.2857142857142857,
-    "42": 0.2857142857142857,
-    "43": 0.3333333333333333,
-    "44": 0.42857142857142855,
-    "45": 0.38095238095238093,
-    "46": 0.38095238095238093,
-    "47": 0.4,
-    "48": 0.4666666666666667,
-    "49": 0.6,
-    "50": 0.4,
-    "51": 1.0,
-    "52": 1.0,
-    "53": 1.0,
-    "54": 1.0,
-    "55": 1.0,
-    "56": 1.0,
-    "57": 1.0,
+    "7": 0.17701149425287357,
+    "8": 0.06666666666666667,
+    "9": 0.11083743842364532,
+    "10": 0.1225071225071225,
+    "11": 0.11965811965811966,
+    "12": 0.1111111111111111,
+    "13": 0.09971509971509972,
+    "14": 0.12923076923076923,
+    "15": 0.18666666666666668,
+    "16": 0.12333333333333334,
+    "17": 0.12318840579710146,
+    "18": 0.11956521739130435,
+    "19": 0.15019762845849802,
+    "20": 0.10276679841897234,
+    "21": 0.21645021645021645,
+    "22": 0.1,
+    "23": 0.10526315789473684,
+    "24": 0.1437908496732026,
+    "25": 0.19117647058823528,
+    "26": 0.11764705882352941,
+    "27": 0.15441176470588236,
+    "28": 0.19117647058823528,
+    "29": 0.21666666666666667,
+    "30": 0.225,
+    "31": 0.1619047619047619,
+    "32": 0.18681318681318682,
+    "33": 0.27472527472527475,
+    "34": 0.15384615384615385,
+    "35": 0.16666666666666666,
+    "36": 0.20512820512820512,
+    "37": 0.2564102564102564,
+    "38": 0.22727272727272727,
+    "39": 0.24242424242424243,
+    "40": 0.21212121212121213,
+    "41": 0.18181818181818182,
+    "42": 0.23636363636363636,
+    "43": 0.2545454545454545,
+    "44": 0.3111111111111111,
+    "45": 0.2,
+    "46": 0.2222222222222222,
+    "47": 0.25,
+    "48": 0.2857142857142857,
+    "49": 0.32142857142857145,
+    "50": 0.2857142857142857,
+    "51": 0.2857142857142857,
+    "52": 0.38095238095238093,
+    "53": 0.4,
+    "54": 0.6,
+    "55": 0.4,
+    "56": 0.6,
+    "57": 0.4,
     "58": 1.0,
     "59": 1.0,
     "60": 1.0,
@@ -1377,13 +1641,56 @@
     "111": 1.0,
     "112": 1.0,
     "113": 1.0,
-    "114": 1.0
+    "114": 1.0,
+    "115": 1.0,
+    "116": 1.0,
+    "117": 1.0,
+    "118": 1.0,
+    "119": 1.0,
+    "120": 1.0,
+    "121": 1.0,
+    "122": 1.0
   },
   "gods": [
     {
       "id": "src_lib_utils_cn",
       "label": "cn()",
-      "degree": 220
+      "degree": 224
+    },
+    {
+      "id": "src_hooks_useproject_useproject",
+      "label": "useProject()",
+      "degree": 36
+    },
+    {
+      "id": "src_components_ui_button_button",
+      "label": "Button",
+      "degree": 29
+    },
+    {
+      "id": "src_components_ui_card_card",
+      "label": "Card",
+      "degree": 26
+    },
+    {
+      "id": "src_components_ui_card_cardcontent",
+      "label": "CardContent",
+      "degree": 26
+    },
+    {
+      "id": "src_components_ui_badge_badge",
+      "label": "Badge()",
+      "degree": 25
+    },
+    {
+      "id": "src_lib_format_formatardatahora",
+      "label": "formatarDataHora()",
+      "degree": 24
+    },
+    {
+      "id": "src_routetree_gen_fileroutesbypath",
+      "label": "FileRoutesByPath",
+      "degree": 23
     },
     {
       "id": "tsconfig_compileroptions",
@@ -1391,58 +1698,12 @@
       "degree": 22
     },
     {
-      "id": "src_hooks_useproject_useproject",
-      "label": "useProject()",
-      "degree": 20
-    },
-    {
-      "id": "src_components_ui_button_button",
-      "label": "Button",
-      "degree": 19
-    },
-    {
-      "id": "src_lib_types_newsitem",
-      "label": "NewsItem",
+      "id": "src_components_common_loadingstate_loadingstate",
+      "label": "LoadingState()",
       "degree": 18
-    },
-    {
-      "id": "src_components_ui_card_card",
-      "label": "Card",
-      "degree": 17
-    },
-    {
-      "id": "src_components_ui_card_cardcontent",
-      "label": "CardContent",
-      "degree": 17
-    },
-    {
-      "id": "src_components_ui_badge_badge",
-      "label": "Badge()",
-      "degree": 15
-    },
-    {
-      "id": "src_components_ui_card_cardheader",
-      "label": "CardHeader",
-      "degree": 15
-    },
-    {
-      "id": "src_components_ui_card_cardtitle",
-      "label": "CardTitle",
-      "degree": 15
     }
   ],
   "surprises": [
-    {
-      "source": "Props",
-      "target": "NewsItem",
-      "source_files": [
-        "src/components/common/NewsCard.tsx",
-        "src/lib/types.ts"
-      ],
-      "confidence": "EXTRACTED",
-      "relation": "references",
-      "why": "bridges separate communities; peripheral node `Props` unexpectedly reaches hub `NewsItem`"
-    },
     {
       "source": "AlertDialogOverlay",
       "target": "cn()",
@@ -1455,37 +1716,48 @@
       "why": "bridges separate communities; peripheral node `AlertDialogOverlay` unexpectedly reaches hub `cn()`"
     },
     {
-      "source": "Carousel",
+      "source": "BreadcrumbList",
       "target": "cn()",
       "source_files": [
-        "src/components/ui/carousel.tsx",
+        "src/components/ui/breadcrumb.tsx",
         "src/lib/utils.ts"
       ],
       "confidence": "EXTRACTED",
       "relation": "calls",
-      "why": "bridges separate communities; peripheral node `Carousel` unexpectedly reaches hub `cn()`"
+      "why": "bridges separate communities; peripheral node `BreadcrumbList` unexpectedly reaches hub `cn()`"
     },
     {
-      "source": "ChartContainer",
+      "source": "BreadcrumbItem",
       "target": "cn()",
       "source_files": [
-        "src/components/ui/chart.tsx",
+        "src/components/ui/breadcrumb.tsx",
         "src/lib/utils.ts"
       ],
       "confidence": "EXTRACTED",
       "relation": "calls",
-      "why": "bridges separate communities; peripheral node `ChartContainer` unexpectedly reaches hub `cn()`"
+      "why": "bridges separate communities; peripheral node `BreadcrumbItem` unexpectedly reaches hub `cn()`"
     },
     {
-      "source": "Checkbox",
+      "source": "BreadcrumbLink",
       "target": "cn()",
       "source_files": [
-        "src/components/ui/checkbox.tsx",
+        "src/components/ui/breadcrumb.tsx",
         "src/lib/utils.ts"
       ],
       "confidence": "EXTRACTED",
       "relation": "calls",
-      "why": "bridges separate communities; peripheral node `Checkbox` unexpectedly reaches hub `cn()`"
+      "why": "bridges separate communities; peripheral node `BreadcrumbLink` unexpectedly reaches hub `cn()`"
+    },
+    {
+      "source": "BreadcrumbPage",
+      "target": "cn()",
+      "source_files": [
+        "src/components/ui/breadcrumb.tsx",
+        "src/lib/utils.ts"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "bridges separate communities; peripheral node `BreadcrumbPage` unexpectedly reaches hub `cn()`"
     }
   ],
   "tokens": {
