@@ -1,16 +1,9 @@
 import { Badge } from "@/components/ui/badge";
 
 export function ConfidenceBadge({ confianca }: { confianca: number }) {
-  let variant: "default" | "secondary" | "destructive" | "outline" = "default";
-  let label = `${confianca}% confiança`;
-
-  if (confianca >= 85) {
-    variant = "default";
-  } else if (confianca >= 65) {
-    variant = "secondary";
-  } else {
-    variant = "destructive";
-  }
+  const variant: "default" | "secondary" | "destructive" | "outline" =
+    confianca >= 85 ? "default" : confianca >= 65 ? "secondary" : "destructive";
+  const label = `${confianca}% confiança`;
 
   return <Badge variant={variant}>{label}</Badge>;
 }
