@@ -29,7 +29,8 @@ export type AcaoAuditavel =
   | "deliverable_update"
   | "instagram_disconnect";
 
-const CHAVES_PROIBIDAS = /(token|secret|password|senha|api[_-]?key|authorization|cookie)/i;
+const CHAVES_PROIBIDAS =
+  /(token|secret|password|senha|api[_-]?key|authorization|cookie)/i;
 
 export function sanitizarDetalhes(
   detalhes: Record<string, unknown> | undefined,
@@ -70,13 +71,18 @@ export async function registrarAuditoria(
 
   if (!rpc.error) return;
 
-  const funcaoNaoExiste = /function .*registrar_auditoria.*does not exist|PGRST202/i.test(rpc.error.message);
+  const funcaoNaoExiste =
+    /function .*registrar_auditoria.*does not exist|PGRST202/i.test(
+      rpc.error.message,
+    );
   if (!funcaoNaoExiste) {
     throw new Error(`Falha ao registrar auditoria: ${rpc.error.message}`);
   }
 
   // Compatibilidade transitória para ambientes que ainda não aplicaram a migration.
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { supabaseAdmin } = await import(
+    "@/integrations/supabase/client.server"
+  );
   const { error } = await supabaseAdmin.from("audit_logs").insert({
     project_id: entrada.projectId,
     actor_id: entrada.actorId,
@@ -111,7 +117,9 @@ export async function criarNotificacao(
     campaignId?: string | null;
   },
 ): Promise<void> {
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { supabaseAdmin } = await import(
+    "@/integrations/supabase/client.server"
+  );
   const { error } = await supabaseAdmin.from("notifications").insert({
     project_id: entrada.projectId,
     kind: entrada.kind,
