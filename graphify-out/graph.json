@@ -5189,7 +5189,7 @@
       "file_type": "code",
       "norm_label": "useauth()",
       "source_file": "src/hooks/useAuth.ts",
-      "source_location": "L13"
+      "source_location": "L12"
     },
     {
       "id": "src_routes_login_loginpage",
@@ -46928,7 +46928,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/hooks/useAuth.ts",
-      "source_location": "L13",
+      "source_location": "L12",
       "weight": 1.0
     },
     {
@@ -55382,5 +55382,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "cfeb86eb14d765b8b2cb2e77eb1b5c7aa9eddd23"
+  "built_at_commit": "2a4c1198c4c1acbb4975a2c9fff7cc5bbdba8856"
 }
