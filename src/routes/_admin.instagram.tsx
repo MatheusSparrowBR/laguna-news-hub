@@ -42,9 +42,9 @@ const MENSAGEM_RETORNO: Record<string, { tipo: "ok" | "erro"; texto: string }> =
 };
 
 export const Route = createFileRoute("/_admin/instagram")({
-  validateSearch: (search: Record<string, unknown>) => ({
-    instagram: typeof search["instagram"] === "string" ? search["instagram"] : undefined,
-  }),
+  validateSearch: (search: Record<string, unknown>): { instagram?: string | undefined } =>
+    typeof search["instagram"] === "string" ? { instagram: search["instagram"] } : {},
+
   head: () => ({
     meta: [
       { title: "Instagram | HORA NEWS LAGUNA" },
