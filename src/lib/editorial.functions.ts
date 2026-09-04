@@ -46,6 +46,12 @@ export const salvarOverrideGeografico = createServerFn({ method: "POST" })
       .maybeSingle();
 
     const agora = new Date().toISOString();
+    const { houveMudancaGeo } = await import("@/lib/rules/editorialAudit");
+    const mudou = houveMudancaGeo(
+      atual?.manual_decision as "local" | "outside" | "uncertain" | null,
+      atual?.decision as "local" | "outside" | "uncertain" | null,
+      data.manual_decision,
+    );
 
     if (atual) {
       // A decisão automática (decision) NUNCA é sobrescrita.
@@ -76,21 +82,32 @@ export const salvarOverrideGeografico = createServerFn({ method: "POST" })
       if (error) throw new Error("Não foi possível salvar a revisão geográfica.");
     }
 
-    const { registrarAuditoria } = await import("@/lib/audit.server");
-    await registrarAuditoria(supabase, {
-      projectId: data.project_id,
-      actorId: userId,
-      action: "geo_override",
-      entityType: "news",
-      entityId: data.news_id,
-      details: {
-        automatic_decision: atual?.decision ?? null,
-        manual_decision: data.manual_decision,
-      },
-    });
+    // Auditoria somente quando a decisão vigente mudou de fato.
+    if (mudou) {
+      const { registrarAuditoria } = await import("@/lib/audit.server");
+      await registrarAuditoria(supabase, {
+        projectId: data.project_id,
+        actorId: userId,
+        action: "geo_override",
+        entityType: "news",
+        entityId: data.news_id,
+        details: {
+          automatic_decision: atual?.decision ?? null,
+          previous_manual_decision: atual?.manual_decision ?? null,
+          manual_decision: data.manual_decision,
+          review_notes: data.review_notes ?? null,
+        },
+      });
+    }
 
-    return { ok: true, automatic_decision: atual?.decision ?? null, manual_decision: data.manual_decision };
+    return {
+      ok: true,
+      mudou,
+      automatic_decision: atual?.decision ?? null,
+      manual_decision: data.manual_decision,
+    };
   });
+
 
 export const salvarDecisaoEditorial = createServerFn({ method: "POST" })
   .middleware([analyzeAuthMiddleware])
