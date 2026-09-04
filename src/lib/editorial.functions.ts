@@ -46,6 +46,12 @@ export const salvarOverrideGeografico = createServerFn({ method: "POST" })
       .maybeSingle();
 
     const agora = new Date().toISOString();
+    const { houveMudancaGeo } = await import("@/lib/rules/editorialAudit");
+    const mudou = houveMudancaGeo(
+      atual?.manual_decision as "local" | "outside" | "uncertain" | null,
+      atual?.decision as "local" | "outside" | "uncertain" | null,
+      data.manual_decision,
+    );
 
     if (atual) {
       // A decisão automática (decision) NUNCA é sobrescrita.
@@ -76,21 +82,32 @@ export const salvarOverrideGeografico = createServerFn({ method: "POST" })
       if (error) throw new Error("Não foi possível salvar a revisão geográfica.");
     }
 
-    const { registrarAuditoria } = await import("@/lib/audit.server");
-    await registrarAuditoria(supabase, {
-      projectId: data.project_id,
-      actorId: userId,
-      action: "geo_override",
-      entityType: "news",
-      entityId: data.news_id,
-      details: {
-        automatic_decision: atual?.decision ?? null,
-        manual_decision: data.manual_decision,
-      },
-    });
+    // Auditoria somente quando a decisão vigente mudou de fato.
+    if (mudou) {
+      const { registrarAuditoria } = await import("@/lib/audit.server");
+      await registrarAuditoria(supabase, {
+        projectId: data.project_id,
+        actorId: userId,
+        action: "geo_override",
+        entityType: "news",
+        entityId: data.news_id,
+        details: {
+          automatic_decision: atual?.decision ?? null,
+          previous_manual_decision: atual?.manual_decision ?? null,
+          manual_decision: data.manual_decision,
+          review_notes: data.review_notes ?? null,
+        },
+      });
+    }
 
-    return { ok: true, automatic_decision: atual?.decision ?? null, manual_decision: data.manual_decision };
+    return {
+      ok: true,
+      mudou,
+      automatic_decision: atual?.decision ?? null,
+      manual_decision: data.manual_decision,
+    };
   });
+
 
 export const salvarDecisaoEditorial = createServerFn({ method: "POST" })
   .middleware([analyzeAuthMiddleware])
@@ -117,14 +134,17 @@ export const salvarDecisaoEditorial = createServerFn({ method: "POST" })
       throw new Error("Notícia não encontrada neste projeto.");
     }
 
-    // Idempotente: repetir a mesma decisão não gera efeito adicional.
-    if (noticia.status !== data.decision) {
-      const { error } = await supabase
-        .from("news")
-        .update({ status: data.decision })
-        .eq("id", data.news_id);
-      if (error) throw new Error("Não foi possível salvar a decisão editorial.");
-    }
+    // Idempotente: repetir a mesma decisão não grava e não audita.
+    const { houveMudancaStatus } = await import("@/lib/rules/editorialAudit");
+    const mudou = houveMudancaStatus(noticia.status, data.decision);
+
+    if (!mudou) return { ok: true, mudou: false, status: data.decision };
+
+    const { error } = await supabase
+      .from("news")
+      .update({ status: data.decision })
+      .eq("id", data.news_id);
+    if (error) throw new Error("Não foi possível salvar a decisão editorial.");
 
     const acao =
       data.decision === "approved"
@@ -143,7 +163,8 @@ export const salvarDecisaoEditorial = createServerFn({ method: "POST" })
       details: { de: noticia.status, para: data.decision, nota: data.note ?? null },
     });
 
-    return { ok: true, status: data.decision };
+    return { ok: true, mudou: true, status: data.decision };
+
   });
 
 export const obterEstadoInstagram = createServerFn({ method: "POST" })

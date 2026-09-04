@@ -200,13 +200,13 @@ function EditorialInboxPage() {
                   <Button
                     size="sm"
                     variant="outline"
-                    disabled={decisao.isPending}
+                    disabled={decisao.isPending || noticia.status === "review_required"}
                     onClick={() =>
                       decisao.mutate({ news_id: noticia.id, decision: "review_required" })
                     }
                   >
                     <RotateCcw className="size-4" />
-                    Revisar
+                    {noticia.status === "review_required" ? "Em revisão" : "Enviar para revisão"}
                   </Button>
                   <Button
                     size="sm"
@@ -219,10 +219,15 @@ function EditorialInboxPage() {
                     <X className="size-4" />
                     Rejeitar
                   </Button>
-                  <Button size="sm" variant="outline" onClick={() => setEmRevisao(noticia)}>
+                  <Button
+                    size="sm"
+                    variant={decisaoVigente(noticia) === "outside" ? "default" : "outline"}
+                    onClick={() => setEmRevisao(noticia)}
+                  >
                     <MapPin className="size-4" />
-                    Local
+                    Revisar localização
                   </Button>
+
                   <Button size="sm" variant="outline" onClick={() => setEmComposicao(noticia)}>
                     <PenLine className="size-4" />
                     Criar publicação

@@ -110,6 +110,13 @@ function useInvalidar(chaves: string[], projectId?: string) {
   };
 }
 
+const MENSAGEM_DECISAO: Record<string, string> = {
+  approved: "Notícia aprovada.",
+  rejected: "Notícia rejeitada.",
+  review_required: "Notícia enviada para revisão.",
+  archived: "Notícia arquivada.",
+};
+
 export function useDecisaoEditorial(projectId?: string) {
   const invalidar = useInvalidar(["fila-editorial", "metricas-internas", "noticias"], projectId);
   return useMutation({
@@ -118,9 +125,13 @@ export function useDecisaoEditorial(projectId?: string) {
       decision: "approved" | "rejected" | "review_required" | "archived";
       note?: string | undefined;
     }) => salvarDecisaoEditorial({ data: { project_id: projectId!, ...entrada } }),
-    onSuccess: () => {
+    onSuccess: (resultado) => {
       invalidar();
-      toast.success("Decisão registrada.");
+      if (resultado.mudou) {
+        toast.success(MENSAGEM_DECISAO[resultado.status] ?? "Situação atualizada.");
+      } else {
+        toast.info("Nada mudou: a notícia já estava nessa situação.");
+      }
     },
     onError: (erro: Error) => toast.error(erro.message),
   });
@@ -134,13 +145,16 @@ export function useOverrideGeografico(projectId?: string) {
       manual_decision: "local" | "outside" | "uncertain";
       review_notes?: string | undefined;
     }) => salvarOverrideGeografico({ data: { project_id: projectId!, ...entrada } }),
-    onSuccess: () => {
+    onSuccess: (resultado) => {
       invalidar();
-      toast.success("Revisão geográfica salva.");
+      toast.success(
+        resultado.mudou ? "Localização atualizada." : "Localização mantida como estava.",
+      );
     },
     onError: (erro: Error) => toast.error(erro.message),
   });
 }
+
 
 export function useSalvarPost(projectId?: string) {
   const invalidar = useInvalidar(["posts-projeto", "metricas-internas"], projectId);
