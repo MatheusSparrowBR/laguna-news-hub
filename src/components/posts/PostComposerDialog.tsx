@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Download, ImagePlus, Loader2, X } from "lucide-react";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -23,6 +23,7 @@ import {
 import { exportarArte, baixarArquivo } from "@/lib/art/exportArt";
 import { renderizarArteSvg } from "@/lib/art/renderArt";
 import { enviarImagemPost, salvarArteGerada, validarImagem } from "@/services/postAssets";
+import { obterCreditoFotoPost, salvarCreditoFotoPost } from "@/services/postPhotoCredit";
 import type { Campanha, EntradaPost, NoticiaEditorial, PostRegistro, Sponsor } from "@/services/editorialData";
 
 export type TipoPost = "noticia" | "patrocinado";
@@ -65,10 +66,26 @@ export function PostComposerDialog({
   const [imagem, setImagem] = useState(post?.image_url ?? noticia?.image_url ?? "");
   const [imagemFile, setImagemFile] = useState<File | null>(null);
   const [imagemPreview, setImagemPreview] = useState<string | null>(null);
+  const [creditoFoto, setCreditoFoto] = useState("");
   const [agendamento, setAgendamento] = useState(post?.scheduled_at?.slice(0, 16) ?? "");
   const [exportando, setExportando] = useState(false);
   const [enviandoImagem, setEnviandoImagem] = useState(false);
   const inputImagemRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (!aberto || !post?.id) return;
+    let ativo = true;
+    void obterCreditoFotoPost(post.id)
+      .then((credito) => {
+        if (ativo) setCreditoFoto(credito);
+      })
+      .catch(() => {
+        // Compatibilidade com posts antigos ou ambientes ainda sem a migration aplicada.
+      });
+    return () => {
+      ativo = false;
+    };
+  }, [aberto, post?.id]);
 
   const campanha = campanhas.find((c) => c.id === campanhaId) ?? null;
   const patrocinador = patrocinadores.find((s) => s.id === campanha?.sponsor_id) ?? null;
@@ -82,12 +99,13 @@ export function PostComposerDialog({
       subtitle: patrocinado ? (campanha?.name ?? null) : (noticia?.source_name ?? null),
       imageUrl: imagemAtual || null,
       sourceName: patrocinado ? null : (noticia?.source_name ?? null),
+      photoCredit: creditoFoto.trim() || null,
       dateLabel: new Date(noticia?.discovered_at ?? Date.now()).toLocaleDateString("pt-BR"),
       sponsorName: patrocinado ? (patrocinador?.display_name ?? patrocinador?.name ?? null) : null,
       sponsorLogoUrl: patrocinado ? (patrocinador?.logo_url ?? null) : null,
       cta: null,
     }),
-    [patrocinado, template, titulo, noticia, imagemAtual, campanha, patrocinador],
+    [patrocinado, template, titulo, noticia, imagemAtual, creditoFoto, campanha, patrocinador],
   );
 
   const escolherImagem = async (file: File | undefined) => {
@@ -151,6 +169,10 @@ export function PostComposerDialog({
       toast.error("Escreva o título da publicação.");
       return;
     }
+    if ((imagemAtual || imagemFile) && !creditoFoto.trim()) {
+      toast.error("Informe a fonte ou o crédito da foto antes de salvar a publicação.");
+      return;
+    }
     setEnviandoImagem(Boolean(imagemFile));
     try {
       // Primeiro cria/atualiza o post para obter um post_id estável.
@@ -172,6 +194,11 @@ export function PostComposerDialog({
         scheduled_at: agendamento ? new Date(agendamento).toISOString() : null,
       });
 
+      const creditoPersistido = await salvarCreditoFotoPost(salvo.id, creditoFoto.trim() || null);
+      if (!creditoPersistido) {
+        toast.warning("Crédito salvo nesta arte, mas a coluna do banco ainda não está disponível. Aplique a migration do projeto.");
+      }
+
       if (imagemFile) {
         const asset = await enviarImagemPost({ projectId, postId: salvo.id, file: imagemFile, assetType: "source_image" });
         setImagem(asset.signedUrl);
@@ -184,7 +211,7 @@ export function PostComposerDialog({
       // Ao salvar/aprovar, persiste também a arte final em PNG para que a publicação
       // não dependa somente de um preview local.
       if (imagemAtual || imagemFile) {
-        const arteEntrada = { ...entradaArte, imageUrl: imagemAtual || imagem };
+        const arteEntrada = { ...entradaArte, imageUrl: imagemAtual || imagem, photoCredit: creditoFoto.trim() || null };
         const svg = renderizarArteSvg({ ...arteEntrada, format: "feed" });
         const arquivo = await exportarArte(svg, "feed", "image/png");
         await salvarArteGerada({ projectId, postId: salvo.id, blob: arquivo.blob, width: arquivo.width, height: arquivo.height });
@@ -264,6 +291,18 @@ export function PostComposerDialog({
                 </Button>
               )}
               <p className="text-xs text-muted-foreground">JPG, JPEG, PNG ou WEBP • máximo 10 MB • a foto será validada e enviada ao Storage privado.</p>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="credito-foto-post">Crédito / fonte da foto</Label>
+              <Input
+                id="credito-foto-post"
+                value={creditoFoto}
+                onChange={(event) => setCreditoFoto(event.target.value)}
+                maxLength={200}
+                placeholder="Ex.: Prefeitura de Laguna, Defesa Civil, Leitor João..."
+              />
+              <p className="text-xs text-muted-foreground">Informe exatamente de quem é a foto ou qual é a fonte. Esse texto aparecerá na arte como “Foto: ...”.</p>
             </div>
 
             <div className="space-y-2">
