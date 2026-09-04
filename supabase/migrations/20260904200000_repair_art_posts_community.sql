@@ -9,107 +9,12 @@ ALTER TABLE public.posts
   ADD COLUMN IF NOT EXISTS idempotency_key text,
   ADD COLUMN IF NOT EXISTS community_submission_id uuid,
   ADD COLUMN IF NOT EXISTS template_key text,
-  ADD COLUMN IF NOT EXISTS channel text NOT NULL DEFAULT 'instagram';
-
-ALTER TABLE public.posts
-  ADD COLUMN IF NOT EXISTS published_at timestamptz;
-
-ALTER TABLE public.posts
-  ADD CONSTRAINT posts_community_submission_id_fkey
-  FOREIGN KEY (community_submission_id)
-  REFERENCES public.community_submissions(id)
-  ON DELETE SET NULL;
-
--- A implementação do frontend usa ON CONFLICT (idempotency_key).
--- O índice anterior era composto por (project_id, idempotency_key) e ainda
--- possuía predicado parcial, que não pode ser inferido por esse ON CONFLICT.
-DROP INDEX IF EXISTS public.posts_idempotency_key_uidx;
-CREATE UNIQUE INDEX IF NOT EXISTS posts_idempotency_key_uidx
-  ON public.posts (idempotency_key)
-  WHERE idempotency_key IS NOT NULL;
+  ADD COLUMN IF NOT EXISTS channel text NOT NULL DEFAULT 'instagram',
+  ADD COLUMN IF NOT EXISTS published_at timestamptz,
+  ADD COLUMN IF NOT EXISTS photo_credit text;
 
 -- =========================================================
--- 2) Normalização de idempotência para notícias, campanhas,
---    pautas da comunidade e posts manuais
--- =========================================================
-
-CREATE OR REPLACE FUNCTION public.normalize_post_idempotency_key()
-RETURNS trigger
-LANGUAGE plpgsql
-SET search_path = public
-AS $$
-BEGIN
-  IF NEW.community_submission_id IS NOT NULL THEN
-    NEW.idempotency_key := NEW.project_id::text || ':community:' || NEW.community_submission_id::text || ':' || NEW.post_type::text;
-  ELSIF NEW.news_id IS NOT NULL THEN
-    NEW.idempotency_key := NEW.project_id::text || ':news:' || NEW.news_id::text || ':' || NEW.post_type::text;
-  ELSIF NEW.campaign_id IS NOT NULL THEN
-    NEW.idempotency_key := NEW.project_id::text || ':campaign:' || NEW.campaign_id::text || ':' || NEW.post_type::text;
-  ELSIF NEW.idempotency_key IS NULL
-     OR NEW.idempotency_key = NEW.project_id::text || ':manual:' || NEW.post_type::text THEN
-    -- Posts manuais não devem bloquear novos posts manuais do mesmo projeto.
-    -- NEW.id já recebeu o default uuid antes do trigger.
-    NEW.idempotency_key := NEW.project_id::text || ':manual:' || NEW.id::text || ':' || NEW.post_type::text;
-  END IF;
-
-  RETURN NEW;
-END;
-$$;
-
-DROP TRIGGER IF EXISTS normalize_post_idempotency_key ON public.posts;
-CREATE TRIGGER normalize_post_idempotency_key
-BEFORE INSERT OR UPDATE OF project_id, news_id, campaign_id, community_submission_id, post_type, idempotency_key
-ON public.posts
-FOR EACH ROW EXECUTE FUNCTION public.normalize_post_idempotency_key();
-
-REVOKE ALL ON FUNCTION public.normalize_post_idempotency_key() FROM anon, authenticated, public;
-
--- =========================================================
--- 3) Storage oficial de artes e fotos de posts
--- =========================================================
-
-INSERT INTO storage.buckets (id, name, public)
-VALUES ('social-assets', 'social-assets', false)
-ON CONFLICT (id) DO UPDATE SET public = false;
-
-DROP POLICY IF EXISTS social_assets_select_own_project ON storage.objects;
-CREATE POLICY social_assets_select_own_project
-  ON storage.objects FOR SELECT TO authenticated
-  USING (
-    bucket_id = 'social-assets'
-    AND public.owns_project(NULLIF((storage.foldername(name))[1], '')::uuid)
-  );
-
-DROP POLICY IF EXISTS social_assets_insert_own_project ON storage.objects;
-CREATE POLICY social_assets_insert_own_project
-  ON storage.objects FOR INSERT TO authenticated
-  WITH CHECK (
-    bucket_id = 'social-assets'
-    AND public.owns_project(NULLIF((storage.foldername(name))[1], '')::uuid)
-  );
-
-DROP POLICY IF EXISTS social_assets_update_own_project ON storage.objects;
-CREATE POLICY social_assets_update_own_project
-  ON storage.objects FOR UPDATE TO authenticated
-  USING (
-    bucket_id = 'social-assets'
-    AND public.owns_project(NULLIF((storage.foldername(name))[1], '')::uuid)
-  )
-  WITH CHECK (
-    bucket_id = 'social-assets'
-    AND public.owns_project(NULLIF((storage.foldername(name))[1], '')::uuid)
-  );
-
-DROP POLICY IF EXISTS social_assets_delete_own_project ON storage.objects;
-CREATE POLICY social_assets_delete_own_project
-  ON storage.objects FOR DELETE TO authenticated
-  USING (
-    bucket_id = 'social-assets'
-    AND public.owns_project(NULLIF((storage.foldername(name))[1], '')::uuid)
-  );
-
--- =========================================================
--- 4) Tabelas de comunidade: garante que o runtime esteja alinhado
+-- 2) Tabelas de comunidade: garante que o runtime esteja alinhado
 -- =========================================================
 
 CREATE TABLE IF NOT EXISTS public.community_submissions (
@@ -195,6 +100,87 @@ REVOKE ALL ON public.community_submissions FROM anon;
 REVOKE ALL ON public.community_submission_media FROM anon;
 
 -- =========================================================
+-- 3) Idempotência dos posts
+-- =========================================================
+
+DROP INDEX IF EXISTS public.posts_idempotency_key_uidx;
+CREATE UNIQUE INDEX IF NOT EXISTS posts_idempotency_key_uidx
+  ON public.posts (idempotency_key)
+  WHERE idempotency_key IS NOT NULL;
+
+CREATE OR REPLACE FUNCTION public.normalize_post_idempotency_key()
+RETURNS trigger
+LANGUAGE plpgsql
+SET search_path = public
+AS $$
+BEGIN
+  IF NEW.community_submission_id IS NOT NULL THEN
+    NEW.idempotency_key := NEW.project_id::text || ':community:' || NEW.community_submission_id::text || ':' || NEW.post_type::text;
+  ELSIF NEW.news_id IS NOT NULL THEN
+    NEW.idempotency_key := NEW.project_id::text || ':news:' || NEW.news_id::text || ':' || NEW.post_type::text;
+  ELSIF NEW.campaign_id IS NOT NULL THEN
+    NEW.idempotency_key := NEW.project_id::text || ':campaign:' || NEW.campaign_id::text || ':' || NEW.post_type::text;
+  ELSIF NEW.idempotency_key IS NULL
+     OR NEW.idempotency_key = NEW.project_id::text || ':manual:' || NEW.post_type::text THEN
+    NEW.idempotency_key := NEW.project_id::text || ':manual:' || NEW.id::text || ':' || NEW.post_type::text;
+  END IF;
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS normalize_post_idempotency_key ON public.posts;
+CREATE TRIGGER normalize_post_idempotency_key
+BEFORE INSERT OR UPDATE OF project_id, news_id, campaign_id, community_submission_id, post_type, idempotency_key
+ON public.posts
+FOR EACH ROW EXECUTE FUNCTION public.normalize_post_idempotency_key();
+
+REVOKE ALL ON FUNCTION public.normalize_post_idempotency_key() FROM anon, authenticated, public;
+
+-- =========================================================
+-- 4) Storage oficial de artes/fotos dos posts
+-- =========================================================
+
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('social-assets', 'social-assets', false)
+ON CONFLICT (id) DO UPDATE SET public = false;
+
+DROP POLICY IF EXISTS social_assets_select_own_project ON storage.objects;
+CREATE POLICY social_assets_select_own_project
+  ON storage.objects FOR SELECT TO authenticated
+  USING (
+    bucket_id = 'social-assets'
+    AND public.owns_project(NULLIF((storage.foldername(name))[1], '')::uuid)
+  );
+
+DROP POLICY IF EXISTS social_assets_insert_own_project ON storage.objects;
+CREATE POLICY social_assets_insert_own_project
+  ON storage.objects FOR INSERT TO authenticated
+  WITH CHECK (
+    bucket_id = 'social-assets'
+    AND public.owns_project(NULLIF((storage.foldername(name))[1], '')::uuid)
+  );
+
+DROP POLICY IF EXISTS social_assets_update_own_project ON storage.objects;
+CREATE POLICY social_assets_update_own_project
+  ON storage.objects FOR UPDATE TO authenticated
+  USING (
+    bucket_id = 'social-assets'
+    AND public.owns_project(NULLIF((storage.foldername(name))[1], '')::uuid)
+  )
+  WITH CHECK (
+    bucket_id = 'social-assets'
+    AND public.owns_project(NULLIF((storage.foldername(name))[1], '')::uuid)
+  );
+
+DROP POLICY IF EXISTS social_assets_delete_own_project ON storage.objects;
+CREATE POLICY social_assets_delete_own_project
+  ON storage.objects FOR DELETE TO authenticated
+  USING (
+    bucket_id = 'social-assets'
+    AND public.owns_project(NULLIF((storage.foldername(name))[1], '')::uuid)
+  );
+
+-- =========================================================
 -- 5) Storage privado da comunidade
 -- =========================================================
 
@@ -240,14 +226,7 @@ CREATE POLICY community_storage_delete
   );
 
 -- =========================================================
--- 6) Crédito da foto: garante a coluna usada pelo Composer
--- =========================================================
-
-ALTER TABLE public.posts
-  ADD COLUMN IF NOT EXISTS photo_credit text;
-
--- =========================================================
--- 7) Permissões públicas: nenhuma dessas tabelas deve ficar exposta a anon
+-- 6) Exposição pública
 -- =========================================================
 
 REVOKE ALL ON public.posts FROM anon;
