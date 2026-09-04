@@ -12,10 +12,16 @@ export async function obterProjetoAtualSeguro(): Promise<ProjetoAtual | null> {
   try {
     const { error } = await supabase.rpc("claim_admin_project", {});
     if (error) {
-      console.warn("[obterProjetoAtualSeguro] claim_admin_project falhou:", error.message);
+      console.warn(
+        "[obterProjetoAtualSeguro] claim_admin_project falhou:",
+        error.message,
+      );
     }
   } catch (error) {
-    console.warn("[obterProjetoAtualSeguro] claim_admin_project não disponível:", error);
+    console.warn(
+      "[obterProjetoAtualSeguro] claim_admin_project não disponível:",
+      error,
+    );
   }
 
   const {
@@ -28,7 +34,9 @@ export async function obterProjetoAtualSeguro(): Promise<ProjetoAtual | null> {
 
   const { data, error } = await supabase
     .from("projects")
-    .select("id, name, city, state, country, profile_name, instagram_username, active")
+    .select(
+      "id, name, city, state, country, profile_name, instagram_username, active",
+    )
     .eq("owner_id", user.id)
     .eq("active", true)
     .order("created_at", { ascending: true })
