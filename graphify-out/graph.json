@@ -37,7 +37,7 @@
       "file_type": "code",
       "norm_label": "tiponotificacao",
       "source_file": "src/lib/audit.server.ts",
-      "source_location": "L91"
+      "source_location": "L97"
     },
     {
       "id": "src_lib_rules_editorialaudit_decisaogeo",
@@ -2363,7 +2363,7 @@
       "file_type": "code",
       "norm_label": "registrarauditoria()",
       "source_file": "src/lib/audit.server.ts",
-      "source_location": "L50"
+      "source_location": "L51"
     },
     {
       "id": "src_lib_audit_server_sanitizardetalhes",
@@ -2374,7 +2374,7 @@
       "file_type": "code",
       "norm_label": "sanitizardetalhes()",
       "source_file": "src/lib/audit.server.ts",
-      "source_location": "L34"
+      "source_location": "L35"
     },
     {
       "id": "src_lib_format_formatardatahora",
@@ -4662,7 +4662,7 @@
       "file_type": "code",
       "norm_label": "criarnotificacao()",
       "source_file": "src/lib/audit.server.ts",
-      "source_location": "L102"
+      "source_location": "L108"
     },
     {
       "id": "src_components_editorial_geobadge_geobadge",
@@ -18771,7 +18771,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/audit.server.ts",
-      "source_location": "L61",
+      "source_location": "L62",
       "weight": 1.0
     },
     {
@@ -23358,7 +23358,7 @@
       "context": "import",
       "deferred": true,
       "source_file": "src/lib/audit.server.ts",
-      "source_location": "L114",
+      "source_location": "L120",
       "weight": 1.0
     },
     {
@@ -23371,7 +23371,7 @@
       "context": "import",
       "deferred": true,
       "source_file": "src/lib/audit.server.ts",
-      "source_location": "L79",
+      "source_location": "L83",
       "weight": 1.0
     },
     {
@@ -48265,7 +48265,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/audit.server.ts",
-      "source_location": "L102",
+      "source_location": "L108",
       "weight": 1.0
     },
     {
@@ -48287,7 +48287,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/audit.server.ts",
-      "source_location": "L34",
+      "source_location": "L35",
       "weight": 1.0
     },
     {
@@ -48298,7 +48298,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/audit.server.ts",
-      "source_location": "L50",
+      "source_location": "L51",
       "weight": 1.0
     },
     {
@@ -48309,7 +48309,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/audit.server.ts",
-      "source_location": "L91",
+      "source_location": "L97",
       "weight": 1.0
     },
     {
@@ -55529,5 +55529,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "c1381459a317d064171b57d60d8f5441b2214fe6"
+  "built_at_commit": "1f6997e63b4903aa47056319ce9ff39f965b4447"
 }
