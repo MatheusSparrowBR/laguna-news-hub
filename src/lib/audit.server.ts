@@ -46,8 +46,6 @@ export function sanitizarDetalhes(
 /**
  * Grava auditoria através de uma RPC SECURITY DEFINER que exige que o
  * usuário autenticado seja dono do projeto e usa auth.uid() como actor_id.
- * O fallback administrativo mantém compatibilidade com ambientes antigos
- * ainda não migrados, mas erros não são mais engolidos silenciosamente.
  */
 export async function registrarAuditoria(
   supabase: Cliente,
@@ -62,7 +60,7 @@ export async function registrarAuditoria(
 ): Promise<void> {
   const detalhes = sanitizarDetalhes(entrada.details);
 
-  const rpc = await supabase.rpc("registrar_auditoria", {
+  const rpc = await supabase.rpc("registrar_auditoria" as never, {
     p_project_id: entrada.projectId,
     p_action: entrada.action,
     p_entity_type: entrada.entityType,
@@ -77,6 +75,7 @@ export async function registrarAuditoria(
     throw new Error(`Falha ao registrar auditoria: ${rpc.error.message}`);
   }
 
+  // Compatibilidade transitória para ambientes que ainda não aplicaram a migration.
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { error } = await supabaseAdmin.from("audit_logs").insert({
     project_id: entrada.projectId,
