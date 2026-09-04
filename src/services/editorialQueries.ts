@@ -161,10 +161,13 @@ export function useOverrideGeografico(projectId?: string) {
   });
 }
 
-
+/**
+ * Salva o post e expõe `mutate` com o contrato assíncrono esperado pelo PostComposer.
+ * O resultado de `mutate` continua sendo seguro para chamadas existentes que ignoram o retorno.
+ */
 export function useSalvarPost(projectId?: string) {
   const invalidar = useInvalidar(["posts-projeto", "metricas-internas"], projectId);
-  return useMutation({
+  const mutation = useMutation({
     mutationFn: (entrada: EntradaPost & { id?: string | undefined }) => salvarPost(entrada),
     onSuccess: () => {
       invalidar();
@@ -172,6 +175,11 @@ export function useSalvarPost(projectId?: string) {
     },
     onError: (erro: Error) => toast.error(erro.message),
   });
+
+  return {
+    ...mutation,
+    mutate: mutation.mutateAsync,
+  };
 }
 
 export function useAlterarStatusPost(projectId?: string) {
