@@ -6,7 +6,7 @@ export interface OfficialInstagramStoryArtInput { template: TemplateKey; title: 
 export const OFFICIAL_INSTAGRAM_STORY_TEMPLATE = { key: "hora-news-laguna-official-story", format: "story" as const, width: DIMENSOES.story.width, height: DIMENSOES.story.height, logoPath: "/branding/hora-news-laguna-logo.png", logoX: 770, logoY: 1670, logoWidth: 250, logoHeight: 250 } as const;
 const FONT = "Inter, Arial, Helvetica, sans-serif";
 const W = DIMENSOES.story.width, H = DIMENSOES.story.height;
-function esc(value: string): string { return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;").replace(/'/g, "&apos;"); }
+function esc(value: string): string { return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&apos;"); }
 function formatDate(value?: string | null): string { return value || new Date().toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" }); }
 
 /** Composição editorial própria para Instagram Stories 1080×1920; não é o Feed esticado. */
