@@ -4,24 +4,30 @@ interface PhotoCreditRow {
   photo_credit: string | null;
 }
 
-/** Lê o crédito salvo de um post existente. Usa a coluna criada pela migration. */
-export async function obterCreditoFotoPost(postId: string): Promise<string> {
-  const client = supabase as unknown as {
-    from: (table: string) => {
-      select: (columns: string) => {
-        eq: (column: string, value: string) => {
-          maybeSingle: () => Promise<{ data: PhotoCreditRow | null; error: { message: string } | null }>;
-        };
+type PostsClient = {
+  from: (table: string) => {
+    select: (columns: string) => {
+      eq: (column: string, value: string) => {
+        maybeSingle: () => Promise<{ data: PhotoCreditRow | null; error: { message: string } | null }>;
       };
     };
+    update: (values: Record<string, unknown>) => {
+      eq: (column: string, value: string) => Promise<{ error: { message: string } | null }>;
+    };
   };
+};
 
-  const { data, error } = await client
-    .from("posts")
-    .select("photo_credit")
-    .eq("id", postId)
-    .maybeSingle();
+const client = supabase as unknown as PostsClient;
 
-  if (error) throw new Error(`Não foi possível carregar o crédito da foto: ${error.message}`);
+/** Lê o crédito salvo de um post existente. */
+export async function obterCreditoFotoPost(postId: string): Promise<string> {
+  const { data, error } = await client.from("posts").select("photo_credit").eq("id", postId).maybeSingle();
+  if (error) throw new Error(error.message);
   return data?.photo_credit ?? "";
+}
+
+/** Salva o crédito manualmente. Retorna false em ambientes que ainda não aplicaram a migration. */
+export async function salvarCreditoFotoPost(postId: string, photoCredit: string | null): Promise<boolean> {
+  const { error } = await client.from("posts").update({ photo_credit: photoCredit }).eq("id", postId);
+  return !error;
 }
