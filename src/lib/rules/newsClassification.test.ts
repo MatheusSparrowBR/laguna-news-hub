@@ -133,7 +133,7 @@ describe("refinamento final (saúde, trânsito, economia, turismo)", () => {
 describe('ajuste pontual: "empresa" contextual', () => {
   it('"empresa" isolada não classifica como Economia', () => {
     const r = diagnosticarClassificacao(
-      "Empresa responsável pela obraна rua é notificada pela prefeitura".replace("на", " "),
+      "Empresa responsável pela obra na rua é notificada pela prefeitura",
       "A empresa terá prazo para concluir o serviço no bairro.",
     );
     expect(r.categoria_prevista).not.toBe("Economia");
