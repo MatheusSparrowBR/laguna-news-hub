@@ -12,6 +12,7 @@ import { useProject } from "@/hooks/useProject";
 import {
   useAlterarStatusPost,
   useEstadoInstagram,
+  usePublicarAgora,
   useLogsPublicacao,
   usePostsProjeto,
 } from "@/services/editorialQueries";
@@ -53,6 +54,7 @@ function FilaPublicacaoPage() {
   const { data: logs } = useLogsPublicacao(projectId);
   const { data: instagram } = useEstadoInstagram(projectId);
   const alterarStatus = useAlterarStatusPost(projectId);
+  const publicar = usePublicarAgora(projectId);
 
   const [aba, setAba] = useState("prontos");
   const [novaData, setNovaData] = useState<Record<string, string>>({});
