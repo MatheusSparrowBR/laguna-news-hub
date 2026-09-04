@@ -5575,7 +5575,7 @@
       "file_type": "code",
       "norm_label": "errorcomponent()",
       "source_file": "src/routes/__root.tsx",
-      "source_location": "L39"
+      "source_location": "L38"
     },
     {
       "id": "src_routes_root_notfoundcomponent",
@@ -5586,7 +5586,7 @@
       "file_type": "code",
       "norm_label": "notfoundcomponent()",
       "source_file": "src/routes/__root.tsx",
-      "source_location": "L17"
+      "source_location": "L16"
     },
     {
       "id": "src_routes_root_rootcomponent",
@@ -5597,7 +5597,7 @@
       "file_type": "code",
       "norm_label": "rootcomponent()",
       "source_file": "src/routes/__root.tsx",
-      "source_location": "L132"
+      "source_location": "L146"
     },
     {
       "id": "src_routes_root_rootshell",
@@ -5608,7 +5608,7 @@
       "file_type": "code",
       "norm_label": "rootshell()",
       "source_file": "src/routes/__root.tsx",
-      "source_location": "L118"
+      "source_location": "L132"
     },
     {
       "id": "src_lib_art_arttemplates_temadotemplate",
@@ -11620,7 +11620,7 @@
       "file_type": "code",
       "norm_label": "route",
       "source_file": "src/routes/__root.tsx",
-      "source_location": "L77"
+      "source_location": "L95"
     },
     {
       "id": "src_lib_art_officialinstagramstorytemplate",
@@ -52148,7 +52148,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/__root.tsx",
-      "source_location": "L77",
+      "source_location": "L95",
       "weight": 1.0
     },
     {
@@ -55488,7 +55488,7 @@
       "confidence_score": 0.85,
       "context": "collection",
       "source_file": "src/routes/__root.tsx",
-      "source_location": "L112",
+      "source_location": "L126",
       "weight": 1.0
     },
     {
@@ -55500,7 +55500,7 @@
       "confidence_score": 0.85,
       "context": "collection",
       "source_file": "src/routes/__root.tsx",
-      "source_location": "L113",
+      "source_location": "L127",
       "weight": 1.0
     },
     {
@@ -55512,7 +55512,7 @@
       "confidence_score": 0.85,
       "context": "collection",
       "source_file": "src/routes/__root.tsx",
-      "source_location": "L114",
+      "source_location": "L128",
       "weight": 1.0
     },
     {
@@ -55524,10 +55524,10 @@
       "confidence_score": 0.85,
       "context": "collection",
       "source_file": "src/routes/__root.tsx",
-      "source_location": "L115",
+      "source_location": "L129",
       "weight": 1.0
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "5b3a7ca25c0121c2fd785952a34b390f203b470e"
+  "built_at_commit": "c15b548ce4c1775d11c8552770dcda1fb0ad559c"
 }
