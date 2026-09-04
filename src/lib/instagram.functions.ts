@@ -20,7 +20,6 @@ export const iniciarConexaoInstagram = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
 
-    // RLS garante que só o dono do projeto enxerga a linha.
     const { data: dono } = await supabase
       .from("projects")
       .select("id")
@@ -61,11 +60,15 @@ export const verificarConexaoInstagram = createServerFn({ method: "POST" })
 
     const { obterToken } = await import("@/lib/instagram/tokenStore.server");
     const credencial = await obterToken(data.project_id);
+    const admin = await import("@/lib/adminClient.server").then((m) => m.criarClienteAdmin());
+
     if (!credencial) {
-      await supabase
+      const { error } = await admin
         .from("social_accounts")
         .update({ status: "disconnected", last_verified_at: new Date().toISOString() })
-        .eq("id", conta.id);
+        .eq("id", conta.id)
+        .eq("project_id", data.project_id);
+      if (error) throw new Error("Não foi possível atualizar a situação da conta.");
       return {
         status: "disconnected",
         username: conta.username,
@@ -81,10 +84,12 @@ export const verificarConexaoInstagram = createServerFn({ method: "POST" })
     if (!perfil.ok) {
       const { traduzirErro } = await import("@/lib/instagram/errorMap");
       const amigavel = traduzirErro(null, perfil.status);
-      await supabase
+      const { error } = await admin
         .from("social_accounts")
         .update({ status: perfil.status === 401 || perfil.status === 403 ? "expired" : "error", last_verified_at: agora })
-        .eq("id", conta.id);
+        .eq("id", conta.id)
+        .eq("project_id", data.project_id);
+      if (error) throw new Error("Não foi possível atualizar a situação da conta.");
       return {
         status: perfil.status === 401 || perfil.status === 403 ? "expired" : "error",
         username: conta.username,
@@ -93,7 +98,7 @@ export const verificarConexaoInstagram = createServerFn({ method: "POST" })
       };
     }
 
-    await supabase
+    const { error } = await admin
       .from("social_accounts")
       .update({
         status: "connected",
@@ -101,7 +106,9 @@ export const verificarConexaoInstagram = createServerFn({ method: "POST" })
         display_name: perfil.perfil.name ?? conta.display_name,
         last_verified_at: agora,
       })
-      .eq("id", conta.id);
+      .eq("id", conta.id)
+      .eq("project_id", data.project_id);
+    if (error) throw new Error("Não foi possível atualizar a situação da conta.");
 
     return {
       status: "connected",
@@ -111,10 +118,7 @@ export const verificarConexaoInstagram = createServerFn({ method: "POST" })
     };
   });
 
-/**
- * Publicação MANUAL. Só executa quando o usuário clica em "Publicar agora"
- * e apenas para post aprovado com arte válida.
- */
+/** Publicação MANUAL. Só executa quando o usuário clica em "Publicar agora" e apenas para post aprovado com arte válida. */
 export const publicarAgora = createServerFn({ method: "POST" })
   .middleware([analyzeAuthMiddleware])
   .inputValidator((input) => projeto.extend({ post_id: z.string().uuid() }).parse(input))
@@ -150,7 +154,8 @@ export const publicarAgora = createServerFn({ method: "POST" })
     const legenda = [post.caption ?? "", post.hashtags ?? ""].join("\n\n").trim();
     if (!legenda) throw new Error("A legenda está vazia.");
 
-    await supabase.from("posts").update({ status: "publishing" }).eq("id", post.id);
+    const { error: publishingError } = await supabase.from("posts").update({ status: "publishing" }).eq("id", post.id);
+    if (publishingError) throw new Error(`Não foi possível iniciar a publicação: ${publishingError.message}`);
 
     const { resultado } = await publicarPostAgora(supabase, {
       projectId: data.project_id,
@@ -167,7 +172,7 @@ export const publicarAgora = createServerFn({ method: "POST" })
     });
 
     const publicado = resultado.ok && resultado.state === "published";
-    await supabase
+    const { error: finalError } = await supabase
       .from("posts")
       .update({
         status: publicado ? "published" : "failed",
@@ -175,6 +180,7 @@ export const publicarAgora = createServerFn({ method: "POST" })
         external_post_id: resultado.externalId,
       })
       .eq("id", post.id);
+    if (finalError) throw new Error(`Publicação concluída no provedor, mas o estado local não pôde ser salvo: ${finalError.message}`);
 
     const { registrarAuditoria } = await import("@/lib/audit.server");
     await registrarAuditoria(supabase, {
