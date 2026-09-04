@@ -111,7 +111,6 @@ export function renderOfficialInstagramSvg(input: OfficialInstagramArtInput): st
     parts.push(`<rect width="${W}" height="${H}" fill="${MARCA.primary}"/>`);
   }
 
-  // Cabeçalho fixo, leve o suficiente para não esconder a fotografia.
   parts.push(
     `<rect x="40" y="30" width="330" height="58" rx="12" fill="${MARCA.primary}" opacity="0.94"/>` +
       `<circle cx="72" cy="59" r="16" fill="${MARCA.accent}"/>` +
@@ -122,7 +121,6 @@ export function renderOfficialInstagramSvg(input: OfficialInstagramArtInput): st
       `<text x="792" y="68" font-family="${FONT}" font-size="21" font-weight="900" fill="${MARCA.text}">${date}</text>`,
   );
 
-  // Painel editorial translúcido: mantém a foto nítida e visível atrás do texto.
   parts.push(
     `<path d="M0 ${panelTop} C180 ${panelTop - 18} 350 ${panelTop + 20} 540 ${panelTop - 2} C730 ${panelTop - 24} 900 ${panelTop + 2} ${W} ${panelTop - 10} L${W} ${H} L0 ${H}Z" fill="${MARCA.primary}" opacity="0.38"/>`,
   );
@@ -156,7 +154,6 @@ export function renderOfficialInstagramSvg(input: OfficialInstagramArtInput): st
       `<text x="350" y="${footerY + 12}" font-family="${FONT}" font-size="19" font-weight="600" fill="${MARCA.white}">│ Foto: ${credit}</text>`,
   );
 
-  // Ondas discretas ficam atrás da assinatura da marca.
   parts.push(
     `<path d="M0 1288 C230 1250 380 1320 610 1282 C790 1250 920 1270 ${W} 1238 L${W} ${H} L0 ${H}Z" fill="${MARCA.secondary}" opacity="0.42"/>`,
   );
@@ -164,12 +161,14 @@ export function renderOfficialInstagramSvg(input: OfficialInstagramArtInput): st
     `<path d="M0 1315 C250 1280 430 1342 680 1305 C850 1280 950 1300 ${W} 1270" fill="none" stroke="${MARCA.accent}" stroke-width="7" opacity="0.96"/>`,
   );
 
-  // Rodapé de branding com fotografia + overlay suave, evitando bloco azul chapado.
+  // O rodapé usa a própria fotografia apenas dentro da faixa de branding.
   if (input.imageUrl) {
-    parts.push(renderPhotoBackground(input.imageUrl, W, H).replace("</image>", "") + "");
+    parts.push(
+      `<g clip-path="url(#hora-branding-clip)" opacity="0.72">${renderPhotoBackground(input.imageUrl, W, H)}</g>`,
+    );
   }
   parts.push(
-    `<rect x="${OFFICIAL_INSTAGRAM_TEMPLATE.brandingBarX}" y="${OFFICIAL_INSTAGRAM_TEMPLATE.brandingBarY}" width="${OFFICIAL_INSTAGRAM_TEMPLATE.brandingBarWidth}" height="${OFFICIAL_INSTAGRAM_TEMPLATE.brandingBarHeight}" rx="12" fill="${MARCA.secondary}" opacity="0.48" clip-path="url(#hora-branding-clip)"/>`,
+    `<rect x="${OFFICIAL_INSTAGRAM_TEMPLATE.brandingBarX}" y="${OFFICIAL_INSTAGRAM_TEMPLATE.brandingBarY}" width="${OFFICIAL_INSTAGRAM_TEMPLATE.brandingBarWidth}" height="${OFFICIAL_INSTAGRAM_TEMPLATE.brandingBarHeight}" rx="12" fill="${MARCA.secondary}" opacity="0.54"/>`,
   );
   parts.push(`<rect x="${OFFICIAL_INSTAGRAM_TEMPLATE.brandingBarX}" y="${OFFICIAL_INSTAGRAM_TEMPLATE.brandingBarY}" width="${OFFICIAL_INSTAGRAM_TEMPLATE.brandingBarWidth}" height="3" rx="1.5" fill="${MARCA.accent}" opacity="0.96"/>`);
 
