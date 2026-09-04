@@ -1,0 +1,1 @@
+Implemented the fixed HORA NEWS LAGUNA Instagram feed composition on the feature branch. Runtime build and browser export still need to be executed in the project environment.
