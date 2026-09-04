@@ -282,7 +282,11 @@ const REGRAS: Record<CategoriaSlug, Palavra[]> = {
   ],
   economia: [
     ...p(3, "vagas de emprego", "geração de emprego", "geração de empregos", "investimento privado", "empreendedor", "empreendedorismo", "setor produtivo", "contratação", "contratações"),
-    ...p(2, "emprego", "empregos", "salário", "salários", "economia", "empresa", "empresas", "indústria", "comércio", "comércio local", "negócios", "investimento", "investimentos", "renda", "vagas"),
+    ...p(2, "emprego", "empregos", "salário", "salários", "economia", "indústria", "comércio", "comércio local", "negócios", "investimento", "investimentos", "renda", "vagas"),
+    // "empresa"/"empresas" isoladas são genéricas (empresa de ônibus, empresa responsável pela obra):
+    // só pontuam com contexto econômico explícito.
+    c(2, "empresa", ...CTX_ECONOMIA),
+    c(2, "empresas", ...CTX_ECONOMIA),
     ...p(1, "mercado", "custo", "faturamento"),
   ],
 
