@@ -86,7 +86,7 @@ export interface CommunityMedia {
   is_primary: boolean;
   sort_order: number;
   created_at: string;
-  signed_url?: string;
+  signed_url?: string | undefined;
 }
 
 export const STATUS_LABEL: Record<CommunityStatus, string> = {
