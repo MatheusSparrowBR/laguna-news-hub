@@ -3,7 +3,7 @@ import { Heart, MessageCircle, Send, Bookmark } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { NOME_DO_PERFIL } from "@/config/app";
 import { renderizarArteSvg, svgParaBlobUrl } from "@/lib/art/renderArt";
-import { OFFICIAL_INSTAGRAM_TEMPLATE } from "@/lib/art/officialInstagramTemplateV2";
+import { OFFICIAL_INSTAGRAM_TEMPLATE } from "@/lib/art/officialInstagramTemplateV3";
 import type { EntradaArte } from "@/lib/art/renderArt";
 import type { ArtFormat } from "@/lib/art/artTemplates";
 
@@ -57,7 +57,7 @@ export function PostInstagramPreview({
               alt="Logo HORA NEWS LAGUNA"
               className="pointer-events-none absolute object-contain"
               style={{
-                left: `${logo.logoX / (logo.width ?? OFFICIAL_INSTAGRAM_TEMPLATE.width) * 100}%`,
+                left: `${logo.logoX / OFFICIAL_INSTAGRAM_TEMPLATE.width * 100}%`,
                 top: `${logo.logoY / OFFICIAL_INSTAGRAM_TEMPLATE.height * 100}%`,
                 width: `${(logo.logoWidth / OFFICIAL_INSTAGRAM_TEMPLATE.width) * 100}%`,
                 height: `${(logo.logoHeight / OFFICIAL_INSTAGRAM_TEMPLATE.height) * 100}%`,

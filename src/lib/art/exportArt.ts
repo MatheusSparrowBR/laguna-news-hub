@@ -6,7 +6,7 @@
 
 import { DIMENSOES, type ArtFormat } from "./artTemplates";
 import { svgParaBlobUrl } from "./renderArt";
-import { OFFICIAL_INSTAGRAM_TEMPLATE } from "./officialInstagramTemplateV2";
+import { OFFICIAL_INSTAGRAM_TEMPLATE } from "./officialInstagramTemplateV3";
 import { OFFICIAL_INSTAGRAM_STORY_TEMPLATE } from "./officialInstagramStoryTemplate";
 
 export type ArtMimeType = "image/png" | "image/jpeg";
