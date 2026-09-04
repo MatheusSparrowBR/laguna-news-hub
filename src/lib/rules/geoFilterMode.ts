@@ -61,6 +61,18 @@ export function situacaoRevisaoInicial(
   return "pending";
 }
 
+/**
+ * Situação inicial da notícia recém-inserida.
+ * Em `review`, decisão não-local entra na fila de revisão em vez de seguir
+ * como notícia normal. Em `shadow`, nada muda.
+ */
+export function statusInicialNoticia(
+  decision: ScopeDecision,
+  mode: GeoFilterMode = GEOGRAPHIC_FILTER_MODE,
+): "new" | "review_required" {
+  return permiteFluxoAutomatico(decision, mode) ? "new" : "review_required";
+}
+
 /** Motivo auditável de bloqueio, quando houver. */
 export function motivoBloqueio(
   decision: ScopeDecision,
@@ -71,3 +83,4 @@ export function motivoBloqueio(
   }
   return null;
 }
+

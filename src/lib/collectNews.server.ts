@@ -11,7 +11,13 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
 import { classificarNoticia, type CategoriaSlug } from "@/lib/rules/newsClassification";
 import { avaliarEscopoLaguna } from "@/lib/rules/lagunaScope";
-import { GEOGRAPHIC_FILTER_MODE, permiteInsercao } from "@/lib/rules/geoFilterMode";
+import {
+  GEOGRAPHIC_FILTER_MODE,
+  permiteInsercao,
+  motivoBloqueio,
+  statusInicialNoticia,
+} from "@/lib/rules/geoFilterMode";
+import { atualizacaoFalha, atualizacaoSucesso } from "@/lib/rules/sourceHealth";
 import {
   buscarConteudoCompleto,
   mapearComLimite,
@@ -174,10 +180,17 @@ export function extractItems(xml: string): FeedItem[] {
 
 export class ErroFonte extends Error {
   readonly contentType: "xml" | "html" | "error";
-  constructor(message: string, contentType: "xml" | "html" | "error" = "error") {
+  /** Código HTTP quando a falha veio de uma resposta do servidor. */
+  readonly httpStatus: number | null;
+  constructor(
+    message: string,
+    contentType: "xml" | "html" | "error" = "error",
+    httpStatus: number | null = null,
+  ) {
     super(message);
     this.name = "ErroFonte";
     this.contentType = contentType;
+    this.httpStatus = httpStatus;
   }
 }
 
@@ -231,7 +244,7 @@ export async function buscarFeed(rssUrl: string, opcoes: OpcoesFeed = {}): Promi
     }
 
     if (!resposta.ok) {
-      const erro = new ErroFonte(`HTTP ${resposta.status}`);
+      const erro = new ErroFonte(`HTTP ${resposta.status}`, "error", resposta.status);
       if (STATUS_SEM_RETRY.has(resposta.status)) throw erro;
       ultimoErro = erro;
       continue;
@@ -358,7 +371,7 @@ export async function executarColeta(opcoes: OpcoesColeta): Promise<CollectNewsR
 
   const { data: fontes, error: erroFontes } = await supabase
     .from("sources")
-    .select("id, name, rss_url")
+    .select("id, name, rss_url, consecutive_failures")
     .eq("project_id", projectId)
     .eq("active", true)
     .not("rss_url", "is", null);
@@ -467,7 +480,14 @@ export async function executarColeta(opcoes: OpcoesColeta): Promise<CollectNewsR
         else geoUncertain++;
 
         if (!permiteInsercao(escopo.decision)) {
-          log("geo_blocked", { source_id: fonte.id, decision: escopo.decision });
+          log("geo_blocked", {
+            source_id: fonte.id,
+            source_url: item.link,
+            decision: escopo.decision,
+            score: escopo.score,
+            motivo: motivoBloqueio(escopo.decision),
+            run_id: run.id,
+          });
           continue;
         }
 
@@ -487,7 +507,7 @@ export async function executarColeta(opcoes: OpcoesColeta): Promise<CollectNewsR
             source_url: item.link,
             image_url: item.imageUrl,
             discovered_at: dataParaIso(item.pubDate),
-            status: "new",
+            status: statusInicialNoticia(escopo.decision),
             category_id: classificacao.category_id,
             importance_score: classificacao.importance_score,
             ai_confidence: 0,
@@ -553,7 +573,12 @@ export async function executarColeta(opcoes: OpcoesColeta): Promise<CollectNewsR
 
       await supabase
         .from("sources")
-        .update({ last_checked_at: new Date().toISOString() })
+        .update(
+          atualizacaoSucesso({
+            agoraIso: new Date().toISOString(),
+            encontrouNoticia: novas > 0,
+          }),
+        )
         .eq("id", fonte.id);
 
       logs.push({
@@ -579,6 +604,28 @@ export async function executarColeta(opcoes: OpcoesColeta): Promise<CollectNewsR
       totalErrors++;
       const mensagem = erro instanceof Error ? erro.message : "Erro desconhecido";
       const contentType = erro instanceof ErroFonte ? erro.contentType : "error";
+      const httpStatus = erro instanceof ErroFonte ? erro.httpStatus : null;
+
+      // Saúde da fonte: falha registrada sem interromper as demais fontes.
+      await supabase
+        .from("sources")
+        .update(
+          atualizacaoFalha({
+            agoraIso: new Date().toISOString(),
+            mensagem: mensagem,
+            falhasAnteriores: fonte.consecutive_failures ?? 0,
+            httpStatus,
+          }),
+        )
+        .eq("id", fonte.id);
+
+      await criarNotificacao(supabase, {
+        projectId,
+        kind: "source_failing",
+        title: `Fonte com falha: ${fonte.name}`,
+        message: mensagem.slice(0, 300),
+      });
+
       logs.push({
         source_id: fonte.id,
         source_name: fonte.name,

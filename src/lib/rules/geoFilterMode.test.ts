@@ -6,6 +6,7 @@ import {
   permiteFluxoAutomatico,
   permiteInsercao,
   situacaoRevisaoInicial,
+  statusInicialNoticia,
 } from "./geoFilterMode";
 
 describe("modo do filtro geográfico", () => {
@@ -42,5 +43,28 @@ describe("modo do filtro geográfico", () => {
 
   it("usa o modo atual quando nenhum é informado", () => {
     expect(permiteInsercao("outside")).toBe(true);
+  });
+});
+
+describe("statusInicialNoticia", () => {
+  it("shadow: tudo entra como nova", () => {
+    expect(statusInicialNoticia("outside", "shadow")).toBe("new");
+    expect(statusInicialNoticia("uncertain", "shadow")).toBe("new");
+    expect(statusInicialNoticia("local", "shadow")).toBe("new");
+  });
+
+  it("review: não-local vai para revisão", () => {
+    expect(statusInicialNoticia("local", "review")).toBe("new");
+    expect(statusInicialNoticia("uncertain", "review")).toBe("review_required");
+    expect(statusInicialNoticia("outside", "review")).toBe("review_required");
+  });
+
+  it("block_outside: outside não é inserida; uncertain entra em revisão", () => {
+    expect(permiteInsercao("outside", "block_outside")).toBe(false);
+    expect(permiteInsercao("uncertain", "block_outside")).toBe(true);
+    expect(permiteInsercao("local", "block_outside")).toBe(true);
+    expect(statusInicialNoticia("uncertain", "block_outside")).toBe("review_required");
+    expect(motivoBloqueio("outside", "block_outside")).toContain("block_outside");
+    expect(motivoBloqueio("local", "block_outside")).toBeNull();
   });
 });
