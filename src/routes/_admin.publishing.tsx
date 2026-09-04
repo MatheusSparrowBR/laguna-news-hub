@@ -12,6 +12,7 @@ import { useProject } from "@/hooks/useProject";
 import {
   useAlterarStatusPost,
   useEstadoInstagram,
+  usePublicarAgora,
   useLogsPublicacao,
   usePostsProjeto,
 } from "@/services/editorialQueries";
@@ -53,6 +54,7 @@ function FilaPublicacaoPage() {
   const { data: logs } = useLogsPublicacao(projectId);
   const { data: instagram } = useEstadoInstagram(projectId);
   const alterarStatus = useAlterarStatusPost(projectId);
+  const publicar = usePublicarAgora(projectId);
 
   const [aba, setAba] = useState("prontos");
   const [novaData, setNovaData] = useState<Record<string, string>>({});
@@ -141,9 +143,23 @@ function FilaPublicacaoPage() {
                   >
                     Cancelar
                   </Button>
-                  <Button size="sm" disabled title="Disponível quando o Instagram estiver conectado">
-                    Publicar
+                  <Button
+                    size="sm"
+                    disabled={
+                      !instagram?.conectado ||
+                      publicar.isPending ||
+                      !["approved", "scheduled", "queued"].includes(post.status)
+                    }
+                    title={
+                      instagram?.conectado
+                        ? "Publica agora no Instagram"
+                        : "Conecte o Instagram para publicar"
+                    }
+                    onClick={() => publicar.mutate({ post_id: post.id })}
+                  >
+                    {publicar.isPending ? "Publicando…" : "Publicar agora"}
                   </Button>
+
                 </div>
               </CardContent>
             </Card>

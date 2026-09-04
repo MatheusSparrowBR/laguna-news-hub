@@ -183,6 +183,7 @@ export const obterEstadoInstagram = createServerFn({ method: "POST" })
       status: estado.conta?.status ?? "disconnected",
       scopes: estado.conta?.scopes ?? [],
       connected_at: estado.conta?.connected_at ?? null,
+      last_verified_at: estado.conta?.last_verified_at ?? null,
     };
   });
 

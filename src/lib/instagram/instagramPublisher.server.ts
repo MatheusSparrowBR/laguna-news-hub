@@ -15,7 +15,9 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
 import { validarAsset, type AssetParaPublicacao, type MediaKind } from "./assetValidation";
+import { traduzirErro } from "./errorMap";
 import { decidirRetry, type PublishState } from "./publishState";
+
 
 type Cliente = SupabaseClient<Database>;
 
@@ -103,7 +105,7 @@ export async function validateConnection(
   };
 }
 
-/* ------------------------------------------------------ publicação (preparada) */
+/* ------------------------------------------------------------- publicação */
 
 export interface ResultadoPublicacao {
   ok: boolean;
@@ -113,20 +115,39 @@ export interface ResultadoPublicacao {
   errorMessage: string | null;
 }
 
-function naoConectado(mensagem: string): ResultadoPublicacao {
+function falha(codigo: string, statusHttp?: number): ResultadoPublicacao {
+  const amigavel = traduzirErro(codigo, statusHttp);
+
   return {
     ok: false,
     state: "failed",
     externalId: null,
-    errorCode: "not_connected",
-    errorMessage: mensagem,
+    errorCode: amigavel.codigo,
+    errorMessage: amigavel.mensagem,
   };
 }
 
-/**
- * Cria o container de mídia. Sem conta conectada, não chama a API:
- * devolve "not_connected" (erro permanente — não gera retry).
- */
+async function contexto(
+  supabase: Cliente,
+  projectId: string,
+): Promise<
+  | { ok: true; igUserId: string; accessToken: string }
+  | { ok: false; resultado: ResultadoPublicacao }
+> {
+  const estado = await validateConnection(supabase, projectId);
+  if (!estado.conectado || !estado.conta?.account_id) {
+    return { ok: false, resultado: falha("not_connected") };
+  }
+  const { obterToken } = await import("./tokenStore.server");
+  const credencial = await obterToken(projectId);
+  if (!credencial) return { ok: false, resultado: falha("not_connected") };
+  if (credencial.expiresAt && new Date(credencial.expiresAt).getTime() < Date.now()) {
+    return { ok: false, resultado: falha("token_expired") };
+  }
+  return { ok: true, igUserId: estado.conta.account_id, accessToken: credencial.accessToken };
+}
+
+/** Cria o container de mídia (POST {ig-user-id}/media). */
 export async function createMediaContainer(
   supabase: Cliente,
   entrada: {
@@ -139,41 +160,79 @@ export async function createMediaContainer(
   },
 ): Promise<ResultadoPublicacao> {
   const validacao = validarAsset(entrada.asset);
-  if (!validacao.ok) {
-    return {
-      ok: false,
-      state: "failed",
-      externalId: null,
-      errorCode: validacao.codigo,
-      errorMessage: validacao.erros.join(" "),
-    };
+  if (!validacao.ok) return falha(validacao.codigo ?? "invalid_media");
+
+  const ctx = await contexto(supabase, entrada.projectId);
+  if (!ctx.ok) return ctx.resultado;
+
+  const url = new URL(`${GRAPH_BASE}/${ctx.igUserId}/media`);
+  const resposta = await fetch(url, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${ctx.accessToken}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      image_url: entrada.asset.publicUrl,
+      caption: entrada.caption,
+    }),
+  });
+
+  if (!resposta.ok) {
+    console.error("[instagram] criação de container falhou", resposta.status);
+    return falha("media_rejected", resposta.status);
   }
-  const estado = await validateConnection(supabase, entrada.projectId);
-  if (!estado.conectado) {
-    return naoConectado("O Instagram ainda não está conectado a este projeto.");
-  }
-  // Ponto único da chamada oficial POST {ig-user-id}/media — habilitado
-  // somente quando a conta estiver conectada e autorizada pelo usuário.
-  return naoConectado("Publicação indisponível: conexão do Instagram não verificada.");
+  const json = (await resposta.json()) as { id?: string };
+  if (!json.id) return falha("media_rejected");
+  return { ok: true, state: "publishing", externalId: json.id, errorCode: null, errorMessage: null };
 }
 
 export async function checkMediaStatus(
   supabase: Cliente,
   projectId: string,
-  _containerId: string,
+  containerId: string,
 ): Promise<ResultadoPublicacao> {
-  const estado = await validateConnection(supabase, projectId);
-  if (!estado.conectado) return naoConectado("O Instagram ainda não está conectado.");
-  return naoConectado("Consulta de status indisponível sem conexão verificada.");
+  const ctx = await contexto(supabase, projectId);
+  if (!ctx.ok) return ctx.resultado;
+
+  const url = new URL(`${GRAPH_BASE}/${containerId}`);
+  url.searchParams.set("fields", "status_code");
+  const resposta = await fetch(url, { headers: { Authorization: `Bearer ${ctx.accessToken}` } });
+  if (!resposta.ok) return falha("temporary_error", resposta.status);
+
+  const json = (await resposta.json()) as { status_code?: string };
+  if (json.status_code === "FINISHED") {
+    return { ok: true, state: "queued", externalId: containerId, errorCode: null, errorMessage: null };
+  }
+  if (json.status_code === "ERROR") return falha("media_rejected");
+  return falha("publish_in_progress");
 }
 
+/** Publica o container (POST {ig-user-id}/media_publish). */
 export async function publishMedia(
   supabase: Cliente,
   entrada: { projectId: string; postId: string; containerId: string },
 ): Promise<ResultadoPublicacao> {
-  const estado = await validateConnection(supabase, entrada.projectId);
-  if (!estado.conectado) return naoConectado("O Instagram ainda não está conectado.");
-  return naoConectado("Publicação real indisponível: conexão não verificada.");
+  const ctx = await contexto(supabase, entrada.projectId);
+  if (!ctx.ok) return ctx.resultado;
+
+  const url = new URL(`${GRAPH_BASE}/${ctx.igUserId}/media_publish`);
+  const resposta = await fetch(url, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${ctx.accessToken}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ creation_id: entrada.containerId }),
+  });
+
+  if (!resposta.ok) {
+    console.error("[instagram] publicação falhou", resposta.status);
+    return falha("media_rejected", resposta.status);
+  }
+  const json = (await resposta.json()) as { id?: string };
+  if (!json.id) return falha("media_rejected");
+  return { ok: true, state: "published", externalId: json.id, errorCode: null, errorMessage: null };
 }
 
 export async function getPublishedMedia(
@@ -185,10 +244,11 @@ export async function getPublishedMedia(
 }
 
 /**
- * Enfileira a publicação: grava o log com a tentativa e devolve a decisão de
- * retry. Nunca publica direto e nunca faz loop.
+ * Publicação MANUAL de um post aprovado. Nunca é chamada por cron.
+ *
+ * Idempotência: se já existe log publicado para o post, nada é reenviado.
  */
-export async function scheduleOrQueuePublish(
+export async function publicarPostAgora(
   supabase: Cliente,
   entrada: {
     projectId: string;
@@ -201,7 +261,6 @@ export async function scheduleOrQueuePublish(
 ): Promise<{ resultado: ResultadoPublicacao; retry: ReturnType<typeof decidirRetry> }> {
   const tentativa = entrada.tentativa ?? 1;
 
-  // Idempotência: se já existe log publicado para este post, não repete nada.
   const { data: jaPublicado } = await supabase
     .from("publication_logs")
     .select("id, external_id")
@@ -223,7 +282,52 @@ export async function scheduleOrQueuePublish(
     };
   }
 
-  const resultado = await createMediaContainer(supabase, {
+  const container = await createMediaContainer(supabase, {
+    projectId: entrada.projectId,
+    asset: entrada.asset,
+    caption: entrada.caption,
+    kind: "image",
+    idempotencyKey: entrada.idempotencyKey,
+  });
+
+  let resultado = container;
+  if (container.ok && container.externalId) {
+    resultado = await publishMedia(supabase, {
+      projectId: entrada.projectId,
+      postId: entrada.postId,
+      containerId: container.externalId,
+    });
+  }
+
+  const publicado = resultado.ok && resultado.state === "published";
+  await supabase.from("publication_logs").insert({
+    post_id: entrada.postId,
+    provider: "instagram",
+    external_id: resultado.externalId,
+    status: publicado ? "published" : "failed",
+    attempt: tentativa,
+    published_at: publicado ? new Date().toISOString() : null,
+    error_code: resultado.errorCode,
+    error_message: resultado.errorMessage,
+  });
+
+  return { resultado, retry: decidirRetry(tentativa, resultado.errorCode) };
+}
+
+/** Enfileira sem publicar (usado por agendamento manual). */
+export async function scheduleOrQueuePublish(
+  supabase: Cliente,
+  entrada: {
+    projectId: string;
+    postId: string;
+    asset: AssetParaPublicacao;
+    caption: string;
+    idempotencyKey: string;
+    tentativa?: number;
+  },
+): Promise<{ resultado: ResultadoPublicacao; retry: ReturnType<typeof decidirRetry> }> {
+  const tentativa = entrada.tentativa ?? 1;
+  const container = await createMediaContainer(supabase, {
     projectId: entrada.projectId,
     asset: entrada.asset,
     caption: entrada.caption,
@@ -234,12 +338,13 @@ export async function scheduleOrQueuePublish(
   await supabase.from("publication_logs").insert({
     post_id: entrada.postId,
     provider: "instagram",
-    external_id: resultado.externalId,
-    status: resultado.ok ? "queued" : "failed",
+    external_id: container.externalId,
+    status: container.ok ? "queued" : "failed",
     attempt: tentativa,
-    error_code: resultado.errorCode,
-    error_message: resultado.errorMessage,
+    error_code: container.errorCode,
+    error_message: container.errorMessage,
   });
 
-  return { resultado, retry: decidirRetry(tentativa, resultado.errorCode) };
+  return { resultado: container, retry: decidirRetry(tentativa, container.errorCode) };
 }
+
