@@ -9,27 +9,32 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * Design system definition.
+ * HORA NEWS LAGUNA — Design System oficial
  *
- * The @theme inline block maps CSS custom properties to Tailwind utility
- * classes (e.g. --color-primary -> bg-primary, text-primary).
+ * A identidade visual é centralizada nestes tokens. Evite HEX espalhado
+ * pelos componentes: use as variáveis semânticas abaixo.
  *
- * The :root and .dark blocks define the actual color values using oklch.
- * All colors MUST use oklch format.
- *
- * To add a new semantic color:
- * 1. Add the variable to :root (light value) and .dark (dark value)
- * 2. Register it in @theme inline as --color-<name>: var(--<name>)
+ * Paleta oficial:
+ * --brand-primary:   #0B3D91
+ * --brand-secondary: #1E6BB8
+ * --brand-accent:    #FFC107
+ * --brand-background:#F4F7FB
+ * --brand-text:      #1F2937
+ * --brand-white:     #FFFFFF
  */
 
 @theme inline {
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --radius-2xl: calc(var(--radius) + 8px);
-  --radius-3xl: calc(var(--radius) + 12px);
-  --radius-4xl: calc(var(--radius) + 16px);
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 12px;
+  --radius-2xl: 16px;
+  --radius-3xl: 20px;
+  --radius-4xl: 24px;
+
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Inter", ui-sans-serif, system-ui, sans-serif;
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -57,7 +62,6 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  --color-ring-offset-background: var(--background);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
@@ -71,81 +75,159 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
-  --shadow-card: 0 1px 2px 0 oklch(0.28 0.07 258 / 6%), 0 8px 24px -12px oklch(0.28 0.07 258 / 14%);
-  --shadow-elevated: 0 12px 32px -12px oklch(0.28 0.07 258 / 22%);
 }
 
 :root {
-  --radius: 0.75rem;
+  --radius: 10px;
 
-  /* Fundo cinza muito claro, cartões brancos */
-  --background: oklch(0.976 0.004 247);
-  --foreground: oklch(0.24 0.035 258);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.24 0.035 258);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.24 0.035 258);
+  /* Identidade HORA NEWS LAGUNA — não alterar os códigos oficiais. */
+  --brand-primary: #0B3D91;
+  --brand-secondary: #1E6BB8;
+  --brand-accent: #FFC107;
+  --brand-background: #F4F7FB;
+  --brand-text: #1F2937;
+  --brand-white: #FFFFFF;
 
-  /* Azul escuro principal */
-  --primary: oklch(0.36 0.093 261);
-  --primary-foreground: oklch(0.99 0.002 247);
-  --primary-soft: oklch(0.94 0.02 258);
+  /* Tokens semânticos */
+  --background: var(--brand-background);
+  --foreground: var(--brand-text);
+  --card: var(--brand-white);
+  --card-foreground: var(--brand-text);
+  --popover: var(--brand-white);
+  --popover-foreground: var(--brand-text);
 
-  --secondary: oklch(0.96 0.008 250);
-  --secondary-foreground: oklch(0.32 0.06 260);
-  --muted: oklch(0.966 0.006 250);
-  --muted-foreground: oklch(0.55 0.028 256);
-  --accent: oklch(0.95 0.018 255);
-  --accent-foreground: oklch(0.32 0.07 260);
+  --primary: var(--brand-primary);
+  --primary-foreground: var(--brand-white);
+  --primary-soft: color-mix(in srgb, var(--brand-primary) 10%, var(--brand-white));
 
-  /* Vermelho: urgente */
-  --destructive: oklch(0.55 0.21 26);
-  --destructive-foreground: oklch(0.99 0.002 247);
-  --destructive-soft: oklch(0.955 0.03 25);
+  --secondary: var(--brand-secondary);
+  --secondary-foreground: var(--brand-white);
+  --muted: var(--brand-background);
+  --muted-foreground: color-mix(in srgb, var(--brand-text) 68%, var(--brand-white));
 
-  /* Amarelo/laranja: alertas */
-  --warning: oklch(0.7 0.16 60);
-  --warning-foreground: oklch(0.28 0.07 55);
-  --warning-soft: oklch(0.96 0.04 80);
+  --accent: var(--brand-accent);
+  --accent-foreground: var(--brand-text);
 
-  --success: oklch(0.56 0.12 158);
-  --success-foreground: oklch(0.99 0.002 247);
-  --success-soft: oklch(0.95 0.04 158);
+  /* Estados semânticos usam somente a identidade oficial + transparência. */
+  --destructive: var(--brand-primary);
+  --destructive-foreground: var(--brand-white);
+  --destructive-soft: color-mix(in srgb, var(--brand-primary) 9%, var(--brand-white));
+  --warning: var(--brand-accent);
+  --warning-foreground: var(--brand-text);
+  --warning-soft: color-mix(in srgb, var(--brand-accent) 18%, var(--brand-white));
+  --success: var(--brand-secondary);
+  --success-foreground: var(--brand-white);
+  --success-soft: color-mix(in srgb, var(--brand-secondary) 10%, var(--brand-white));
 
-  --border: oklch(0.92 0.008 252);
-  --input: oklch(0.92 0.008 252);
-  --ring: oklch(0.55 0.09 260);
+  --border: color-mix(in srgb, var(--brand-primary) 12%, var(--brand-white));
+  --input: color-mix(in srgb, var(--brand-primary) 16%, var(--brand-white));
+  --ring: var(--brand-secondary);
 
-  --chart-1: oklch(0.36 0.093 261);
-  --chart-2: oklch(0.62 0.13 245);
-  --chart-3: oklch(0.7 0.16 60);
-  --chart-4: oklch(0.55 0.21 26);
-  --chart-5: oklch(0.56 0.12 158);
+  --chart-1: var(--brand-primary);
+  --chart-2: var(--brand-secondary);
+  --chart-3: var(--brand-accent);
+  --chart-4: var(--brand-primary);
+  --chart-5: var(--brand-secondary);
 
-  /* Sidebar azul escuro */
-  --sidebar: oklch(0.27 0.062 262);
-  --sidebar-foreground: oklch(0.9 0.015 250);
-  --sidebar-primary: oklch(0.62 0.14 245);
-  --sidebar-primary-foreground: oklch(0.99 0.002 247);
-  --sidebar-accent: oklch(0.33 0.07 262);
-  --sidebar-accent-foreground: oklch(0.98 0.003 247);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.62 0.14 245);
+  /* Sidebar institucional */
+  --sidebar: var(--brand-primary);
+  --sidebar-foreground: var(--brand-white);
+  --sidebar-primary: var(--brand-accent);
+  --sidebar-primary-foreground: var(--brand-text);
+  --sidebar-accent: var(--brand-secondary);
+  --sidebar-accent-foreground: var(--brand-white);
+  --sidebar-border: color-mix(in srgb, var(--brand-white) 16%, transparent);
+  --sidebar-ring: var(--brand-accent);
 }
-
 
 @layer base {
   * {
     border-color: var(--color-border);
   }
 
+  html {
+    font-family: var(--font-sans);
+    background: var(--brand-background);
+  }
+
   body {
+    min-width: 320px;
     background-color: var(--color-background);
     color: var(--color-foreground);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.5;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-display);
+    color: var(--brand-text);
+  }
+
+  h1 {
+    font-size: 32px;
+    line-height: 1.15;
+    font-weight: 800;
+  }
+
+  h2 {
+    font-size: 24px;
+    line-height: 1.2;
+    font-weight: 700;
+  }
+
+  h3 {
+    font-size: 20px;
+    line-height: 1.25;
+    font-weight: 700;
+  }
+
+  button,
+  input,
+  textarea,
+  select {
+    font: inherit;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--brand-secondary);
+    outline-offset: 2px;
   }
 }
 
-@theme inline {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Plus Jakarta Sans", "Inter", ui-sans-serif, sans-serif;
+@layer components {
+  /* Utilitários de marca para componentes que precisam explicitar a identidade. */
+  .hora-news-brand-primary {
+    background-color: var(--brand-primary);
+    color: var(--brand-white);
+  }
+
+  .hora-news-brand-secondary {
+    background-color: var(--brand-secondary);
+    color: var(--brand-white);
+  }
+
+  .hora-news-brand-accent {
+    background-color: var(--brand-accent);
+    color: var(--brand-text);
+  }
+
+  .hora-news-brand-surface {
+    background-color: var(--brand-background);
+    color: var(--brand-text);
+  }
+
+  .hora-news-card {
+    background-color: var(--brand-white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 1px 2px color-mix(in srgb, var(--brand-primary) 6%, transparent),
+      0 8px 24px color-mix(in srgb, var(--brand-primary) 8%, transparent);
+  }
 }
