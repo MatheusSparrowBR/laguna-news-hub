@@ -1,0 +1,10 @@
+REVOKE ALL ON FUNCTION public.recalcular_delivered_posts(uuid) FROM anon, authenticated, public;
+REVOKE ALL ON FUNCTION public.trg_sponsor_deliverables_sync() FROM anon, authenticated, public;
+REVOKE ALL ON FUNCTION public.trg_campaign_same_project() FROM anon, authenticated, public;
+REVOKE ALL ON FUNCTION public.trg_post_same_project() FROM anon, authenticated, public;
+REVOKE ALL ON FUNCTION public.trg_deliverable_same_project() FROM anon, authenticated, public;
+REVOKE ALL ON FUNCTION public.update_updated_at_column() FROM anon, authenticated, public;
+REVOKE ALL ON FUNCTION public.owns_project(uuid) FROM anon, public;
+GRANT EXECUTE ON FUNCTION public.owns_project(uuid) TO authenticated;
+REVOKE ALL ON FUNCTION public.claim_admin_project(text) FROM anon, public;
+GRANT EXECUTE ON FUNCTION public.claim_admin_project(text) TO authenticated;
