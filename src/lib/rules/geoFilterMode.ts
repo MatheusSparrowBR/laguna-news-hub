@@ -3,26 +3,71 @@
  *
  * Ponto ÚNICO de configuração — não replicar essa decisão em outros arquivos.
  *
- *  - "shadow"  → apenas observa e conta; NENHUMA notícia é descartada.
- *  - "enforce" → (futuro) descartaria notícias com decisão "outside".
+ *  - "shadow"        → nada é bloqueado; tudo é inserido; a decisão é observada.
+ *  - "review"        → tudo é inserido, mas "outside" nunca segue automaticamente:
+ *                      entra na fila editorial de revisão.
+ *  - "block_outside" → "outside" não entra no fluxo editorial normal; o item é
+ *                      registrado com motivo (auditabilidade) e não publica.
  *
- * Fase atual: shadow. Estamos coletando dados reais para medir a proporção de
- * local/outside/uncertain antes de decidir se "outside" será bloqueado.
+ * Fase atual: shadow. block_outside NÃO deve ser ativado sem decisão explícita.
  */
 import type { ScopeDecision } from "./lagunaScope";
 
-export type GeoFilterMode = "shadow" | "enforce";
+export type GeoFilterMode = "shadow" | "review" | "block_outside";
+
+export const GEO_FILTER_MODES: readonly GeoFilterMode[] = [
+  "shadow",
+  "review",
+  "block_outside",
+] as const;
 
 export const GEOGRAPHIC_FILTER_MODE: GeoFilterMode = "shadow";
 
+/** Situação de revisão geográfica atribuída no momento da coleta. */
+export type GeoReviewStatus = "pending" | "reviewed" | "skipped";
+
 /**
  * Decide se um item pode seguir para o INSERT.
- * Em modo shadow, todas as decisões são permitidas (retorna sempre true).
+ * Em shadow e review, todas as decisões são inseridas (a diferença está no fluxo
+ * editorial posterior). Em block_outside, "outside" não é inserido.
  */
 export function permiteInsercao(
   decision: ScopeDecision,
   mode: GeoFilterMode = GEOGRAPHIC_FILTER_MODE,
 ): boolean {
+  if (mode === "block_outside") return decision !== "outside";
+  return true;
+}
+
+/**
+ * Decide se o item pode seguir automaticamente no fluxo editorial
+ * (sem passar obrigatoriamente por decisão humana de geografia).
+ */
+export function permiteFluxoAutomatico(
+  decision: ScopeDecision,
+  mode: GeoFilterMode = GEOGRAPHIC_FILTER_MODE,
+): boolean {
   if (mode === "shadow") return true;
-  return decision !== "outside";
+  return decision === "local";
+}
+
+/** Situação de revisão geográfica inicial para uma notícia recém-coletada. */
+export function situacaoRevisaoInicial(
+  decision: ScopeDecision,
+  mode: GeoFilterMode = GEOGRAPHIC_FILTER_MODE,
+): GeoReviewStatus {
+  if (mode === "shadow") return "pending";
+  if (decision === "local") return "skipped";
+  return "pending";
+}
+
+/** Motivo auditável de bloqueio, quando houver. */
+export function motivoBloqueio(
+  decision: ScopeDecision,
+  mode: GeoFilterMode = GEOGRAPHIC_FILTER_MODE,
+): string | null {
+  if (mode === "block_outside" && decision === "outside") {
+    return "bloqueado por filtro geográfico: fora de Laguna (modo block_outside)";
+  }
+  return null;
 }
