@@ -103,10 +103,13 @@ REVOKE ALL ON public.community_submission_media FROM anon;
 -- 3) Idempotência dos posts
 -- =========================================================
 
+-- ON CONFLICT (idempotency_key) precisa de uma restrição/índice único
+-- inferível sem predicado adicional. Em PostgreSQL, um índice parcial
+-- exigiria um WHERE correspondente no ON CONFLICT; o código do Composer
+-- usa somente a coluna, portanto o índice deve ser não-parcial.
 DROP INDEX IF EXISTS public.posts_idempotency_key_uidx;
 CREATE UNIQUE INDEX IF NOT EXISTS posts_idempotency_key_uidx
-  ON public.posts (idempotency_key)
-  WHERE idempotency_key IS NOT NULL;
+  ON public.posts (idempotency_key);
 
 CREATE OR REPLACE FUNCTION public.normalize_post_idempotency_key()
 RETURNS trigger
@@ -229,6 +232,5 @@ CREATE POLICY community_storage_delete
 -- 6) Exposição pública
 -- =========================================================
 
-REVOKE ALL ON public.posts FROM anon;
 REVOKE ALL ON public.post_assets FROM anon;
 REVOKE ALL ON public.publication_logs FROM anon;
