@@ -544,34 +544,6 @@
       "src_lib_rules_newsclassification_test_casos"
     ],
     "14": [
-      "node_crypto",
-      "src_integrations_supabase_cron_auth",
-      "src_integrations_supabase_cron_auth_authenticatecronrequest",
-      "src_lib_adminclient_server",
-      "src_lib_adminclient_server_criarclienteadmin",
-      "src_lib_adminclient_server_ehchavenova",
-      "src_lib_instagram_instagramoauth_server_desconectar",
-      "src_lib_instagram_oauthstate_server",
-      "src_lib_instagram_oauthstate_server_assinar",
-      "src_lib_instagram_oauthstate_server_assinaturavalida",
-      "src_lib_instagram_oauthstate_server_base64url",
-      "src_lib_instagram_oauthstate_server_consumirstate",
-      "src_lib_instagram_oauthstate_server_gerarstate",
-      "src_lib_instagram_oauthstate_server_hashstate",
-      "src_lib_instagram_oauthstate_server_registrarstate",
-      "src_lib_instagram_oauthstate_server_segredoassinatura",
-      "src_lib_instagram_oauthstate_server_statevalidado",
-      "src_lib_instagram_tokenstore_server",
-      "src_lib_instagram_tokenstore_server_apagartoken",
-      "src_lib_instagram_tokenstore_server_obtertoken",
-      "src_lib_instagram_tokenstore_server_salvartoken",
-      "src_routes_api_public_hooks_collect_news",
-      "src_routes_api_public_hooks_collect_news_route",
-      "src_routes_api_public_integrations_instagram_callback",
-      "src_routes_api_public_integrations_instagram_callback_redirecionar",
-      "src_routes_api_public_integrations_instagram_callback_route"
-    ],
-    "15": [
       "src_lib_collectnews_server",
       "src_lib_collectnews_server_buscarfeed",
       "src_lib_collectnews_server_clientecoleta",
@@ -597,7 +569,34 @@
       "src_lib_collectnews_server_opcoescoleta",
       "src_lib_collectnews_server_opcoesfeed",
       "src_lib_collectnews_server_status_sem_retry",
-      "src_lib_geography_server_registrardecisaogeografica"
+      "src_lib_geography_server_montarregistrogeografico"
+    ],
+    "15": [
+      "src_lib_instagram_errormap",
+      "src_lib_instagram_errormap_classeerro",
+      "src_lib_instagram_errormap_erroamigavel",
+      "src_lib_instagram_errormap_mapa",
+      "src_lib_instagram_errormap_test",
+      "src_lib_instagram_errormap_traduzirerro",
+      "src_lib_instagram_functions_verificarconexaoinstagram",
+      "src_lib_instagram_instagrampublisher_server",
+      "src_lib_instagram_instagrampublisher_server_checkmediastatus",
+      "src_lib_instagram_instagrampublisher_server_cliente",
+      "src_lib_instagram_instagrampublisher_server_configmeta",
+      "src_lib_instagram_instagrampublisher_server_containstagram",
+      "src_lib_instagram_instagrampublisher_server_contexto",
+      "src_lib_instagram_instagrampublisher_server_createmediacontainer",
+      "src_lib_instagram_instagrampublisher_server_estadoconexao",
+      "src_lib_instagram_instagrampublisher_server_falha",
+      "src_lib_instagram_instagrampublisher_server_getaccount",
+      "src_lib_instagram_instagrampublisher_server_getpublishedmedia",
+      "src_lib_instagram_instagrampublisher_server_graph_base",
+      "src_lib_instagram_instagrampublisher_server_graph_version",
+      "src_lib_instagram_instagrampublisher_server_publicarpostagora",
+      "src_lib_instagram_instagrampublisher_server_publishmedia",
+      "src_lib_instagram_instagrampublisher_server_resultadopublicacao",
+      "src_lib_instagram_instagrampublisher_server_validateconnection",
+      "src_lib_instagram_publishstate_publishstate"
     ],
     "16": [
       "src_components_ui_checkbox",
@@ -723,6 +722,30 @@
       "src_lib_templates_posttemplates_titulo_post_max"
     ],
     "21": [
+      "src_integrations_supabase_client_server",
+      "src_integrations_supabase_client_server_createsupabaseadminclient",
+      "src_integrations_supabase_client_server_createsupabasefetch",
+      "src_integrations_supabase_client_server_isnewsupabaseapikey",
+      "src_integrations_supabase_client_server_supabaseadmin",
+      "src_lib_audit_server",
+      "src_lib_audit_server_acaoauditavel",
+      "src_lib_audit_server_cliente",
+      "src_lib_audit_server_criarnotificacao",
+      "src_lib_audit_server_registrarauditoria",
+      "src_lib_audit_server_sanitizardetalhes",
+      "src_lib_audit_server_tiponotificacao",
+      "src_lib_instagram_asseturl_server",
+      "src_lib_instagram_asseturl_server_assetresolvido",
+      "src_lib_instagram_asseturl_server_falha",
+      "src_lib_instagram_asseturl_server_resolverassetdopost",
+      "src_lib_instagram_asseturl_server_urlacessivel",
+      "src_lib_instagram_asseturl_server_validade_segundos",
+      "src_lib_instagram_functions",
+      "src_lib_instagram_functions_iniciarconexaoinstagram",
+      "src_lib_instagram_functions_projeto",
+      "src_lib_instagram_functions_publicaragora"
+    ],
+    "22": [
       "src_lib_collectnews_functions_collectnewsserver",
       "src_lib_newsfilter",
       "src_lib_newsfilter_filtrarnoticias",
@@ -746,7 +769,7 @@
       "src_services_queries_usefontes",
       "src_services_queries_usenoticias"
     ],
-    "22": [
+    "23": [
       "server",
       "src_components_debug_debugauthbutton_debugauthbutton",
       "src_integrations_supabase_analyze_auth_middleware",
@@ -769,7 +792,7 @@
       "src_lib_newsanalysis_server_persistanalysis",
       "supabase_js"
     ],
-    "23": [
+    "24": [
       "src_data_mock",
       "src_data_mock_analisesimulada",
       "src_data_mock_hoje",
@@ -792,29 +815,29 @@
       "src_services_supabasedata_fontebanco",
       "src_services_supabasedata_resumoanalytics"
     ],
-    "24": [
-      "src_integrations_supabase_auth_middleware",
-      "src_integrations_supabase_auth_middleware_createsupabasefetch",
-      "src_integrations_supabase_auth_middleware_isnewsupabaseapikey",
-      "src_integrations_supabase_auth_middleware_requiresupabaseauth",
-      "src_integrations_supabase_client_server",
-      "src_integrations_supabase_client_server_createsupabaseadminclient",
-      "src_integrations_supabase_client_server_createsupabasefetch",
-      "src_integrations_supabase_client_server_isnewsupabaseapikey",
-      "src_integrations_supabase_client_server_supabaseadmin",
-      "src_integrations_supabase_types",
-      "src_integrations_supabase_types_compositetypes",
-      "src_integrations_supabase_types_constants",
-      "src_integrations_supabase_types_database",
-      "src_integrations_supabase_types_databasewithoutinternals",
-      "src_integrations_supabase_types_defaultschema",
-      "src_integrations_supabase_types_enums",
-      "src_integrations_supabase_types_json",
-      "src_integrations_supabase_types_tables",
-      "src_integrations_supabase_types_tablesinsert",
-      "src_integrations_supabase_types_tablesupdate"
-    ],
     "25": [
+      "src_lib_adminclient_server",
+      "src_lib_adminclient_server_criarclienteadmin",
+      "src_lib_adminclient_server_ehchavenova",
+      "src_lib_instagram_oauthstate_server",
+      "src_lib_instagram_oauthstate_server_assinar",
+      "src_lib_instagram_oauthstate_server_assinaturavalida",
+      "src_lib_instagram_oauthstate_server_base64url",
+      "src_lib_instagram_oauthstate_server_consumirstate",
+      "src_lib_instagram_oauthstate_server_gerarstate",
+      "src_lib_instagram_oauthstate_server_hashstate",
+      "src_lib_instagram_oauthstate_server_registrarstate",
+      "src_lib_instagram_oauthstate_server_segredoassinatura",
+      "src_lib_instagram_oauthstate_server_statevalidado",
+      "src_lib_instagram_tokenstore_server",
+      "src_lib_instagram_tokenstore_server_apagartoken",
+      "src_lib_instagram_tokenstore_server_obtertoken",
+      "src_lib_instagram_tokenstore_server_salvartoken",
+      "src_routes_api_public_integrations_instagram_callback",
+      "src_routes_api_public_integrations_instagram_callback_redirecionar",
+      "src_routes_api_public_integrations_instagram_callback_route"
+    ],
+    "26": [
       "src_routes_admin_analytics_route",
       "src_routes_admin_calendar_route",
       "src_routes_admin_dashboard_route",
@@ -836,7 +859,7 @@
       "src_routes_login_route",
       "src_routetree_gen_fileroutesbypath"
     ],
-    "26": [
+    "27": [
       "components",
       "components_aliases",
       "components_aliases_components",
@@ -857,7 +880,7 @@
       "components_tailwind_prefix",
       "components_tsx"
     ],
-    "27": [
+    "28": [
       "src_components_common_confirmationdialog",
       "src_components_common_confirmationdialog_confirmationdialogprops",
       "src_components_ui_alert_dialog",
@@ -878,7 +901,7 @@
       "src_routes_admin_instagram_mensagem_retorno",
       "src_routes_admin_instagram_rotulo_situacao"
     ],
-    "28": [
+    "29": [
       "src_components_common_metriccard",
       "src_components_common_metriccard_metriccard",
       "src_components_common_metriccard_metriccardprops",
@@ -899,7 +922,7 @@
       "src_services_collectnews_obterultimaexecucao",
       "src_services_queries_usepublicacoes"
     ],
-    "29": [
+    "30": [
       "src_components_posts_postinstagrampreview",
       "src_components_posts_postinstagrampreview_postinstagrampreview",
       "src_lib_art_art_test",
@@ -920,7 +943,7 @@
       "src_lib_art_renderart_svgparadataurl",
       "src_lib_templates_posttemplates_template_keys"
     ],
-    "30": [
+    "31": [
       "src_components_sources_collectresultpanel",
       "src_components_sources_collectresultpanel_aviso",
       "src_components_sources_collectresultpanel_collectresultpanel",
@@ -941,7 +964,7 @@
       "src_components_ui_alert_alertvariants",
       "src_services_collectnews_collectnewsresult"
     ],
-    "31": [
+    "32": [
       "src_hooks_useauth",
       "src_hooks_useauth_authstate",
       "src_integrations_supabase_auth_attacher",
@@ -961,27 +984,6 @@
       "src_services_postphotocredit_postsclient",
       "src_services_postphotocredit_salvarcreditofotopost",
       "src_start"
-    ],
-    "32": [
-      "src_lib_instagram_instagrampublisher_server",
-      "src_lib_instagram_instagrampublisher_server_checkmediastatus",
-      "src_lib_instagram_instagrampublisher_server_cliente",
-      "src_lib_instagram_instagrampublisher_server_configmeta",
-      "src_lib_instagram_instagrampublisher_server_containstagram",
-      "src_lib_instagram_instagrampublisher_server_contexto",
-      "src_lib_instagram_instagrampublisher_server_createmediacontainer",
-      "src_lib_instagram_instagrampublisher_server_estadoconexao",
-      "src_lib_instagram_instagrampublisher_server_falha",
-      "src_lib_instagram_instagrampublisher_server_getaccount",
-      "src_lib_instagram_instagrampublisher_server_getpublishedmedia",
-      "src_lib_instagram_instagrampublisher_server_graph_base",
-      "src_lib_instagram_instagrampublisher_server_graph_version",
-      "src_lib_instagram_instagrampublisher_server_publicarpostagora",
-      "src_lib_instagram_instagrampublisher_server_publishmedia",
-      "src_lib_instagram_instagrampublisher_server_resultadopublicacao",
-      "src_lib_instagram_instagrampublisher_server_scheduleorqueuepublish",
-      "src_lib_instagram_instagrampublisher_server_validateconnection",
-      "src_lib_instagram_publishstate_publishstate"
     ],
     "33": [
       "server_entry",
@@ -1060,7 +1062,7 @@
     "37": [
       "src_lib_geography_server",
       "src_lib_geography_server_cliente",
-      "src_lib_geography_server_montarregistrogeografico",
+      "src_lib_geography_server_registrardecisaogeografica",
       "src_lib_geography_server_registrogeografico",
       "src_lib_rules_geofiltermode",
       "src_lib_rules_geofiltermode_geo_filter_modes",
@@ -1076,22 +1078,22 @@
       "src_lib_rules_lagunascope_scopedecision"
     ],
     "38": [
-      "src_lib_instagram_asseturl_server",
-      "src_lib_instagram_asseturl_server_assetresolvido",
-      "src_lib_instagram_asseturl_server_falha",
-      "src_lib_instagram_asseturl_server_resolverassetdopost",
-      "src_lib_instagram_asseturl_server_urlacessivel",
-      "src_lib_instagram_asseturl_server_validade_segundos",
-      "src_lib_instagram_errormap",
-      "src_lib_instagram_errormap_classeerro",
-      "src_lib_instagram_errormap_erroamigavel",
-      "src_lib_instagram_errormap_mapa",
-      "src_lib_instagram_errormap_test",
-      "src_lib_instagram_errormap_traduzirerro",
-      "src_lib_instagram_functions",
-      "src_lib_instagram_functions_projeto",
-      "src_lib_instagram_functions_publicaragora",
-      "src_lib_instagram_functions_verificarconexaoinstagram"
+      "src_lib_instagram_instagramoauth_server",
+      "src_lib_instagram_instagramoauth_server_cliente",
+      "src_lib_instagram_instagramoauth_server_desconectar",
+      "src_lib_instagram_instagramoauth_server_erroconfiguracaometa",
+      "src_lib_instagram_instagramoauth_server_erroconfiguracaometa_constructor",
+      "src_lib_instagram_instagramoauth_server_iniciaroauth",
+      "src_lib_instagram_instagramoauth_server_obterperfil",
+      "src_lib_instagram_instagramoauth_server_perfilinstagram",
+      "src_lib_instagram_instagramoauth_server_salvarconexao",
+      "src_lib_instagram_instagramoauth_server_tokentrocado",
+      "src_lib_instagram_instagramoauth_server_trocarcodeportoken",
+      "src_lib_instagram_instagramoauth_server_trocarportokenlongo",
+      "src_lib_instagram_instagrampublisher_server_instagram_scopes",
+      "src_lib_instagram_instagrampublisher_server_oauth_authorize_url",
+      "src_lib_instagram_instagrampublisher_server_oauth_token_url",
+      "src_lib_instagram_instagrampublisher_server_obterconfigmeta"
     ],
     "39": [
       "src_components_ui_sonner",
@@ -1111,21 +1113,21 @@
       "src_routetree_gen_fileroutesbyid"
     ],
     "40": [
-      "src_lib_instagram_instagramoauth_server",
-      "src_lib_instagram_instagramoauth_server_cliente",
-      "src_lib_instagram_instagramoauth_server_erroconfiguracaometa",
-      "src_lib_instagram_instagramoauth_server_erroconfiguracaometa_constructor",
-      "src_lib_instagram_instagramoauth_server_iniciaroauth",
-      "src_lib_instagram_instagramoauth_server_obterperfil",
-      "src_lib_instagram_instagramoauth_server_perfilinstagram",
-      "src_lib_instagram_instagramoauth_server_salvarconexao",
-      "src_lib_instagram_instagramoauth_server_tokentrocado",
-      "src_lib_instagram_instagramoauth_server_trocarcodeportoken",
-      "src_lib_instagram_instagramoauth_server_trocarportokenlongo",
-      "src_lib_instagram_instagrampublisher_server_instagram_scopes",
-      "src_lib_instagram_instagrampublisher_server_oauth_authorize_url",
-      "src_lib_instagram_instagrampublisher_server_oauth_token_url",
-      "src_lib_instagram_instagrampublisher_server_obterconfigmeta"
+      "src_integrations_supabase_auth_middleware",
+      "src_integrations_supabase_auth_middleware_createsupabasefetch",
+      "src_integrations_supabase_auth_middleware_isnewsupabaseapikey",
+      "src_integrations_supabase_auth_middleware_requiresupabaseauth",
+      "src_integrations_supabase_types",
+      "src_integrations_supabase_types_compositetypes",
+      "src_integrations_supabase_types_constants",
+      "src_integrations_supabase_types_database",
+      "src_integrations_supabase_types_databasewithoutinternals",
+      "src_integrations_supabase_types_defaultschema",
+      "src_integrations_supabase_types_enums",
+      "src_integrations_supabase_types_json",
+      "src_integrations_supabase_types_tables",
+      "src_integrations_supabase_types_tablesinsert",
+      "src_integrations_supabase_types_tablesupdate"
     ],
     "41": [
       "src_components_ui_carousel",
@@ -1144,6 +1146,22 @@
       "src_components_ui_carousel_usecarouselparameters"
     ],
     "42": [
+      "src_lib_instagram_instagrampublisher_server_scheduleorqueuepublish",
+      "src_lib_instagram_publishstate",
+      "src_lib_instagram_publishstate_chaveidempotencia",
+      "src_lib_instagram_publishstate_decidirretry",
+      "src_lib_instagram_publishstate_decisaoretry",
+      "src_lib_instagram_publishstate_erropermanente",
+      "src_lib_instagram_publishstate_erros_permanentes",
+      "src_lib_instagram_publishstate_estadofinal",
+      "src_lib_instagram_publishstate_proximosestados",
+      "src_lib_instagram_publishstate_publish_states",
+      "src_lib_instagram_publishstate_retry_max_tentativas",
+      "src_lib_instagram_publishstate_test",
+      "src_lib_instagram_publishstate_transicaopermitida",
+      "src_lib_instagram_publishstate_transicoes"
+    ],
+    "43": [
       "cmdk",
       "lucide_react",
       "package_dependencies",
@@ -1158,7 +1176,7 @@
       "radix_ui_react_slot",
       "react_hook_form"
     ],
-    "43": [
+    "44": [
       "src_components_posts_artpreview",
       "src_components_posts_artpreview_artpreview",
       "src_components_posts_artpreview_artselection",
@@ -1173,7 +1191,7 @@
       "src_lib_art_exportart_exportararte",
       "src_lib_art_renderart_svgparabloburl"
     ],
-    "44": [
+    "45": [
       "src_lib_instagram_assetvalidation",
       "src_lib_instagram_assetvalidation_assetparapublicacao",
       "src_lib_instagram_assetvalidation_lado_max",
@@ -1187,21 +1205,6 @@
       "src_lib_instagram_assetvalidation_tamanho_max_bytes",
       "src_lib_instagram_assetvalidation_urlpublicavalida",
       "src_lib_instagram_assetvalidation_validarasset"
-    ],
-    "45": [
-      "src_lib_instagram_publishstate",
-      "src_lib_instagram_publishstate_chaveidempotencia",
-      "src_lib_instagram_publishstate_decidirretry",
-      "src_lib_instagram_publishstate_decisaoretry",
-      "src_lib_instagram_publishstate_erropermanente",
-      "src_lib_instagram_publishstate_erros_permanentes",
-      "src_lib_instagram_publishstate_estadofinal",
-      "src_lib_instagram_publishstate_proximosestados",
-      "src_lib_instagram_publishstate_publish_states",
-      "src_lib_instagram_publishstate_retry_max_tentativas",
-      "src_lib_instagram_publishstate_test",
-      "src_lib_instagram_publishstate_transicaopermitida",
-      "src_lib_instagram_publishstate_transicoes"
     ],
     "46": [
       "src_components_common_newscard",
@@ -1375,16 +1378,6 @@
       "src_components_ui_navigation_menu_navigationmenuviewport"
     ],
     "60": [
-      "src_lib_audit_server",
-      "src_lib_audit_server_acaoauditavel",
-      "src_lib_audit_server_cliente",
-      "src_lib_audit_server_criarnotificacao",
-      "src_lib_audit_server_registrarauditoria",
-      "src_lib_audit_server_sanitizardetalhes",
-      "src_lib_audit_server_tiponotificacao",
-      "src_lib_instagram_functions_iniciarconexaoinstagram"
-    ],
-    "61": [
       "src_services_postassets",
       "src_services_postassets_allowed_mime",
       "src_services_postassets_assetuploadresult",
@@ -1394,7 +1387,7 @@
       "src_services_postassets_salvarartegerada",
       "src_services_postassets_validarimagem"
     ],
-    "62": [
+    "61": [
       "package",
       "package_name",
       "package_overrides",
@@ -1403,7 +1396,7 @@
       "package_sideeffects",
       "package_type"
     ],
-    "63": [
+    "62": [
       "package_scripts",
       "package_scripts_build",
       "package_scripts_build_dev",
@@ -1412,7 +1405,7 @@
       "package_scripts_lint",
       "package_scripts_preview"
     ],
-    "64": [
+    "63": [
       "src_components_ui_toggle",
       "src_components_ui_toggle_group",
       "src_components_ui_toggle_group_togglegroup",
@@ -1421,7 +1414,7 @@
       "src_components_ui_toggle_toggle",
       "src_components_ui_toggle_togglevariants"
     ],
-    "65": [
+    "64": [
       "supabase_functions_analyze_news_index",
       "supabase_functions_analyze_news_index_allowed_origins",
       "supabase_functions_analyze_news_index_analysisresult",
@@ -1430,7 +1423,7 @@
       "supabase_functions_analyze_news_index_isoriginallowed",
       "supabase_functions_analyze_news_index_jsonresponse"
     ],
-    "66": [
+    "65": [
       "src_lib_art_officialinstagramtemplatev3",
       "src_lib_art_officialinstagramtemplatev3_esc",
       "src_lib_art_officialinstagramtemplatev3_official_instagram_template",
@@ -1438,13 +1431,20 @@
       "src_lib_art_officialinstagramtemplatev3_renderphotobackground",
       "src_lib_art_officialinstagramtemplatev3_test"
     ],
-    "67": [
+    "66": [
       "src_lib_rules_editorialaudit",
       "src_lib_rules_editorialaudit_decisaogeo",
       "src_lib_rules_editorialaudit_houvemudancageo",
       "src_lib_rules_editorialaudit_houvemudancastatus",
       "src_lib_rules_editorialaudit_statuseditorial",
       "src_lib_rules_editorialaudit_test"
+    ],
+    "67": [
+      "node_crypto",
+      "src_integrations_supabase_cron_auth",
+      "src_integrations_supabase_cron_auth_authenticatecronrequest",
+      "src_routes_api_public_hooks_collect_news",
+      "src_routes_api_public_hooks_collect_news_route"
     ],
     "68": [
       "src_router",
@@ -1728,38 +1728,38 @@
     "11": 0.17195767195767195,
     "12": 0.11965811965811966,
     "13": 0.09971509971509972,
-    "14": 0.15384615384615385,
-    "15": 0.11384615384615385,
+    "14": 0.11384615384615385,
+    "15": 0.13666666666666666,
     "16": 0.08333333333333333,
     "17": 0.16600790513833993,
     "18": 0.13852813852813853,
     "19": 0.14285714285714285,
     "20": 0.19480519480519481,
-    "21": 0.15151515151515152,
-    "22": 0.1380952380952381,
-    "23": 0.12380952380952381,
-    "24": 0.13157894736842105,
-    "25": 0.1,
-    "26": 0.10526315789473684,
-    "27": 0.21052631578947367,
-    "28": 0.2222222222222222,
-    "29": 0.21637426900584794,
-    "30": 0.16374269005847952,
-    "31": 0.15204678362573099,
-    "32": 0.1871345029239766,
+    "21": 0.1341991341991342,
+    "22": 0.15151515151515152,
+    "23": 0.1380952380952381,
+    "24": 0.12380952380952381,
+    "25": 0.21578947368421053,
+    "26": 0.1,
+    "27": 0.10526315789473684,
+    "28": 0.21052631578947367,
+    "29": 0.2222222222222222,
+    "30": 0.21637426900584794,
+    "31": 0.16374269005847952,
+    "32": 0.15204678362573099,
     "33": 0.19117647058823528,
     "34": 0.16176470588235295,
     "35": 0.15833333333333333,
     "36": 0.18333333333333332,
-    "37": 0.25,
+    "37": 0.24166666666666667,
     "38": 0.16666666666666666,
     "39": 0.1619047619047619,
-    "40": 0.18095238095238095,
+    "40": 0.1619047619047619,
     "41": 0.18681318681318682,
-    "42": 0.15384615384615385,
-    "43": 0.2948717948717949,
-    "44": 0.16666666666666666,
-    "45": 0.2564102564102564,
+    "42": 0.23076923076923078,
+    "43": 0.15384615384615385,
+    "44": 0.2948717948717949,
+    "45": 0.16666666666666666,
     "46": 0.30303030303030304,
     "47": 0.22727272727272727,
     "48": 0.24242424242424243,
@@ -1774,14 +1774,14 @@
     "57": 0.25,
     "58": 0.25,
     "59": 0.2857142857142857,
-    "60": 0.2857142857142857,
-    "61": 0.39285714285714285,
+    "60": 0.39285714285714285,
+    "61": 0.2857142857142857,
     "62": 0.2857142857142857,
-    "63": 0.2857142857142857,
-    "64": 0.42857142857142855,
-    "65": 0.38095238095238093,
-    "66": 0.6666666666666666,
-    "67": 0.4666666666666667,
+    "63": 0.42857142857142855,
+    "64": 0.38095238095238093,
+    "65": 0.6666666666666666,
+    "66": 0.4666666666666667,
+    "67": 0.6,
     "68": 0.4,
     "69": 1.0,
     "70": 1.0,
