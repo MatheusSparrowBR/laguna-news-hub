@@ -6,6 +6,7 @@ import {
   permiteFluxoAutomatico,
   permiteInsercao,
   situacaoRevisaoInicial,
+  statusInicialNoticia,
 } from "./geoFilterMode";
 
 describe("modo do filtro geográfico", () => {
