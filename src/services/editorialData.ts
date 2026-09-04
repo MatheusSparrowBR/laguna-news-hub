@@ -134,7 +134,9 @@ export interface EntradaPost {
 }
 
 /** Idempotente por chave: recriar o mesmo post não gera duplicado. */
-export async function salvarPost(entrada: EntradaPost & { id?: string }): Promise<PostRegistro> {
+export async function salvarPost(
+  entrada: EntradaPost & { id?: string | undefined },
+): Promise<PostRegistro> {
   const { id, ...campos } = entrada;
   const chave = `${campos.project_id}:${campos.news_id ?? campos.campaign_id ?? "manual"}:${campos.post_type}`;
 
@@ -201,7 +203,9 @@ export async function obterPatrocinadores(projectId: string): Promise<Sponsor[]>
 }
 
 export async function salvarPatrocinador(
-  entrada: Partial<Sponsor> & { project_id: string; name: string },
+  entrada: Partial<Record<keyof Sponsor, never>> extends never
+    ? never
+    : { [K in keyof Sponsor]?: Sponsor[K] | undefined } & { project_id: string; name: string },
 ): Promise<Sponsor> {
   if (entrada.id) {
     const { id, ...campos } = entrada;
@@ -258,7 +262,11 @@ export async function obterCampanhas(projectId: string): Promise<Campanha[]> {
 }
 
 export async function salvarCampanha(
-  entrada: Partial<Campanha> & { project_id: string; sponsor_id: string; name: string },
+  entrada: { [K in keyof Campanha]?: Campanha[K] | undefined } & {
+    project_id: string;
+    sponsor_id: string;
+    name: string;
+  },
 ): Promise<void> {
   const { id, sponsor_name: _sponsorName, ...campos } = entrada;
   if (id) {
@@ -301,12 +309,12 @@ export async function obterEntregas(projectId: string): Promise<Entrega[]> {
 }
 
 export async function salvarEntrega(entrada: {
-  id?: string;
+  id?: string | undefined;
   campaign_id: string;
-  post_id?: string | null;
-  scheduled_at?: string | null;
+  post_id?: string | null | undefined;
+  scheduled_at?: string | null | undefined;
   status: string;
-  notes?: string | null;
+  notes?: string | null | undefined;
 }): Promise<void> {
   const { id, ...campos } = entrada;
   if (id) {
