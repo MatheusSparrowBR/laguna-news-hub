@@ -3,7 +3,7 @@ import { DIMENSOES, type ArtFormat } from "./artTemplates";
 import { renderOfficialInstagramSvg } from "./officialInstagramTemplateV2";
 import { renderOfficialInstagramStorySvg } from "./officialInstagramStoryTemplate";
 
-export interface EntradaArte { template: TemplateKey; format: ArtFormat; title: string; subtitle?: string | null; imageUrl?: string | null; sourceName?: string | null; dateLabel?: string | null; sponsorName?: string | null; sponsorLogoUrl?: string | null; cta?: string | null; }
+export interface EntradaArte { template: TemplateKey; format: ArtFormat; title: string; subtitle?: string | null; imageUrl?: string | null; sourceName?: string | null; photoCredit?: string | null; dateLabel?: string | null; sponsorName?: string | null; sponsorLogoUrl?: string | null; cta?: string | null; }
 export function escaparXml(texto: string): string { return texto.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;").replace(/'/g, "&apos;"); }
 
 /** Seleciona automaticamente o renderer oficial de acordo com o formato. */
@@ -15,7 +15,7 @@ export function renderizarArteSvg(entrada: EntradaArte): string {
     imageUrl: entrada.imageUrl,
     dateLabel: entrada.dateLabel,
     location: "Laguna - SC",
-    photoCredit: entrada.sponsorName ? `Publicidade • ${entrada.sponsorName}` : (entrada.sourceName ?? "Divulgação"),
+    photoCredit: entrada.sponsorName ? `Publicidade • ${entrada.sponsorName}` : (entrada.photoCredit ?? "Crédito não informado"),
     sponsorName: entrada.sponsorName,
   };
   if (entrada.format === "feed") return renderOfficialInstagramSvg(common);
@@ -28,7 +28,7 @@ export function renderizarArteSvg(entrada: EntradaArte): string {
 
 export function svgParaDataUrl(svg: string): string { return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`; }
 
-/** Blob URL mantém a origem do documento para carregar a logo PNG no SVG. */
+/** Blob URL mantém a origem do documento para carregar assets no SVG. */
 export function svgParaBlobUrl(svg: string): string {
   if (typeof URL === "undefined" || typeof Blob === "undefined") throw new Error("Blob URLs não estão disponíveis neste ambiente.");
   return URL.createObjectURL(new Blob([svg], { type: "image/svg+xml" }));
