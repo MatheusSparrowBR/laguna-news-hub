@@ -2457,7 +2457,7 @@
       "file_type": "code",
       "norm_label": "esc()",
       "source_file": "src/lib/art/officialInstagramTemplateV2.ts",
-      "source_location": "L9"
+      "source_location": "L38"
     },
     {
       "id": "src_lib_art_officialinstagramtemplatev2_renderofficialinstagramsvg",
@@ -2468,7 +2468,7 @@
       "file_type": "code",
       "norm_label": "renderofficialinstagramsvg()",
       "source_file": "src/lib/art/officialInstagramTemplateV2.ts",
-      "source_location": "L11"
+      "source_location": "L42"
     },
     {
       "id": "src_lib_art_renderart_escaparxml",
@@ -7283,7 +7283,7 @@
       "file_type": "code",
       "norm_label": "official_instagram_template",
       "source_file": "src/lib/art/officialInstagramTemplateV2.ts",
-      "source_location": "L7"
+      "source_location": "L21"
     },
     {
       "id": "src_lib_art_officialinstagramtemplatev2_test",
@@ -18216,7 +18216,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/art/officialInstagramTemplateV2.ts",
-      "source_location": "L13",
+      "source_location": "L47",
       "weight": 1.0
     },
     {
@@ -18228,7 +18228,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/art/officialInstagramTemplateV2.ts",
-      "source_location": "L14",
+      "source_location": "L49",
       "weight": 1.0
     },
     {
@@ -18240,7 +18240,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/art/officialInstagramTemplateV2.ts",
-      "source_location": "L16",
+      "source_location": "L69",
       "weight": 1.0
     },
     {
@@ -22524,7 +22524,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/lib/art/officialInstagramTemplateV2.ts",
-      "source_location": "L5",
+      "source_location": "L6",
       "weight": 1.0
     },
     {
@@ -46969,13 +46969,35 @@
     },
     {
       "source": "src_lib_art_officialinstagramtemplatev2",
+      "target": "src_lib_art_officialinstagramtemplatev2_official_instagram_template",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/art/officialInstagramTemplateV2.ts",
+      "source_location": "L21",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_art_officialinstagramtemplatev2",
+      "target": "src_lib_art_officialinstagramtemplatev2_esc",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/art/officialInstagramTemplateV2.ts",
+      "source_location": "L38",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_art_officialinstagramtemplatev2",
       "target": "src_lib_art_officialinstagramtemplatev2_renderofficialinstagramsvg",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/art/officialInstagramTemplateV2.ts",
-      "source_location": "L11",
+      "source_location": "L42",
       "weight": 1.0
     },
     {
@@ -46987,28 +47009,6 @@
       "confidence_score": 1.0,
       "source_file": "src/lib/art/officialInstagramTemplateV2.ts",
       "source_location": "L5",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_art_officialinstagramtemplatev2",
-      "target": "src_lib_art_officialinstagramtemplatev2_official_instagram_template",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/lib/art/officialInstagramTemplateV2.ts",
-      "source_location": "L7",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_art_officialinstagramtemplatev2",
-      "target": "src_lib_art_officialinstagramtemplatev2_esc",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/lib/art/officialInstagramTemplateV2.ts",
-      "source_location": "L9",
       "weight": 1.0
     },
     {
@@ -54608,5 +54608,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "d44b0408910b4c3674c3c49063b08b9cc7fe99e2"
+  "built_at_commit": "6fc5d1895d712cdc92c23739f425358b9ac63e31"
 }
