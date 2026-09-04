@@ -5,12 +5,12 @@ import { ajustarTexto } from "./textFit";
 export interface OfficialInstagramArtInput {
   template: TemplateKey;
   title: string;
-  summary?: string | null;
-  imageUrl?: string | null;
-  dateLabel?: string | null;
-  location?: string | null;
-  photoCredit?: string | null;
-  sponsorName?: string | null;
+  summary?: string | null | undefined;
+  imageUrl?: string | null | undefined;
+  dateLabel?: string | null | undefined;
+  location?: string | null | undefined;
+  photoCredit?: string | null | undefined;
+  sponsorName?: string | null | undefined;
 }
 
 /**
