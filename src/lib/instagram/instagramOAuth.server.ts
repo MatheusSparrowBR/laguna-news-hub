@@ -6,6 +6,7 @@
  */
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
+import { criarClienteAdmin } from "@/lib/adminClient.server";
 import {
   INSTAGRAM_SCOPES,
   OAUTH_AUTHORIZE_URL,
@@ -70,7 +71,6 @@ export async function trocarCodePorToken(code: string): Promise<TokenTrocado> {
   });
 
   if (!resposta.ok) {
-    // Detalhe só no log do servidor; o usuário recebe mensagem amigável.
     console.error("[instagram-oauth] troca de code falhou", resposta.status);
     throw new Error("Não foi possível concluir a autorização do Instagram.");
   }
@@ -90,9 +90,7 @@ export async function trocarCodePorToken(code: string): Promise<TokenTrocado> {
   };
 }
 
-/**
- * Registra/atualiza a conexão (sem token). Idempotente por (project_id, provider).
- */
+/** Registra/atualiza a conexão usando exclusivamente a conexão privilegiada server-side. */
 export async function salvarConexao(
   supabase: Cliente,
   entrada: {
@@ -104,8 +102,17 @@ export async function salvarConexao(
     tokenExpiresAt: string | null;
   },
 ): Promise<void> {
+  // Primeiro valida que o projeto está acessível ao contexto autenticado do caller.
+  const { data: projeto, error: projetoError } = await supabase
+    .from("projects")
+    .select("id")
+    .eq("id", entrada.projectId)
+    .maybeSingle();
+  if (projetoError || !projeto) throw new Error("Projeto não autorizado para esta conexão.");
+
   const agora = new Date().toISOString();
-  const { error } = await supabase.from("social_accounts").upsert(
+  const admin = criarClienteAdmin();
+  const { error } = await admin.from("social_accounts").upsert(
     {
       project_id: entrada.projectId,
       provider: "instagram",
@@ -123,10 +130,7 @@ export async function salvarConexao(
   if (error) throw new Error(`Não foi possível salvar a conexão: ${error.message}`);
 }
 
-/**
- * Troca o token curto por um token de longa duração (60 dias).
- * Não lança quando a troca falha: mantém o token curto e informa a validade.
- */
+/** Troca o token curto por um token de longa duração (60 dias). */
 export async function trocarPorTokenLongo(
   accessToken: string,
 ): Promise<{ accessToken: string; expiresInSeconds: number | null }> {
@@ -187,17 +191,26 @@ export async function obterPerfil(
   };
 }
 
-/** Desconecta a conta: remove a conexão sem apagar posts nem histórico. */
+/** Desconecta a conta usando o client autenticado apenas para autorização e o admin para mutação. */
 export async function desconectar(supabase: Cliente, projectId: string): Promise<void> {
-  const { error } = await supabase
+  const { data: conta, error: contaError } = await supabase
+    .from("social_accounts")
+    .select("id")
+    .eq("project_id", projectId)
+    .eq("provider", "instagram")
+    .maybeSingle();
+  if (contaError) throw new Error(`Não foi possível validar a conexão: ${contaError.message}`);
+  if (!conta) return;
+
+  const admin = criarClienteAdmin();
+  const { error } = await admin
     .from("social_accounts")
     .update({ status: "disconnected", account_id: null, token_expires_at: null })
+    .eq("id", conta.id)
     .eq("project_id", projectId)
     .eq("provider", "instagram");
   if (error) throw new Error(`Não foi possível desconectar: ${error.message}`);
 
-  // Credenciais seguras também são apagadas; posts e histórico permanecem.
   const { apagarToken } = await import("./tokenStore.server");
   await apagarToken(projectId);
 }
-
