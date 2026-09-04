@@ -23,7 +23,7 @@ import {
 import { exportarArte, baixarArquivo } from "@/lib/art/exportArt";
 import { renderizarArteSvg } from "@/lib/art/renderArt";
 import { enviarImagemPost, salvarArteGerada, validarImagem } from "@/services/postAssets";
-import { obterCreditoFotoPost } from "@/services/postPhotoCredit";
+import { obterCreditoFotoPost, salvarCreditoFotoPost } from "@/services/postPhotoCredit";
 import type { Campanha, EntradaPost, NoticiaEditorial, PostRegistro, Sponsor } from "@/services/editorialData";
 
 export type TipoPost = "noticia" | "patrocinado";
@@ -176,7 +176,7 @@ export function PostComposerDialog({
     setEnviandoImagem(Boolean(imagemFile));
     try {
       // Primeiro cria/atualiza o post para obter um post_id estável.
-      const salvo = await onSalvar(({
+      const salvo = await onSalvar({
         id: post?.id,
         project_id: projectId,
         news_id: patrocinado ? null : (noticia?.id ?? post?.news_id ?? null),
@@ -192,8 +192,12 @@ export function PostComposerDialog({
         channel: "instagram",
         status,
         scheduled_at: agendamento ? new Date(agendamento).toISOString() : null,
-        photo_credit: creditoFoto.trim() || null,
-      }) as EntradaPost & { id?: string | undefined; photo_credit?: string | null });
+      });
+
+      const creditoPersistido = await salvarCreditoFotoPost(salvo.id, creditoFoto.trim() || null);
+      if (!creditoPersistido) {
+        toast.warning("Crédito salvo nesta arte, mas a coluna do banco ainda não está disponível. Aplique a migration do projeto.");
+      }
 
       if (imagemFile) {
         const asset = await enviarImagemPost({ projectId, postId: salvo.id, file: imagemFile, assetType: "source_image" });
