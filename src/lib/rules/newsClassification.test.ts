@@ -129,3 +129,44 @@ describe("refinamento final (saúde, trânsito, economia, turismo)", () => {
   });
 });
 
+
+describe('ajuste pontual: "empresa" contextual', () => {
+  it('"empresa" isolada não classifica como Economia', () => {
+    const r = diagnosticarClassificacao(
+      "Empresa responsável pela obraна rua é notificada pela prefeitura".replace("на", " "),
+      "A empresa terá prazo para concluir o serviço no bairro.",
+    );
+    expect(r.categoria_prevista).not.toBe("Economia");
+  });
+
+  it('"empresa de ônibus" não classifica como Economia', () => {
+    const r = diagnosticarClassificacao("Empresa de ônibus altera horários de linha", "");
+    expect(r.categoria_prevista).not.toBe("Economia");
+    expect(r.scores.economia).toBeLessThan(4);
+  });
+
+  it('"empresas" com contexto econômico continua Economia', () => {
+    expect(
+      diagnosticarClassificacao("Empresas anunciam investimentos em Laguna", "").categoria_prevista,
+    ).toBe("Economia");
+  });
+
+  it("vagas de emprego seguem em Economia", () => {
+    expect(
+      diagnosticarClassificacao("Novas vagas de emprego são abertas em Laguna", "").categoria_prevista,
+    ).toBe("Economia");
+  });
+
+  it("categorias sensíveis não regridem", () => {
+    const casos: Array<[string, string]> = [
+      ["Homem morto a facadas na região", "Segurança"],
+      ["Acidente na BR-101 deixa trânsito lento", "Trânsito"],
+      ["Defesa Civil alerta para chuva forte", "Clima"],
+      ["Paciente foi atendido no hospital de Laguna", "Saúde"],
+      ["Festival acontece neste fim de semana", "Eventos"],
+    ];
+    for (const [titulo, esperado] of casos) {
+      expect(diagnosticarClassificacao(titulo, "").categoria_prevista).toBe(esperado);
+    }
+  });
+});
