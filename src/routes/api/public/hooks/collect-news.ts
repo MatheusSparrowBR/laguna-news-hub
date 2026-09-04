@@ -48,7 +48,7 @@ export const Route = createFileRoute("/api/public/hooks/collect-news")({
                 projectId: projeto.id,
                 origem: "cron",
               });
-              results.push({ project_id: projeto.id, ok: true, ...resultado });
+              results.push({ ...resultado, project_id: projeto.id, ok: true });
             } catch (erro) {
               hasFailure = true;
               const mensagem = erro instanceof Error ? erro.message : "Erro desconhecido";
