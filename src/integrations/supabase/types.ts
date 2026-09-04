@@ -64,6 +64,47 @@ export type Database = {
           },
         ]
       }
+      audit_logs: {
+        Row: {
+          action: string
+          actor_id: string | null
+          created_at: string
+          details: Json | null
+          entity_id: string | null
+          entity_type: string
+          id: string
+          project_id: string
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          created_at?: string
+          details?: Json | null
+          entity_id?: string | null
+          entity_type: string
+          id?: string
+          project_id: string
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          created_at?: string
+          details?: Json | null
+          entity_id?: string | null
+          entity_type?: string
+          id?: string
+          project_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "audit_logs_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       automation_runs: {
         Row: {
           completed_at: string | null
@@ -279,53 +320,261 @@ export type Database = {
           },
         ]
       }
+      news_geography: {
+        Row: {
+          created_at: string
+          decision: string
+          excluded_localities: string[]
+          id: string
+          manual_decision: string | null
+          matched_entities: string[]
+          matched_localities: string[]
+          news_id: string
+          reason: string | null
+          review_notes: string | null
+          review_status: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          score: number
+          source_mode: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          decision: string
+          excluded_localities?: string[]
+          id?: string
+          manual_decision?: string | null
+          matched_entities?: string[]
+          matched_localities?: string[]
+          news_id: string
+          reason?: string | null
+          review_notes?: string | null
+          review_status?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          score?: number
+          source_mode?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          decision?: string
+          excluded_localities?: string[]
+          id?: string
+          manual_decision?: string | null
+          matched_entities?: string[]
+          matched_localities?: string[]
+          news_id?: string
+          reason?: string | null
+          review_notes?: string | null
+          review_status?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          score?: number
+          source_mode?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "news_geography_news_id_fkey"
+            columns: ["news_id"]
+            isOneToOne: true
+            referencedRelation: "news"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          campaign_id: string | null
+          created_at: string
+          id: string
+          kind: string
+          message: string | null
+          news_id: string | null
+          post_id: string | null
+          project_id: string
+          read_at: string | null
+          title: string
+        }
+        Insert: {
+          campaign_id?: string | null
+          created_at?: string
+          id?: string
+          kind: string
+          message?: string | null
+          news_id?: string | null
+          post_id?: string | null
+          project_id: string
+          read_at?: string | null
+          title: string
+        }
+        Update: {
+          campaign_id?: string | null
+          created_at?: string
+          id?: string
+          kind?: string
+          message?: string | null
+          news_id?: string | null
+          post_id?: string | null
+          project_id?: string
+          read_at?: string | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "sponsor_campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_news_id_fkey"
+            columns: ["news_id"]
+            isOneToOne: false
+            referencedRelation: "news"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      post_assets: {
+        Row: {
+          asset_type: string
+          created_at: string
+          file_size: number | null
+          height: number | null
+          id: string
+          mime_type: string | null
+          post_id: string
+          public_url: string | null
+          storage_path: string
+          width: number | null
+        }
+        Insert: {
+          asset_type?: string
+          created_at?: string
+          file_size?: number | null
+          height?: number | null
+          id?: string
+          mime_type?: string | null
+          post_id: string
+          public_url?: string | null
+          storage_path: string
+          width?: number | null
+        }
+        Update: {
+          asset_type?: string
+          created_at?: string
+          file_size?: number | null
+          height?: number | null
+          id?: string
+          mime_type?: string | null
+          post_id?: string
+          public_url?: string | null
+          storage_path?: string
+          width?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_assets_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       posts: {
         Row: {
+          campaign_id: string | null
           caption: string | null
+          channel: string
           created_at: string
           external_post_id: string | null
+          hashtags: string | null
           id: string
+          idempotency_key: string | null
           image_url: string | null
+          is_sponsored: boolean
           news_id: string | null
           post_type: Database["public"]["Enums"]["post_type"]
           project_id: string
           published_at: string | null
           scheduled_at: string | null
+          sponsor_id: string | null
           status: Database["public"]["Enums"]["post_status"]
+          template_key: string | null
           title: string | null
           updated_at: string
         }
         Insert: {
+          campaign_id?: string | null
           caption?: string | null
+          channel?: string
           created_at?: string
           external_post_id?: string | null
+          hashtags?: string | null
           id?: string
+          idempotency_key?: string | null
           image_url?: string | null
+          is_sponsored?: boolean
           news_id?: string | null
           post_type?: Database["public"]["Enums"]["post_type"]
           project_id: string
           published_at?: string | null
           scheduled_at?: string | null
+          sponsor_id?: string | null
           status?: Database["public"]["Enums"]["post_status"]
+          template_key?: string | null
           title?: string | null
           updated_at?: string
         }
         Update: {
+          campaign_id?: string | null
           caption?: string | null
+          channel?: string
           created_at?: string
           external_post_id?: string | null
+          hashtags?: string | null
           id?: string
+          idempotency_key?: string | null
           image_url?: string | null
+          is_sponsored?: boolean
           news_id?: string | null
           post_type?: Database["public"]["Enums"]["post_type"]
           project_id?: string
           published_at?: string | null
           scheduled_at?: string | null
+          sponsor_id?: string | null
           status?: Database["public"]["Enums"]["post_status"]
+          template_key?: string | null
           title?: string | null
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "posts_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "sponsor_campaigns"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "posts_news_id_fkey"
             columns: ["news_id"]
@@ -338,6 +587,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "posts_sponsor_id_fkey"
+            columns: ["sponsor_id"]
+            isOneToOne: false
+            referencedRelation: "sponsors"
             referencedColumns: ["id"]
           },
         ]
@@ -411,6 +667,59 @@ export type Database = {
         }
         Relationships: []
       }
+      publication_logs: {
+        Row: {
+          attempt: number
+          attempted_at: string
+          created_at: string
+          error_code: string | null
+          error_message: string | null
+          external_id: string | null
+          id: string
+          post_id: string
+          provider: string
+          published_at: string | null
+          response_metadata: Json | null
+          status: string
+        }
+        Insert: {
+          attempt?: number
+          attempted_at?: string
+          created_at?: string
+          error_code?: string | null
+          error_message?: string | null
+          external_id?: string | null
+          id?: string
+          post_id: string
+          provider?: string
+          published_at?: string | null
+          response_metadata?: Json | null
+          status?: string
+        }
+        Update: {
+          attempt?: number
+          attempted_at?: string
+          created_at?: string
+          error_code?: string | null
+          error_message?: string | null
+          external_id?: string | null
+          id?: string
+          post_id?: string
+          provider?: string
+          published_at?: string | null
+          response_metadata?: Json | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "publication_logs_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       settings: {
         Row: {
           approval_required: boolean
@@ -450,6 +759,62 @@ export type Database = {
             foreignKeyName: "settings_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: true
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      social_accounts: {
+        Row: {
+          account_id: string | null
+          connected_at: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          last_verified_at: string | null
+          project_id: string
+          provider: string
+          scopes: string[]
+          status: string
+          token_expires_at: string | null
+          updated_at: string
+          username: string | null
+        }
+        Insert: {
+          account_id?: string | null
+          connected_at?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          last_verified_at?: string | null
+          project_id: string
+          provider?: string
+          scopes?: string[]
+          status?: string
+          token_expires_at?: string | null
+          updated_at?: string
+          username?: string | null
+        }
+        Update: {
+          account_id?: string | null
+          connected_at?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          last_verified_at?: string | null
+          project_id?: string
+          provider?: string
+          scopes?: string[]
+          status?: string
+          token_expires_at?: string | null
+          updated_at?: string
+          username?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "social_accounts_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "projects"
             referencedColumns: ["id"]
           },
@@ -512,6 +877,182 @@ export type Database = {
           },
         ]
       }
+      sponsor_campaigns: {
+        Row: {
+          budget: number | null
+          contracted_posts: number
+          created_at: string
+          delivered_posts: number
+          description: string | null
+          end_date: string | null
+          id: string
+          name: string
+          notes: string | null
+          project_id: string
+          sponsor_id: string
+          start_date: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          budget?: number | null
+          contracted_posts?: number
+          created_at?: string
+          delivered_posts?: number
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          name: string
+          notes?: string | null
+          project_id: string
+          sponsor_id: string
+          start_date?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          budget?: number | null
+          contracted_posts?: number
+          created_at?: string
+          delivered_posts?: number
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          name?: string
+          notes?: string | null
+          project_id?: string
+          sponsor_id?: string
+          start_date?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sponsor_campaigns_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sponsor_campaigns_sponsor_id_fkey"
+            columns: ["sponsor_id"]
+            isOneToOne: false
+            referencedRelation: "sponsors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sponsor_deliverables: {
+        Row: {
+          campaign_id: string
+          created_at: string
+          id: string
+          notes: string | null
+          post_id: string | null
+          published_at: string | null
+          scheduled_at: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          campaign_id: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          post_id?: string | null
+          published_at?: string | null
+          scheduled_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          campaign_id?: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          post_id?: string | null
+          published_at?: string | null
+          scheduled_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sponsor_deliverables_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "sponsor_campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sponsor_deliverables_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sponsors: {
+        Row: {
+          active: boolean
+          contact_name: string | null
+          created_at: string
+          display_name: string | null
+          email: string | null
+          id: string
+          instagram_handle: string | null
+          logo_url: string | null
+          name: string
+          notes: string | null
+          phone: string | null
+          project_id: string
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          active?: boolean
+          contact_name?: string | null
+          created_at?: string
+          display_name?: string | null
+          email?: string | null
+          id?: string
+          instagram_handle?: string | null
+          logo_url?: string | null
+          name: string
+          notes?: string | null
+          phone?: string | null
+          project_id: string
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          active?: boolean
+          contact_name?: string | null
+          created_at?: string
+          display_name?: string | null
+          email?: string | null
+          id?: string
+          instagram_handle?: string | null
+          logo_url?: string | null
+          name?: string
+          notes?: string | null
+          phone?: string | null
+          project_id?: string
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sponsors_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -532,6 +1073,9 @@ export type Database = {
         | "ignored"
         | "duplicate"
         | "review_required"
+        | "rejected"
+        | "scheduled"
+        | "archived"
       post_status:
         | "draft"
         | "scheduled"
@@ -539,6 +1083,9 @@ export type Database = {
         | "published"
         | "failed"
         | "cancelled"
+        | "awaiting_approval"
+        | "approved"
+        | "queued"
       post_type: "feed" | "story" | "reel"
       run_status: "running" | "completed" | "failed" | "partial"
       run_type:
@@ -686,6 +1233,9 @@ export const Constants = {
         "ignored",
         "duplicate",
         "review_required",
+        "rejected",
+        "scheduled",
+        "archived",
       ],
       post_status: [
         "draft",
@@ -694,6 +1244,9 @@ export const Constants = {
         "published",
         "failed",
         "cancelled",
+        "awaiting_approval",
+        "approved",
+        "queued",
       ],
       post_type: ["feed", "story", "reel"],
       run_status: ["running", "completed", "failed", "partial"],

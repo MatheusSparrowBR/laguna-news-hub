@@ -1,39 +1,46 @@
 import { describe, expect, it } from "vitest";
-import { GEOGRAPHIC_FILTER_MODE, permiteInsercao } from "./geoFilterMode";
-import { avaliarEscopoLaguna } from "./lagunaScope";
+import {
+  GEOGRAPHIC_FILTER_MODE,
+  GEO_FILTER_MODES,
+  motivoBloqueio,
+  permiteFluxoAutomatico,
+  permiteInsercao,
+  situacaoRevisaoInicial,
+} from "./geoFilterMode";
 
 describe("modo do filtro geográfico", () => {
-  it("a fase atual é shadow", () => {
+  it("suporta os três modos e mantém shadow como padrão", () => {
+    expect(GEO_FILTER_MODES).toEqual(["shadow", "review", "block_outside"]);
     expect(GEOGRAPHIC_FILTER_MODE).toBe("shadow");
   });
 
-  it("LOCAL → INSERT permitido", () => {
-    expect(permiteInsercao("local")).toBe(true);
-  });
-
-  it("OUTSIDE → INSERT permitido no modo shadow", () => {
-    expect(permiteInsercao("outside")).toBe(true);
-  });
-
-  it("UNCERTAIN → INSERT permitido no modo shadow", () => {
-    expect(permiteInsercao("uncertain")).toBe(true);
-  });
-
-  it("nenhuma decisão real é convertida em rejeição no modo shadow", () => {
-    const casos = [
-      { title: "Prefeitura de Laguna anuncia nova obra", content: "" },
-      { title: "Prefeitura de Tubarão anuncia nova obra", content: "" },
-      { title: "SC tem alerta para chuva intensa", content: "Defesa Civil alerta o estado" },
-    ];
-    for (const caso of casos) {
-      const { decision } = avaliarEscopoLaguna({ ...caso, source: "sulagora.com.br" });
-      expect(permiteInsercao(decision)).toBe(true);
+  it("shadow não bloqueia nada", () => {
+    for (const d of ["local", "outside", "uncertain"] as const) {
+      expect(permiteInsercao(d, "shadow")).toBe(true);
+      expect(permiteFluxoAutomatico(d, "shadow")).toBe(true);
+      expect(motivoBloqueio(d, "shadow")).toBeNull();
+      expect(situacaoRevisaoInicial(d, "shadow")).toBe("pending");
     }
   });
 
-  it("em enforce (fase futura, não ativa) outside seria bloqueado", () => {
-    expect(permiteInsercao("outside", "enforce")).toBe(false);
-    expect(permiteInsercao("uncertain", "enforce")).toBe(true);
-    expect(permiteInsercao("local", "enforce")).toBe(true);
+  it("review insere tudo, mas só local segue automaticamente", () => {
+    expect(permiteInsercao("outside", "review")).toBe(true);
+    expect(permiteFluxoAutomatico("outside", "review")).toBe(false);
+    expect(permiteFluxoAutomatico("uncertain", "review")).toBe(false);
+    expect(permiteFluxoAutomatico("local", "review")).toBe(true);
+    expect(situacaoRevisaoInicial("local", "review")).toBe("skipped");
+    expect(situacaoRevisaoInicial("outside", "review")).toBe("pending");
+  });
+
+  it("block_outside barra outside e registra o motivo", () => {
+    expect(permiteInsercao("outside", "block_outside")).toBe(false);
+    expect(permiteInsercao("local", "block_outside")).toBe(true);
+    expect(permiteInsercao("uncertain", "block_outside")).toBe(true);
+    expect(motivoBloqueio("outside", "block_outside")).toContain("fora de Laguna");
+    expect(motivoBloqueio("uncertain", "block_outside")).toBeNull();
+  });
+
+  it("usa o modo atual quando nenhum é informado", () => {
+    expect(permiteInsercao("outside")).toBe(true);
   });
 });

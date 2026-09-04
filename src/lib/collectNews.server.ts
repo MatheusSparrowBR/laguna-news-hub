@@ -17,6 +17,8 @@ import {
   mapearComLimite,
   FETCH_CONTEUDO_CONCORRENCIA,
 } from "@/lib/articleContent.server";
+import { montarRegistroGeografico, registrarDecisaoGeografica } from "@/lib/geography.server";
+import { criarNotificacao } from "@/lib/audit.server";
 
 
 export type ClienteColeta = SupabaseClient<Database>;
@@ -57,6 +59,9 @@ export interface CollectNewsResult {
   geo_local: number;
   geo_outside: number;
   geo_uncertain: number;
+  /** Quantas decisões geográficas foram gravadas em news_geography. */
+  geo_persisted: number;
+  geo_persist_errors: number;
   /** Quantos itens novos foram analisados com o corpo completo da página. */
   content_full: number;
   /** Quantos itens novos caíram no lead do RSS. */
@@ -320,6 +325,8 @@ export async function executarColeta(opcoes: OpcoesColeta): Promise<CollectNewsR
     geo_local: 0,
     geo_outside: 0,
     geo_uncertain: 0,
+    geo_persisted: 0,
+    geo_persist_errors: 0,
     content_full: 0,
     content_fallback_rss: 0,
     content_fetch_errors: 0,
@@ -387,6 +394,9 @@ export async function executarColeta(opcoes: OpcoesColeta): Promise<CollectNewsR
   let geoLocal = 0;
   let geoOutside = 0;
   let geoUncertain = 0;
+  // Decisões geográficas efetivamente gravadas em news_geography.
+  let geoPersistidos = 0;
+  let geoErrosPersistencia = 0;
   // Contagens da busca de conteúdo completo (somente itens novos).
   let conteudoCompleto = 0;
   let fallbackRss = 0;
@@ -467,28 +477,72 @@ export async function executarColeta(opcoes: OpcoesColeta): Promise<CollectNewsR
         );
 
         // original_content continua recebendo o lead do RSS (nesta etapa).
-        const { error: erroInsert } = await supabase.from("news").insert({
-          project_id: projectId,
-          source_id: fonte.id,
-          title: item.title.substring(0, 500),
-          original_content: leadRss,
-          source_url: item.link,
-          image_url: item.imageUrl,
-          discovered_at: dataParaIso(item.pubDate),
-          status: "new",
-          category_id: classificacao.category_id,
-          importance_score: classificacao.importance_score,
-          ai_confidence: 0,
-          is_duplicate: false,
-          is_demo: false,
-        });
+        const { data: inserida, error: erroInsert } = await supabase
+          .from("news")
+          .insert({
+            project_id: projectId,
+            source_id: fonte.id,
+            title: item.title.substring(0, 500),
+            original_content: leadRss,
+            source_url: item.link,
+            image_url: item.imageUrl,
+            discovered_at: dataParaIso(item.pubDate),
+            status: "new",
+            category_id: classificacao.category_id,
+            importance_score: classificacao.importance_score,
+            ai_confidence: 0,
+            is_duplicate: false,
+            is_demo: false,
+          })
+          .select("id")
+          .single();
 
-
-        if (erroInsert) {
+        if (erroInsert || !inserida) {
           errosInsert++;
-          log("insert_error", { source_id: fonte.id, motivo: erroInsert.message });
+          log("insert_error", { source_id: fonte.id, motivo: erroInsert?.message ?? "sem id" });
         } else {
           novas++;
+
+          // Persistência da decisão geográfica — SOMENTE para a notícia nova.
+          // Falha aqui nunca derruba a coleta.
+          const persistido = await registrarDecisaoGeografica(
+            supabase,
+            montarRegistroGeografico(inserida.id, escopo, GEOGRAPHIC_FILTER_MODE),
+          );
+          if (persistido.ok) {
+            geoPersistidos++;
+          } else {
+            geoErrosPersistencia++;
+            log("geo_persist_error", { news_id: inserida.id, motivo: persistido.error });
+          }
+
+          // Notificações internas (sem e-mail/WhatsApp nesta fase).
+          if (escopo.decision === "uncertain") {
+            await criarNotificacao(supabase, {
+              projectId,
+              kind: "news_uncertain",
+              title: "Notícia com geografia incerta",
+              message: item.title.substring(0, 300),
+              newsId: inserida.id,
+            });
+          } else if (escopo.decision === "outside" && GEOGRAPHIC_FILTER_MODE !== "shadow") {
+            await criarNotificacao(supabase, {
+              projectId,
+              kind: "news_outside_review",
+              title: "Notícia de fora de Laguna em revisão",
+              message: item.title.substring(0, 300),
+              newsId: inserida.id,
+            });
+          }
+          if (classificacao.importance_score >= 8) {
+            await criarNotificacao(supabase, {
+              projectId,
+              kind: "news_high_importance",
+              title: "Notícia de alta importância aguardando decisão",
+              message: item.title.substring(0, 300),
+              newsId: inserida.id,
+            });
+          }
         }
       }
 
@@ -559,6 +613,8 @@ export async function executarColeta(opcoes: OpcoesColeta): Promise<CollectNewsR
     `outside=${geoOutside}`,
     `uncertain=${geoUncertain}`,
     `geo_mode=${GEOGRAPHIC_FILTER_MODE}`,
+    `geo_persistidos=${geoPersistidos}`,
+    `geo_persist_erros=${geoErrosPersistencia}`,
     `conteudo_completo=${conteudoCompleto}`,
     `fallback_rss=${fallbackRss}`,
     `fetch_erro=${fetchErro}`,
@@ -595,6 +651,8 @@ export async function executarColeta(opcoes: OpcoesColeta): Promise<CollectNewsR
     geo_local: geoLocal,
     geo_outside: geoOutside,
     geo_uncertain: geoUncertain,
+    geo_persisted: geoPersistidos,
+    geo_persist_errors: geoErrosPersistencia,
     content_full: conteudoCompleto,
     content_fallback_rss: fallbackRss,
     content_fetch_errors: fetchErro,

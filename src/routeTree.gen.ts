@@ -13,14 +13,22 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteImport } from './routes/_admin'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AdminAnalyticsRouteImport } from './routes/_admin.analytics'
+import { Route as AdminCalendarRouteImport } from './routes/_admin.calendar'
 import { Route as AdminDashboardRouteImport } from './routes/_admin.dashboard'
 import { Route as AdminFeedRouteImport } from './routes/_admin.feed'
 import { Route as AdminInstagramRouteImport } from './routes/_admin.instagram'
 import { Route as AdminPublicationsRouteImport } from './routes/_admin.publications'
+import { Route as AdminPublishingRouteImport } from './routes/_admin.publishing'
 import { Route as AdminSettingsRouteImport } from './routes/_admin.settings'
 import { Route as AdminSourcesRouteImport } from './routes/_admin.sources'
+import { Route as AdminEditorialIndexRouteImport } from './routes/_admin.editorial.index'
+import { Route as AdminEditorialGeografiaRouteImport } from './routes/_admin.editorial.geografia'
 import { Route as AdminNewsIndexRouteImport } from './routes/_admin.news.index'
 import { Route as AdminNewsIdRouteImport } from './routes/_admin.news.$id'
+import { Route as AdminPostsIndexRouteImport } from './routes/_admin.posts.index'
+import { Route as AdminSponsorsIndexRouteImport } from './routes/_admin.sponsors.index'
+import { Route as AdminSponsorsCampaignsRouteImport } from './routes/_admin.sponsors.campaigns'
+import { Route as AdminSponsorsDeliverablesRouteImport } from './routes/_admin.sponsors.deliverables'
 import { Route as ApiPublicHooksCollectNewsRouteImport } from './routes/api/public/hooks/collect-news'
 
 const IndexRoute = IndexRouteImport.update({
@@ -40,6 +48,11 @@ const LoginRoute = LoginRouteImport.update({
 const AdminAnalyticsRoute = AdminAnalyticsRouteImport.update({
   id: '/analytics',
   path: '/analytics',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminCalendarRoute = AdminCalendarRouteImport.update({
+  id: '/calendar',
+  path: '/calendar',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminDashboardRoute = AdminDashboardRouteImport.update({
@@ -62,6 +75,11 @@ const AdminPublicationsRoute = AdminPublicationsRouteImport.update({
   path: '/publications',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminPublishingRoute = AdminPublishingRouteImport.update({
+  id: '/publishing',
+  path: '/publishing',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminSettingsRoute = AdminSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -70,6 +88,16 @@ const AdminSettingsRoute = AdminSettingsRouteImport.update({
 const AdminSourcesRoute = AdminSourcesRouteImport.update({
   id: '/sources',
   path: '/sources',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminEditorialIndexRoute = AdminEditorialIndexRouteImport.update({
+  id: '/editorial/',
+  path: '/editorial/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminEditorialGeografiaRoute = AdminEditorialGeografiaRouteImport.update({
+  id: '/editorial/geografia',
+  path: '/editorial/geografia',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminNewsIndexRoute = AdminNewsIndexRouteImport.update({
@@ -82,6 +110,27 @@ const AdminNewsIdRoute = AdminNewsIdRouteImport.update({
   path: '/news/$id',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminPostsIndexRoute = AdminPostsIndexRouteImport.update({
+  id: '/posts/',
+  path: '/posts/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSponsorsIndexRoute = AdminSponsorsIndexRouteImport.update({
+  id: '/sponsors/',
+  path: '/sponsors/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSponsorsCampaignsRoute = AdminSponsorsCampaignsRouteImport.update({
+  id: '/sponsors/campaigns',
+  path: '/sponsors/campaigns',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSponsorsDeliverablesRoute =
+  AdminSponsorsDeliverablesRouteImport.update({
+    id: '/sponsors/deliverables',
+    path: '/sponsors/deliverables',
+    getParentRoute: () => AdminRoute,
+  } as any)
 const ApiPublicHooksCollectNewsRoute =
   ApiPublicHooksCollectNewsRouteImport.update({
     id: '/api/public/hooks/collect-news',
@@ -93,28 +142,44 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/analytics': typeof AdminAnalyticsRoute
+  '/calendar': typeof AdminCalendarRoute
   '/dashboard': typeof AdminDashboardRoute
   '/feed': typeof AdminFeedRoute
   '/instagram': typeof AdminInstagramRoute
   '/publications': typeof AdminPublicationsRoute
+  '/publishing': typeof AdminPublishingRoute
   '/settings': typeof AdminSettingsRoute
   '/sources': typeof AdminSourcesRoute
+  '/editorial/geografia': typeof AdminEditorialGeografiaRoute
   '/news/$id': typeof AdminNewsIdRoute
+  '/sponsors/campaigns': typeof AdminSponsorsCampaignsRoute
+  '/sponsors/deliverables': typeof AdminSponsorsDeliverablesRoute
+  '/editorial/': typeof AdminEditorialIndexRoute
   '/news/': typeof AdminNewsIndexRoute
+  '/posts/': typeof AdminPostsIndexRoute
+  '/sponsors/': typeof AdminSponsorsIndexRoute
   '/api/public/hooks/collect-news': typeof ApiPublicHooksCollectNewsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/analytics': typeof AdminAnalyticsRoute
+  '/calendar': typeof AdminCalendarRoute
   '/dashboard': typeof AdminDashboardRoute
   '/feed': typeof AdminFeedRoute
   '/instagram': typeof AdminInstagramRoute
   '/publications': typeof AdminPublicationsRoute
+  '/publishing': typeof AdminPublishingRoute
   '/settings': typeof AdminSettingsRoute
   '/sources': typeof AdminSourcesRoute
+  '/editorial/geografia': typeof AdminEditorialGeografiaRoute
   '/news/$id': typeof AdminNewsIdRoute
+  '/sponsors/campaigns': typeof AdminSponsorsCampaignsRoute
+  '/sponsors/deliverables': typeof AdminSponsorsDeliverablesRoute
+  '/editorial': typeof AdminEditorialIndexRoute
   '/news': typeof AdminNewsIndexRoute
+  '/posts': typeof AdminPostsIndexRoute
+  '/sponsors': typeof AdminSponsorsIndexRoute
   '/api/public/hooks/collect-news': typeof ApiPublicHooksCollectNewsRoute
 }
 export interface FileRoutesById {
@@ -123,14 +188,22 @@ export interface FileRoutesById {
   '/_admin': typeof AdminRouteWithChildren
   '/login': typeof LoginRoute
   '/_admin/analytics': typeof AdminAnalyticsRoute
+  '/_admin/calendar': typeof AdminCalendarRoute
   '/_admin/dashboard': typeof AdminDashboardRoute
   '/_admin/feed': typeof AdminFeedRoute
   '/_admin/instagram': typeof AdminInstagramRoute
   '/_admin/publications': typeof AdminPublicationsRoute
+  '/_admin/publishing': typeof AdminPublishingRoute
   '/_admin/settings': typeof AdminSettingsRoute
   '/_admin/sources': typeof AdminSourcesRoute
+  '/_admin/editorial/geografia': typeof AdminEditorialGeografiaRoute
   '/_admin/news/$id': typeof AdminNewsIdRoute
+  '/_admin/sponsors/campaigns': typeof AdminSponsorsCampaignsRoute
+  '/_admin/sponsors/deliverables': typeof AdminSponsorsDeliverablesRoute
+  '/_admin/editorial/': typeof AdminEditorialIndexRoute
   '/_admin/news/': typeof AdminNewsIndexRoute
+  '/_admin/posts/': typeof AdminPostsIndexRoute
+  '/_admin/sponsors/': typeof AdminSponsorsIndexRoute
   '/api/public/hooks/collect-news': typeof ApiPublicHooksCollectNewsRoute
 }
 export interface FileRouteTypes {
@@ -139,28 +212,44 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/analytics'
+    | '/calendar'
     | '/dashboard'
     | '/feed'
     | '/instagram'
     | '/publications'
+    | '/publishing'
     | '/settings'
     | '/sources'
+    | '/editorial/geografia'
     | '/news/$id'
+    | '/sponsors/campaigns'
+    | '/sponsors/deliverables'
+    | '/editorial/'
     | '/news/'
+    | '/posts/'
+    | '/sponsors/'
     | '/api/public/hooks/collect-news'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/login'
     | '/analytics'
+    | '/calendar'
     | '/dashboard'
     | '/feed'
     | '/instagram'
     | '/publications'
+    | '/publishing'
     | '/settings'
     | '/sources'
+    | '/editorial/geografia'
     | '/news/$id'
+    | '/sponsors/campaigns'
+    | '/sponsors/deliverables'
+    | '/editorial'
     | '/news'
+    | '/posts'
+    | '/sponsors'
     | '/api/public/hooks/collect-news'
   id:
     | '__root__'
@@ -168,14 +257,22 @@ export interface FileRouteTypes {
     | '/_admin'
     | '/login'
     | '/_admin/analytics'
+    | '/_admin/calendar'
     | '/_admin/dashboard'
     | '/_admin/feed'
     | '/_admin/instagram'
     | '/_admin/publications'
+    | '/_admin/publishing'
     | '/_admin/settings'
     | '/_admin/sources'
+    | '/_admin/editorial/geografia'
     | '/_admin/news/$id'
+    | '/_admin/sponsors/campaigns'
+    | '/_admin/sponsors/deliverables'
+    | '/_admin/editorial/'
     | '/_admin/news/'
+    | '/_admin/posts/'
+    | '/_admin/sponsors/'
     | '/api/public/hooks/collect-news'
   fileRoutesById: FileRoutesById
 }
@@ -216,6 +313,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAnalyticsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/_admin/calendar': {
+      id: '/_admin/calendar'
+      path: '/calendar'
+      fullPath: '/calendar'
+      preLoaderRoute: typeof AdminCalendarRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/_admin/dashboard': {
       id: '/_admin/dashboard'
       path: '/dashboard'
@@ -244,6 +348,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPublicationsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/_admin/publishing': {
+      id: '/_admin/publishing'
+      path: '/publishing'
+      fullPath: '/publishing'
+      preLoaderRoute: typeof AdminPublishingRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/_admin/settings': {
       id: '/_admin/settings'
       path: '/settings'
@@ -256,6 +367,20 @@ declare module '@tanstack/react-router' {
       path: '/sources'
       fullPath: '/sources'
       preLoaderRoute: typeof AdminSourcesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/_admin/editorial/': {
+      id: '/_admin/editorial/'
+      path: '/editorial'
+      fullPath: '/editorial/'
+      preLoaderRoute: typeof AdminEditorialIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/_admin/editorial/geografia': {
+      id: '/_admin/editorial/geografia'
+      path: '/editorial/geografia'
+      fullPath: '/editorial/geografia'
+      preLoaderRoute: typeof AdminEditorialGeografiaRouteImport
       parentRoute: typeof AdminRoute
     }
     '/_admin/news/': {
@@ -272,6 +397,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminNewsIdRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/_admin/posts/': {
+      id: '/_admin/posts/'
+      path: '/posts'
+      fullPath: '/posts/'
+      preLoaderRoute: typeof AdminPostsIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/_admin/sponsors/': {
+      id: '/_admin/sponsors/'
+      path: '/sponsors'
+      fullPath: '/sponsors/'
+      preLoaderRoute: typeof AdminSponsorsIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/_admin/sponsors/campaigns': {
+      id: '/_admin/sponsors/campaigns'
+      path: '/sponsors/campaigns'
+      fullPath: '/sponsors/campaigns'
+      preLoaderRoute: typeof AdminSponsorsCampaignsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/_admin/sponsors/deliverables': {
+      id: '/_admin/sponsors/deliverables'
+      path: '/sponsors/deliverables'
+      fullPath: '/sponsors/deliverables'
+      preLoaderRoute: typeof AdminSponsorsDeliverablesRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/api/public/hooks/collect-news': {
       id: '/api/public/hooks/collect-news'
       path: '/api/public/hooks/collect-news'
@@ -284,26 +437,42 @@ declare module '@tanstack/react-router' {
 
 interface AdminRouteChildren {
   AdminAnalyticsRoute: typeof AdminAnalyticsRoute
+  AdminCalendarRoute: typeof AdminCalendarRoute
   AdminDashboardRoute: typeof AdminDashboardRoute
   AdminFeedRoute: typeof AdminFeedRoute
   AdminInstagramRoute: typeof AdminInstagramRoute
   AdminPublicationsRoute: typeof AdminPublicationsRoute
+  AdminPublishingRoute: typeof AdminPublishingRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
   AdminSourcesRoute: typeof AdminSourcesRoute
+  AdminEditorialGeografiaRoute: typeof AdminEditorialGeografiaRoute
   AdminNewsIdRoute: typeof AdminNewsIdRoute
+  AdminSponsorsCampaignsRoute: typeof AdminSponsorsCampaignsRoute
+  AdminSponsorsDeliverablesRoute: typeof AdminSponsorsDeliverablesRoute
+  AdminEditorialIndexRoute: typeof AdminEditorialIndexRoute
   AdminNewsIndexRoute: typeof AdminNewsIndexRoute
+  AdminPostsIndexRoute: typeof AdminPostsIndexRoute
+  AdminSponsorsIndexRoute: typeof AdminSponsorsIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminAnalyticsRoute: AdminAnalyticsRoute,
+  AdminCalendarRoute: AdminCalendarRoute,
   AdminDashboardRoute: AdminDashboardRoute,
   AdminFeedRoute: AdminFeedRoute,
   AdminInstagramRoute: AdminInstagramRoute,
   AdminPublicationsRoute: AdminPublicationsRoute,
+  AdminPublishingRoute: AdminPublishingRoute,
   AdminSettingsRoute: AdminSettingsRoute,
   AdminSourcesRoute: AdminSourcesRoute,
+  AdminEditorialGeografiaRoute: AdminEditorialGeografiaRoute,
   AdminNewsIdRoute: AdminNewsIdRoute,
+  AdminSponsorsCampaignsRoute: AdminSponsorsCampaignsRoute,
+  AdminSponsorsDeliverablesRoute: AdminSponsorsDeliverablesRoute,
+  AdminEditorialIndexRoute: AdminEditorialIndexRoute,
   AdminNewsIndexRoute: AdminNewsIndexRoute,
+  AdminPostsIndexRoute: AdminPostsIndexRoute,
+  AdminSponsorsIndexRoute: AdminSponsorsIndexRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
