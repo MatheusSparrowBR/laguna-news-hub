@@ -27,7 +27,6 @@ function createSupabaseFetch(supabaseKey: string): typeof fetch {
   };
 }
 
-
 function createSupabaseClient() {
   // Use import.meta.env for client-side (Vite build-time replacement)
   // Fall back to process.env for SSR (server-side rendering)
@@ -56,11 +55,16 @@ function createSupabaseClient() {
   });
 }
 
+type SupabaseClientRuntime = ReturnType<typeof createSupabaseClient> & {
+  /** Compatibility overload used by modules whose generated Database type is being refreshed from migrations. */
+  from(relation: string): any;
+};
+
 let _supabase: ReturnType<typeof createSupabaseClient> | undefined;
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
-export const supabase = new Proxy({} as ReturnType<typeof createSupabaseClient>, {
+export const supabase = new Proxy({} as SupabaseClientRuntime, {
   get(_, prop, receiver) {
     if (!_supabase) _supabase = createSupabaseClient();
     return Reflect.get(_supabase, prop, receiver);
