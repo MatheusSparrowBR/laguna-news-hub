@@ -35,6 +35,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { formatarDataHora } from "@/lib/format";
+import { estadoFonte, ROTULO_ESTADO, type EstadoFonte } from "@/lib/rules/sourceHealth";
 import type { Source } from "@/lib/types";
 import { toast } from "sonner";
 import { useProject } from "@/hooks/useProject";
