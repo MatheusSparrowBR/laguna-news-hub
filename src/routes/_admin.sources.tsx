@@ -277,6 +277,18 @@ function SourcesPage() {
   );
 }
 
+const CLASSE_ESTADO: Record<EstadoFonte, string> = {
+  saudavel: "border-primary/40 bg-primary/10 text-primary",
+  atencao: "border-warning/40 bg-warning/10 text-warning-foreground",
+  falha: "border-destructive/40 bg-destructive/10 text-destructive",
+};
+
+const PONTO_ESTADO: Record<EstadoFonte, string> = {
+  saudavel: "🟢",
+  atencao: "🟡",
+  falha: "🔴",
+};
+
 function SourceCard({
   fonte,
   modo,
@@ -288,6 +300,11 @@ function SourceCard({
 }) {
   const Icone = tipoIcone[fonte.tipo];
   const isWebsiteSemRss = fonte.tipo === "site";
+  const falhas = fonte.falhasConsecutivas ?? 0;
+  const estado = estadoFonte({
+    consecutive_failures: falhas,
+    last_error: fonte.ultimoErro ?? null,
+  });
 
   return (
     <Card className="transition-shadow hover:shadow-md">
@@ -309,6 +326,9 @@ function SourceCard({
             {fonte.ativa ? "Ativa" : "Inativa"}
           </Badge>
           <Badge variant="outline">{tipoLabel[fonte.tipo]}</Badge>
+          <Badge variant="outline" className={CLASSE_ESTADO[estado]}>
+            {PONTO_ESTADO[estado]} {ROTULO_ESTADO[estado]}
+          </Badge>
         </div>
 
         <a
@@ -326,14 +346,43 @@ function SourceCard({
           </p>
         )}
 
-        <div className="flex items-center justify-between border-t pt-3 text-xs text-muted-foreground">
-          <span>{fonte.noticiasColetadas} notícias coletadas</span>
-          <span>Última: {formatarDataHora(fonte.ultimaColeta)}</span>
-        </div>
+        <dl className="grid grid-cols-2 gap-x-3 gap-y-1.5 border-t pt-3 text-xs">
+          <div>
+            <dt className="text-muted-foreground">Última verificação</dt>
+            <dd className="font-medium text-foreground">{formatarDataHora(fonte.ultimaColeta)}</dd>
+          </div>
+          <div>
+            <dt className="text-muted-foreground">Resposta do site</dt>
+            <dd className="font-medium text-foreground">{fonte.ultimoHttpStatus ?? "—"}</dd>
+          </div>
+          <div>
+            <dt className="text-muted-foreground">Última notícia</dt>
+            <dd className="font-medium text-foreground">
+              {fonte.ultimaNoticiaEm ? formatarDataHora(fonte.ultimaNoticiaEm) : "—"}
+            </dd>
+          </div>
+          <div>
+            <dt className="text-muted-foreground">Falhas seguidas</dt>
+            <dd className="font-medium text-foreground">{falhas}</dd>
+          </div>
+          <div className="col-span-2">
+            <dt className="text-muted-foreground">Notícias coletadas</dt>
+            <dd className="font-medium text-foreground">{fonte.noticiasColetadas}</dd>
+          </div>
+        </dl>
+
+        {fonte.ultimoErro ? (
+          <p className="rounded-md bg-destructive/10 px-2 py-1.5 text-xs text-destructive">
+            Último erro: {fonte.ultimoErro}
+          </p>
+        ) : null}
+
+        {modo === "demo" ? null : null}
       </CardContent>
     </Card>
   );
 }
+
 
 function AddSourceDialog({
   projectId,
