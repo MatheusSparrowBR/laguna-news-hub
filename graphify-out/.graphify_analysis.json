@@ -843,29 +843,6 @@
       "src_services_supabasedata_resumoanalytics"
     ],
     "25": [
-      "src_components_common_confirmationdialog_confirmationdialog",
-      "src_components_layout_navigation",
-      "src_components_layout_navigation_navgroup",
-      "src_components_layout_navigation_navgroups",
-      "src_components_layout_navigation_navitem",
-      "src_components_layout_navigation_navitems",
-      "src_components_layout_sidebar",
-      "src_components_layout_sidebar_sidebar",
-      "src_config_app",
-      "src_config_app_app_name",
-      "src_config_app_cidade",
-      "src_config_app_cidade_completa",
-      "src_config_app_estado",
-      "src_config_app_nome_do_perfil",
-      "src_hooks_useauth",
-      "src_hooks_useauth_authstate",
-      "src_hooks_useauth_useauth",
-      "src_routes_index",
-      "src_routes_index_homeredirect",
-      "src_routes_index_route",
-      "src_routes_login_loginpage"
-    ],
-    "26": [
       "src_components_common_loadingstate",
       "src_components_common_loadingstate_loadingstate",
       "src_components_layout_pagecontainer_pagecontainer",
@@ -888,7 +865,7 @@
       "src_routes_admin_publications_statustabs",
       "src_services_editorialqueries_usepostsprojeto"
     ],
-    "27": [
+    "26": [
       "src_lib_adminclient_server",
       "src_lib_adminclient_server_criarclienteadmin",
       "src_lib_adminclient_server_ehchavenova",
@@ -911,7 +888,7 @@
       "src_routes_api_public_integrations_instagram_callback_redirecionar",
       "src_routes_api_public_integrations_instagram_callback_route"
     ],
-    "28": [
+    "27": [
       "src_components_posts_postcomposerdialog",
       "src_components_posts_postcomposerdialog_postcomposerdialog",
       "src_components_posts_postcomposerdialog_tipopost",
@@ -933,7 +910,7 @@
       "src_services_postphotocredit_postsclient",
       "src_services_postphotocredit_salvarcreditofotopost"
     ],
-    "29": [
+    "28": [
       "src_routes_admin_analytics_route",
       "src_routes_admin_calendar_route",
       "src_routes_admin_community_route",
@@ -955,7 +932,7 @@
       "src_routes_login_route",
       "src_routetree_gen_fileroutesbypath"
     ],
-    "30": [
+    "29": [
       "components",
       "components_aliases",
       "components_aliases_components",
@@ -976,7 +953,7 @@
       "components_tailwind_prefix",
       "components_tsx"
     ],
-    "31": [
+    "30": [
       "src_components_sources_collectresultpanel",
       "src_components_sources_collectresultpanel_aviso",
       "src_components_sources_collectresultpanel_collectresultpanel",
@@ -997,7 +974,7 @@
       "src_components_ui_alert_alertvariants",
       "src_services_collectnews_collectnewsresult"
     ],
-    "32": [
+    "31": [
       "src_lib_templates_posttemplates",
       "src_lib_templates_posttemplates_cortarempalavra",
       "src_lib_templates_posttemplates_entradalegendapost",
@@ -1017,6 +994,26 @@
       "src_lib_templates_posttemplates_template_keys",
       "src_lib_templates_posttemplates_test",
       "src_lib_templates_posttemplates_titulo_post_max"
+    ],
+    "32": [
+      "src_components_common_confirmationdialog_confirmationdialog",
+      "src_components_layout_navigation",
+      "src_components_layout_navigation_navgroup",
+      "src_components_layout_navigation_navgroups",
+      "src_components_layout_navigation_navitem",
+      "src_components_layout_navigation_navitems",
+      "src_components_layout_sidebar",
+      "src_components_layout_sidebar_sidebar",
+      "src_config_app",
+      "src_config_app_app_name",
+      "src_config_app_cidade",
+      "src_config_app_cidade_completa",
+      "src_config_app_estado",
+      "src_config_app_nome_do_perfil",
+      "src_hooks_useauth",
+      "src_hooks_useauth_authstate",
+      "src_hooks_useauth_useauth",
+      "src_routes_login_loginpage"
     ],
     "33": [
       "server_entry",
@@ -1458,258 +1455,263 @@
       "src_routes_api_public_hooks_collect_news_route"
     ],
     "67": [
+      "src_routes_index",
+      "src_routes_index_homeredirect",
+      "src_routes_index_route"
+    ],
+    "68": [
       "class_variance_authority",
       "package_dependencies_class_variance_authority"
     ],
-    "68": [
+    "69": [
       "clsx",
       "package_dependencies_clsx"
     ],
-    "69": [
+    "70": [
       "date_fns",
       "package_dependencies_date_fns"
     ],
-    "70": [
+    "71": [
       "embla_carousel_react",
       "package_dependencies_embla_carousel_react"
     ],
-    "71": [
+    "72": [
       "eslint_config_prettier",
       "package_devdependencies_eslint_config_prettier"
     ],
-    "72": [
+    "73": [
       "eslint_js",
       "package_devdependencies_eslint_js"
     ],
-    "73": [
+    "74": [
       "eslint_plugin_prettier",
       "package_devdependencies_eslint_plugin_prettier"
     ],
-    "74": [
+    "75": [
       "eslint_plugin_react_hooks",
       "package_devdependencies_eslint_plugin_react_hooks"
     ],
-    "75": [
+    "76": [
       "eslint_plugin_react_refresh",
       "package_devdependencies_eslint_plugin_react_refresh"
     ],
-    "76": [
+    "77": [
       "hookform_resolvers",
       "package_dependencies_hookform_resolvers"
     ],
-    "77": [
+    "78": [
       "input_otp",
       "package_dependencies_input_otp"
     ],
-    "78": [
+    "79": [
       "lovable_dev_vite_tanstack_config",
       "package_devdependencies_lovable_dev_vite_tanstack_config"
     ],
-    "79": [
+    "80": [
       "package_dependencies_radix_ui_react_accordion",
       "radix_ui_react_accordion"
     ],
-    "80": [
+    "81": [
       "package_dependencies_radix_ui_react_alert_dialog",
       "radix_ui_react_alert_dialog"
     ],
-    "81": [
+    "82": [
       "package_dependencies_radix_ui_react_aspect_ratio",
       "radix_ui_react_aspect_ratio"
     ],
-    "82": [
+    "83": [
       "package_dependencies_radix_ui_react_avatar",
       "radix_ui_react_avatar"
     ],
-    "83": [
+    "84": [
       "package_dependencies_radix_ui_react_collapsible",
       "radix_ui_react_collapsible"
     ],
-    "84": [
+    "85": [
       "package_dependencies_radix_ui_react_context_menu",
       "radix_ui_react_context_menu"
     ],
-    "85": [
+    "86": [
       "package_dependencies_radix_ui_react_dialog",
       "radix_ui_react_dialog"
     ],
-    "86": [
+    "87": [
       "package_dependencies_radix_ui_react_dropdown_menu",
       "radix_ui_react_dropdown_menu"
     ],
-    "87": [
+    "88": [
       "package_dependencies_radix_ui_react_hover_card",
       "radix_ui_react_hover_card"
     ],
-    "88": [
+    "89": [
       "package_dependencies_radix_ui_react_label",
       "radix_ui_react_label"
     ],
-    "89": [
+    "90": [
       "package_dependencies_radix_ui_react_menubar",
       "radix_ui_react_menubar"
     ],
-    "90": [
+    "91": [
       "package_dependencies_radix_ui_react_navigation_menu",
       "radix_ui_react_navigation_menu"
     ],
-    "91": [
+    "92": [
       "package_dependencies_radix_ui_react_popover",
       "radix_ui_react_popover"
     ],
-    "92": [
+    "93": [
       "package_dependencies_radix_ui_react_radio_group",
       "radix_ui_react_radio_group"
     ],
-    "93": [
+    "94": [
       "package_dependencies_radix_ui_react_scroll_area",
       "radix_ui_react_scroll_area"
     ],
-    "94": [
+    "95": [
       "package_dependencies_radix_ui_react_select",
       "radix_ui_react_select"
     ],
-    "95": [
+    "96": [
       "package_dependencies_radix_ui_react_separator",
       "radix_ui_react_separator"
     ],
-    "96": [
+    "97": [
       "package_dependencies_radix_ui_react_slider",
       "radix_ui_react_slider"
     ],
-    "97": [
+    "98": [
       "package_dependencies_radix_ui_react_switch",
       "radix_ui_react_switch"
     ],
-    "98": [
+    "99": [
       "package_dependencies_radix_ui_react_tabs",
       "radix_ui_react_tabs"
     ],
-    "99": [
+    "100": [
       "package_dependencies_radix_ui_react_toggle",
       "radix_ui_react_toggle"
     ],
-    "100": [
+    "101": [
       "package_dependencies_radix_ui_react_toggle_group",
       "radix_ui_react_toggle_group"
     ],
-    "101": [
+    "102": [
       "package_dependencies_radix_ui_react_tooltip",
       "radix_ui_react_tooltip"
     ],
-    "102": [
+    "103": [
       "package_dependencies_react",
       "react"
     ],
-    "103": [
+    "104": [
       "package_dependencies_react_day_picker",
       "react_day_picker"
     ],
-    "104": [
+    "105": [
       "package_dependencies_react_dom",
       "react_dom"
     ],
-    "105": [
+    "106": [
       "package_dependencies_react_resizable_panels",
       "react_resizable_panels"
     ],
-    "106": [
+    "107": [
       "package_dependencies_recharts",
       "recharts"
     ],
-    "107": [
+    "108": [
       "package_dependencies_sonner",
       "sonner"
     ],
-    "108": [
+    "109": [
       "package_dependencies_supabase_supabase_js",
       "supabase_supabase_js"
     ],
-    "109": [
+    "110": [
       "package_dependencies_tailwind_merge",
       "tailwind_merge"
     ],
-    "110": [
+    "111": [
       "package_dependencies_tailwindcss",
       "tailwindcss"
     ],
-    "111": [
+    "112": [
       "package_dependencies_tailwindcss_vite",
       "tailwindcss_vite"
     ],
-    "112": [
+    "113": [
       "package_dependencies_tanstack_react_query",
       "tanstack_react_query"
     ],
-    "113": [
+    "114": [
       "package_dependencies_tanstack_react_router",
       "tanstack_react_router"
     ],
-    "114": [
+    "115": [
       "package_dependencies_tanstack_react_start",
       "tanstack_react_start"
     ],
-    "115": [
+    "116": [
       "package_dependencies_tanstack_router_plugin",
       "tanstack_router_plugin"
     ],
-    "116": [
+    "117": [
       "package_dependencies_tw_animate_css",
       "tw_animate_css"
     ],
-    "117": [
+    "118": [
       "package_dependencies_vaul",
       "vaul"
     ],
-    "118": [
+    "119": [
       "package_dependencies_vite_tsconfig_paths",
       "vite_tsconfig_paths"
     ],
-    "119": [
+    "120": [
       "package_dependencies_zod",
       "zod"
     ],
-    "120": [
+    "121": [
       "package_devdependencies_prettier",
       "prettier"
     ],
-    "121": [
+    "122": [
       "package_devdependencies_types_react",
       "types_react"
     ],
-    "122": [
+    "123": [
       "package_devdependencies_types_react_dom",
       "types_react_dom"
     ],
-    "123": [
+    "124": [
       "package_devdependencies_typescript",
       "typescript"
     ],
-    "124": [
+    "125": [
       "package_devdependencies_typescript_eslint",
       "typescript_eslint"
     ],
-    "125": [
+    "126": [
       "package_devdependencies_vite",
       "vite"
     ],
-    "126": [
+    "127": [
       "package_devdependencies_vitejs_plugin_react",
       "vitejs_plugin_react"
     ],
-    "127": [
+    "128": [
       "eslint_config"
     ],
-    "128": [
+    "129": [
       "src_components_ui_aspect_ratio"
     ],
-    "129": [
+    "130": [
       "src_components_ui_collapsible"
     ],
-    "130": [
+    "131": [
       "src_lib_art_officialinstagramtemplate"
     ],
-    "131": [
+    "132": [
       "vite_config"
     ]
   },
@@ -1739,14 +1741,14 @@
     "22": 0.13852813852813853,
     "23": 0.19047619047619047,
     "24": 0.12121212121212122,
-    "25": 0.12857142857142856,
-    "26": 0.19047619047619047,
-    "27": 0.20476190476190476,
-    "28": 0.18947368421052632,
-    "29": 0.1,
-    "30": 0.10526315789473684,
-    "31": 0.16374269005847952,
-    "32": 0.2046783625730994,
+    "25": 0.19047619047619047,
+    "26": 0.20476190476190476,
+    "27": 0.18947368421052632,
+    "28": 0.1,
+    "29": 0.10526315789473684,
+    "30": 0.16374269005847952,
+    "31": 0.2046783625730994,
+    "32": 0.1437908496732026,
     "33": 0.19117647058823528,
     "34": 0.19166666666666668,
     "35": 0.18333333333333332,
@@ -1781,7 +1783,7 @@
     "64": 0.6666666666666666,
     "65": 0.4,
     "66": 0.6,
-    "67": 1.0,
+    "67": 0.6666666666666666,
     "68": 1.0,
     "69": 1.0,
     "70": 1.0,
@@ -1845,7 +1847,8 @@
     "128": 1.0,
     "129": 1.0,
     "130": 1.0,
-    "131": 1.0
+    "131": 1.0,
+    "132": 1.0
   },
   "gods": [
     {
