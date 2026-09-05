@@ -1,20 +1,22 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { LoadingState } from "@/components/common/LoadingState";
-import { useAuth } from "@/hooks/useAuth";
 
 export const Route = createFileRoute("/")({
   component: HomeRedirect,
 });
 
+/**
+ * Keep the public entry point independent from Supabase/auth initialization.
+ * Authentication is resolved by /login; this prevents a Supabase configuration
+ * failure from turning the application's first render into the root error page.
+ */
 function HomeRedirect() {
   const navigate = useNavigate();
-  const { session, loading } = useAuth();
 
   useEffect(() => {
-    if (loading) return;
-    void navigate({ to: session ? "/dashboard" : "/login", replace: true });
-  }, [loading, navigate, session]);
+    void navigate({ to: "/login", replace: true });
+  }, [navigate]);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background">
